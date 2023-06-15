@@ -17,11 +17,11 @@ parser.add_argument(
 )
 parser.add_argument(
     "-a", "--initial_a", type=float, required=True,
-    help="[0,4]"
+    help="float value [0,4]"
 )
 parser.add_argument(
     "-b", "--initial_b", type=float, required=True,
-    help="[0,4]"
+    help="float value [0,4]"
 )
 parser.add_argument(
     "-x", "--initial_x", type=float, default=0.5,
@@ -61,6 +61,15 @@ def seed2series(seed: int):
             return series[i:]
     return series
 
+def seq2series(seq):
+    series = []
+    for s in seq:
+        if s == "A":
+            series.append(1)
+        elif s == "B":
+            series.append(0)
+    return series
+
 if __name__ == "__main__":
     args = parser.parse_args()
     initA = args.initial_a
@@ -68,8 +77,15 @@ if __name__ == "__main__":
     initX = args.initial_x
     mode = args.mode
     seed = args.seed
+    seq = args.sequencial
 
-    series = seed2series(seed)
+    # 系列の生成
+    if seq == None:
+        series = seed2series(seed)
+    elif seed == -1:
+        series = seq2series(seq)
+    elif seq != None and seed != -1:
+        raise ValueError(f"Both sequential and seed are specified. Please specify only one of them.")
     print(series)
 
     if mode == "3d":
