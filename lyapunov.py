@@ -28,6 +28,10 @@ parser.add_argument(
     help="Initial value for iterative calculation."
 )
 parser.add_argument(
+    "-y", "--initial_y", type=float, default=0.5,
+    help="Initial value for iterative calculation."
+)
+parser.add_argument(
     "-m", "--mode", type=str, choices=["3d", "plot"], default="plot",
     help="3D mode outputs files in STL format. In plot mode, draw figures with matplotlib."
 )
@@ -70,11 +74,31 @@ def seq2series(seq):
             series.append(0)
     return series
 
+def series2rvalue(series, width, height, a, b):
+    rx = []
+    ry = []
+    ab = [b, a]
+    for w in range(width):
+        i = w % len(series)
+        rx.append(ab[series[i]])
+    for h in range(height):
+        i = h % len(series)
+        ry.append(ab[series[i]])
+    return rx, ry
+
+def r2x(r, initX):
+    x = [initX]
+    for i, _ in enumerate(r):
+        x.append(x[i] * r[i] * (1. - x[i]))
+    return x
+
+
 if __name__ == "__main__":
     args = parser.parse_args()
-    initA = args.initial_a
-    initB = args.initial_b
+    A = args.initial_a
+    B = args.initial_b
     initX = args.initial_x
+    initY = args.initial_y
     mode = args.mode
     seed = args.seed
     seq = args.sequencial
@@ -88,7 +112,13 @@ if __name__ == "__main__":
         series = seq2series(seq)
     elif seq != None and seed != -1:
         raise ValueError(f"Both sequential and seed are specified. Please specify only one of them.")
-    print(series)
+    
+    # 周期列の生成
+    rx, ry = series2rvalue(series, width, height, A, B)
+
+    # 漸化式を解く
+    x = r2x(rx, initX)
+    y = r2x(ry, initY)
 
     if mode == "3d":
         pass
