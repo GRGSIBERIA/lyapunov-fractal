@@ -31,13 +31,6 @@ parser.add_argument(
     "-m", "--mode", type=str, choices=["3d", "plot"], default="plot",
     help="3D mode outputs files in STL format. In plot mode, draw figures with matplotlib."
 )
-parser.add_argument(
-    "-w", "--width", type=int, default=512
-)
-parser.add_argument(
-    "-h", "--height", type=int, default=512
-)
-
 
 def mode_plot():
     pass
@@ -64,9 +57,9 @@ def seed2series(seed: int):
 def seq2series(seq):
     series = []
     for s in seq:
-        if s == "A":
+        if s == "A" or s == "1":
             series.append(1)
-        elif s == "B":
+        elif s == "B" or s == "0":
             series.append(0)
     return series
 
@@ -87,6 +80,16 @@ if __name__ == "__main__":
     elif seq != None and seed != -1:
         raise ValueError(f"Both sequential and seed are specified. Please specify only one of them.")
     print(series)
+
+    print("input width size (1<w)", end=":")
+    width = int(input())
+    if width <= 1:
+        raise ValueError(f"w<=1: {width}")
+    
+    print("input height size (1<h)", end="h")
+    height = int(input())
+    if height <= 1:
+        raise ValueError(f"h<=1: {height}")
 
     if mode == "3d":
         pass
