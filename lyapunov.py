@@ -5,22 +5,38 @@ import argparse
 parser = argparse.ArgumentParser(
     prog='Lyapunov Fractal',
     description='The Lyapunov fractal is a characteristic fractal figure that extends the logistic map. This program generates Lyapunov fractals.',
-    epilog='Text at the bottom of help')
+    epilog='Text at the bottom of help'
+)
 parser.add_argument(
-    "-s", "--seed", type=int, default=-1,
-    help="seed generates a series based on the leading bit of the specified value. Higher numbers mean greater complexity.")
+    "-s", "--seed", type=int, default=None,
+    help="seed generates a series based on the leading bit of the specified value. Higher numbers mean greater complexity."
+)
+parser.add_argument(
+    "-seq", "--sequencial", type=str, default=None,
+    help="sequential creates a cyclic sequence from a string consisting of arbitrary A and B."
+)
 parser.add_argument(
     "-a", "--initial_a", type=float, required=True,
-    help="[0,4]")
+    help="[0,4]"
+)
 parser.add_argument(
     "-b", "--initial_b", type=float, required=True,
-    help="[0,4]")
+    help="[0,4]"
+)
 parser.add_argument(
     "-x", "--initial_x", type=float, default=0.5,
-    help="Initial value for iterative calculation.")
+    help="Initial value for iterative calculation."
+)
 parser.add_argument(
     "-m", "--mode", type=str, choices=["3d", "plot"], default="plot",
-    help="3D mode outputs files in STL format. In plot mode, draw figures with matplotlib.")
+    help="3D mode outputs files in STL format. In plot mode, draw figures with matplotlib."
+)
+parser.add_argument(
+    "-w", "--width", type=int, default=512
+)
+parser.add_argument(
+    "-h", "--height", type=int, default=512
+)
 
 
 def mode_plot():
