@@ -16,14 +16,6 @@ parser.add_argument(
     help="sequential creates a cyclic sequence from a string consisting of arbitrary A and B."
 )
 parser.add_argument(
-    "-a", "--initial_a", type=float, required=True,
-    help="float value [0,4]"
-)
-parser.add_argument(
-    "-b", "--initial_b", type=float, required=True,
-    help="float value [0,4]"
-)
-parser.add_argument(
     "-x", "--initial_x", type=float, default=0.5,
     help="Initial value for iterative calculation."
 )
@@ -106,8 +98,6 @@ def compute_lambda(r, x):
 
 if __name__ == "__main__":
     args = parser.parse_args()
-    A = args.initial_a
-    B = args.initial_b
     initX = args.initial_x
     initY = args.initial_y
     mode = args.mode
