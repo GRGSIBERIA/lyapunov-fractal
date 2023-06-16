@@ -36,10 +36,10 @@ parser.add_argument(
     help="3D mode outputs files in STL format. In plot mode, draw figures with matplotlib."
 )
 parser.add_argument(
-    "-w", "--width", type=int, default=512
+    "-width", "--width", type=int, default=512
 )
 parser.add_argument(
-    "-h", "--height", type=int, default=512
+    "-height", "--height", type=int, default=512
 )
 
 
@@ -92,6 +92,17 @@ def r2x(r, initX):
         x.append(x[i] * r[i] * (1. - x[i]))
     return x
 
+def compute_lambda(r, x):
+    import math
+    total = 0.
+    for n, _ in enumerate(r):
+        absval = math.fabs(r[n] * (1. - (2. * x[n])))
+        try:
+            total += math.log(absval, math.e)
+        except:
+            continue
+    return (1. / len(r)) * total
+
 
 if __name__ == "__main__":
     args = parser.parse_args()
@@ -106,19 +117,27 @@ if __name__ == "__main__":
     height = args.height
 
     # 系列の生成
-    if seq == None:
+    series = None
+    if seed != None:
         series = seed2series(seed)
-    elif seed == -1:
+    elif seq != None:
         series = seq2series(seq)
-    elif seq != None and seed != -1:
+    elif seq == None and seed == -1:
         raise ValueError(f"Both sequential and seed are specified. Please specify only one of them.")
     
-    # 周期列の生成
-    rx, ry = series2rvalue(series, width, height, A, B)
+    a = np.linspace(0,4,width)
+    b = np.linspace(0,4,height)
+    dots = np.zeros(shape=(width, height))
 
-    # 漸化式を解く
-    x = r2x(rx, initX)
-    y = r2x(ry, initY)
+    for i, an in enumerate(a):
+        for j, bn in enumerate(b):
+            r = series2rvalue(series, width, height, an, bn)[0]
+            x = r2x(r, initX)
+            dots[i][j] = compute_lambda(r, x)
+
+    plt.figure()
+    plt.imshow(dots)
+    plt.show()
 
     if mode == "3d":
         pass
