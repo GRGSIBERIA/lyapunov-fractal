@@ -37,13 +37,13 @@ parser.add_argument(
     "-amax", "--amax", type=float, default=4
 )
 parser.add_argument(
-    "-amin", "--amin", type=float, default=4
+    "-amin", "--amin", type=float, default=0
 )
 parser.add_argument(
     "-bmax", "--bmax", type=float, default=4
 )
 parser.add_argument(
-    "-bmin", "--bmin", type=float, default=4
+    "-bmin", "--bmin", type=float, default=0
 )
 
 
