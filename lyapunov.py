@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import argparse
+from numba import jit, f8, i8
 
 parser = argparse.ArgumentParser(
     prog='Lyapunov Fractal',
@@ -45,6 +46,13 @@ parser.add_argument(
 parser.add_argument(
     "-bmin", "--bmin", type=float, default=0
 )
+parser.add_argument(
+    "-f", "--func", type=str, choices=["simple", "sin2"], default="simple"
+)
+parser.add_argument(
+    "-c", "--const", type=float, default=2.7,
+    help="constant used in the sin2 function."
+)
 
 
 def mode_plot():
@@ -86,11 +94,31 @@ def series2rvalue(series, N, a, b):
         r.append(ab[series[idx]])
     return r
 
+
+@jit(f8(f8, f8))
+def func_simple(x, r):
+    return x * r * (1. - x)
+
+@jit(f8(f8, f8, f8))
+def func_sin2(x, r, const):
+    return const * np.sin(x + r)**2.
+
+
 def r2x(r, initX):
     x = [initX]
     for i, _ in enumerate(r):
         x.append(x[i] * r[i] * (1. - x[i]))
     return x
+
+
+@jit(f8(f8,f8))
+def grad_simple(x, r):
+    return r * (1. - (2. * x))
+
+@jit(f8(f8, f8, f8))
+def grad_sin2(x, r, const):
+    return 2. * const * np.sin(x + r) * np.cos(x + r)
+
 
 def compute_lambda(r, x):
     import math
@@ -118,6 +146,8 @@ if __name__ == "__main__":
     amax = args.amax
     bmin = args.bmin
     bmax = args.bmax
+    func = args.func
+    const = args.const
 
     # 系列の生成
     series = None
