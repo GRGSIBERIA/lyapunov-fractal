@@ -120,14 +120,14 @@ if __name__ == "__main__":
 
     par = tom["parameters"]
     param = par["param"]
-    initX = par["initX"]
+    initX = float(par["initX"])
     N = par["N"]
-    amin = par["amin"]
-    amax = par["amax"]
-    bmin = par["bmin"]
-    bmax = par["bmax"]
+    amin = float(par["amin"])
+    amax = float(par["amax"])
+    bmin = float(par["bmin"])
+    bmax = float(par["bmax"])
     func = par["func"]
-    const = par["const"]
+    const = float(par["const"])
 
     # 系列の生成
     series = None
