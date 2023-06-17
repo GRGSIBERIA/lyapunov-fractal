@@ -14,11 +14,11 @@ initX = 0.5
 # 反復計算回数
 N = 10
 # aとbがそれぞれ取り得る最小値と最大値, a,b in [0, 4]
-amin = 2
-amax = 4
+amin = 3
+amax = 3.5
 bmin = 2
-bmax = 4
+bmax = 3.5
 # simple, sin2
-func = "simple"
+func = "sin2"
 # 定数
 const = 2.7
