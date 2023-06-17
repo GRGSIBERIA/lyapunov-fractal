@@ -1,7 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import argparse
-from numba import njit, f8, i8
+from numba import njit, f8
+import toml
 
 parser = argparse.ArgumentParser(
     prog='Lyapunov Fractal',
@@ -105,7 +106,6 @@ def compute_lambda(r, x, const, func_mode):
             continue
     return (1. / len(r)) * total
 
-import toml
 
 if __name__ == "__main__":
     args = parser.parse_args()
