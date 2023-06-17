@@ -16,11 +16,11 @@ parser.add_argument(
     help="sequential creates a cyclic sequence from a string consisting of arbitrary A and B."
 )
 parser.add_argument(
-    "-x", "--initial_x", type=float, default=0.5,
-    help="Initial value for iterative calculation."
+    "-n", "--num_iterations", type=int, default=10,
+    help="Number of iterations."
 )
 parser.add_argument(
-    "-y", "--initial_y", type=float, default=0.5,
+    "-x", "--initial_x", type=float, default=0.5,
     help="Initial value for iterative calculation."
 )
 parser.add_argument(
@@ -66,17 +66,13 @@ def seq2series(seq):
             series.append(0)
     return series
 
-def series2rvalue(series, width, height, a, b):
-    rx = []
-    ry = []
+def series2rvalue(series, N, a, b):
+    r = []
     ab = [b, a]
-    for w in range(width):
-        i = w % len(series)
-        rx.append(ab[series[i]])
-    for h in range(height):
-        i = h % len(series)
-        ry.append(ab[series[i]])
-    return rx, ry
+    for i in range(N):
+        idx = i % len(series)
+        r.append(ab[series[idx]])
+    return r
 
 def r2x(r, initX):
     x = [initX]
@@ -96,15 +92,30 @@ def compute_lambda(r, x):
     return (1. / len(r)) * total
 
 
+def randab():
+    a = np.random.rand() * 4.
+    b = np.random.rand() * 4.
+    return a, b
+
+def linab(i, j, w, h):
+    a = np.linspace(0,4,w)[i]
+    b = np.linspace(0,4,h)[j]
+    return a, b
+
+def sinab(i, j, f):
+    a = np.sin(2. * np.pi * f * i) + 1
+    b = np.sin(2. * np.pi * f * j) + 1
+    return a * 2, b * 2
+
 if __name__ == "__main__":
     args = parser.parse_args()
     initX = args.initial_x
-    initY = args.initial_y
     mode = args.mode
     seed = args.seed
     seq = args.sequencial
     width = args.width
     height = args.height
+    N = args.num_iterations
 
     # 系列の生成
     series = None
@@ -119,9 +130,9 @@ if __name__ == "__main__":
     b = np.linspace(0,4,height)
     dots = np.zeros(shape=(width, height))
 
-    for i, an in enumerate(a):
-        for j, bn in enumerate(b):
-            r = series2rvalue(series, width, height, an, bn)[0]
+    for i, bn in enumerate(b):
+        for j, an in enumerate(a):
+            r = series2rvalue(series, N, an, bn)
             x = r2x(r, initX)
             dots[i][j] = compute_lambda(r, x)
 
