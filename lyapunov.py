@@ -33,6 +33,18 @@ parser.add_argument(
 parser.add_argument(
     "-height", "--height", type=int, default=512
 )
+parser.add_argument(
+    "-amax", "--amax", type=float, default=4
+)
+parser.add_argument(
+    "-amin", "--amin", type=float, default=4
+)
+parser.add_argument(
+    "-bmax", "--bmax", type=float, default=4
+)
+parser.add_argument(
+    "-bmin", "--bmin", type=float, default=4
+)
 
 
 def mode_plot():
@@ -92,20 +104,6 @@ def compute_lambda(r, x):
     return (1. / len(r)) * total
 
 
-def randab():
-    a = np.random.rand() * 4.
-    b = np.random.rand() * 4.
-    return a, b
-
-def linab(i, j, w, h):
-    a = np.linspace(0,4,w)[i]
-    b = np.linspace(0,4,h)[j]
-    return a, b
-
-def sinab(i, j, f):
-    a = np.sin(2. * np.pi * f * i) + 1
-    b = np.sin(2. * np.pi * f * j) + 1
-    return a * 2, b * 2
 
 if __name__ == "__main__":
     args = parser.parse_args()
@@ -116,6 +114,10 @@ if __name__ == "__main__":
     width = args.width
     height = args.height
     N = args.num_iterations
+    amin = args.amin
+    amax = args.amax
+    bmin = args.bmin
+    bmax = args.bmax
 
     # 系列の生成
     series = None
@@ -126,18 +128,20 @@ if __name__ == "__main__":
     elif seq == None and seed == -1:
         raise ValueError(f"Both sequential and seed are specified. Please specify only one of them.")
     
-    a = np.linspace(0,4,width)
-    b = np.linspace(0,4,height)
+    a = np.linspace(amin, amax, width)
+    b = np.linspace(bmin, bmax, height)
     dots = np.zeros(shape=(width, height))
 
     for i, bn in enumerate(b):
         for j, an in enumerate(a):
             r = series2rvalue(series, N, an, bn)
             x = r2x(r, initX)
-            dots[i][j] = compute_lambda(r, x)
+            dots[i][j] = compute_lambda(r, x) * 8
 
     plt.figure()
     plt.imshow(dots)
+    plt.colorbar()
+    plt.tight_layout()
     plt.show()
 
     if mode == "3d":
