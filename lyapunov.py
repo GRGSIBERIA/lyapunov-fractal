@@ -8,52 +8,11 @@ parser = argparse.ArgumentParser(
     description='The Lyapunov fractal is a characteristic fractal figure that extends the logistic map. This program generates Lyapunov fractals.',
     epilog='Text at the bottom of help'
 )
-parser.add_argument(
-    "-s", "--seed", type=int, default=None,
-    help="seed generates a series based on the leading bit of the specified value. Higher numbers mean greater complexity."
-)
-parser.add_argument(
-    "-seq", "--sequencial", type=str, default=None,
-    help="sequential creates a cyclic sequence from a string consisting of arbitrary A and B."
-)
-parser.add_argument(
-    "-n", "--num_iterations", type=int, default=10,
-    help="Number of iterations."
-)
-parser.add_argument(
-    "-x", "--initial_x", type=float, default=0.5,
-    help="Initial value for iterative calculation."
-)
-parser.add_argument(
-    "-m", "--mode", type=str, choices=["3d", "plot"], default="plot",
-    help="3D mode outputs files in STL format. In plot mode, draw figures with matplotlib."
-)
-parser.add_argument(
-    "-width", "--width", type=int, default=512
-)
-parser.add_argument(
-    "-height", "--height", type=int, default=512
-)
-parser.add_argument(
-    "-amax", "--amax", type=float, default=4
-)
-parser.add_argument(
-    "-amin", "--amin", type=float, default=0
-)
-parser.add_argument(
-    "-bmax", "--bmax", type=float, default=4
-)
-parser.add_argument(
-    "-bmin", "--bmin", type=float, default=0
-)
-parser.add_argument(
-    "-f", "--func", type=str, choices=["simple", "sin2"], default="simple"
-)
-parser.add_argument(
-    "-c", "--const", type=float, default=2.7,
-    help="constant used in the sin2 function."
-)
 
+parser.add_argument(
+    "-i", "--input", type=str, required=True,
+    help="toml settings, for example.toml"
+)
 
 def mode_plot():
     pass
@@ -146,31 +105,37 @@ def compute_lambda(r, x, const, func_mode):
             continue
     return (1. / len(r)) * total
 
-
+import toml
 
 if __name__ == "__main__":
     args = parser.parse_args()
-    initX = args.initial_x
-    mode = args.mode
-    seed = args.seed
-    seq = args.sequencial
-    width = args.width
-    height = args.height
-    N = args.num_iterations
-    amin = args.amin
-    amax = args.amax
-    bmin = args.bmin
-    bmax = args.bmax
-    func = args.func
-    const = args.const
+    
+    with open(args.input, "rt", encoding="utf-8") as f:
+        tom = toml.load(f)
+    
+    pt = tom["plottings"]
+    mode = pt["mode"]
+    width = pt["width"]
+    height = pt["height"]
+
+    par = tom["parameters"]
+    param = par["param"]
+    initX = par["initX"]
+    N = par["N"]
+    amin = par["amin"]
+    amax = par["amax"]
+    bmin = par["bmin"]
+    bmax = par["bmax"]
+    func = par["func"]
+    const = par["const"]
 
     # 系列の生成
     series = None
-    if seed != None:
-        series = seed2series(seed)
-    elif seq != None:
-        series = seq2series(seq)
-    elif seq == None and seed == -1:
+    if type(param) is int:
+        series = seed2series(param)
+    elif type(param) is str:
+        series = seq2series(param)
+    else:
         raise ValueError(f"Both sequential and seed are specified. Please specify only one of them.")
     
     a = np.linspace(amin, amax, width)
@@ -183,15 +148,15 @@ if __name__ == "__main__":
             x = r2x(r, initX, const, func)
             dots[i][j] = compute_lambda(r, x, const, func)
 
-    plt.figure()
-    plt.imshow(dots)
-    plt.colorbar()
-    plt.tight_layout()
-    plt.show()
+    
 
     if mode == "3d":
         pass
     elif mode == "plot":
-        pass
+        plt.figure()
+        plt.imshow(dots)
+        plt.colorbar()
+        plt.tight_layout()
+        plt.show()
     else:
         raise ValueError(f"mode choices 3d or plot: {mode}")
