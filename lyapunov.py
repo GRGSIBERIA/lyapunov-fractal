@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import argparse
-from numba import jit, f8, i8
+from numba import njit, f8, i8
 
 parser = argparse.ArgumentParser(
     prog='Lyapunov Fractal',
@@ -95,36 +95,51 @@ def series2rvalue(series, N, a, b):
     return r
 
 
-@jit(f8(f8, f8))
-def func_simple(x, r):
+@njit(f8(f8, f8, f8))
+def func_simple(x, r, _):
     return x * r * (1. - x)
 
-@jit(f8(f8, f8, f8))
+@njit(f8(f8, f8, f8))
 def func_sin2(x, r, const):
     return const * np.sin(x + r)**2.
 
 
-def r2x(r, initX):
+def r2x(r, initX, const, func_mode):
     x = [initX]
+
+    func = {
+        "simple": func_simple,
+        "sin2": func_sin2
+    }
+    func = func[func_mode]
+
     for i, _ in enumerate(r):
-        x.append(x[i] * r[i] * (1. - x[i]))
+        x.append(func(*[x[i], r[i], const]))
+
     return x
 
 
-@jit(f8(f8,f8))
-def grad_simple(x, r):
-    return r * (1. - (2. * x))
+@njit(f8(f8, f8, f8))
+def grad_simple(x, r, _):
+    return np.fabs(r * (1. - (2. * x)))
 
-@jit(f8(f8, f8, f8))
+@njit(f8(f8, f8, f8))
 def grad_sin2(x, r, const):
-    return 2. * const * np.sin(x + r) * np.cos(x + r)
+    return np.fabs(2. * const * np.sin(x + r) * np.cos(x + r))
 
 
-def compute_lambda(r, x):
+def compute_lambda(r, x, const, func_mode):
     import math
     total = 0.
+
+    func = {
+        "simple": grad_simple,
+        "sin2": grad_sin2
+    }
+    func = func[func_mode]
+    
     for n, _ in enumerate(r):
-        absval = math.fabs(r[n] * (1. - (2. * x[n])))
+        absval = func(*[x[n], r[n], const])
         try:
             total += math.log(absval, math.e)
         except:
@@ -165,8 +180,8 @@ if __name__ == "__main__":
     for i, bn in enumerate(b):
         for j, an in enumerate(a):
             r = series2rvalue(series, N, an, bn)
-            x = r2x(r, initX)
-            dots[i][j] = compute_lambda(r, x) * 8
+            x = r2x(r, initX, const, func)
+            dots[i][j] = compute_lambda(r, x, const, func)
 
     plt.figure()
     plt.imshow(dots)
