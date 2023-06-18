@@ -3,6 +3,7 @@
 
 #include "framework.h"
 #include "LyapunovViewer.h"
+#include "toml11/toml.hpp"
 
 #define MAX_LOADSTRING 100
 
