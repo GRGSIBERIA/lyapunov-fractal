@@ -5,6 +5,7 @@
 #include "LyapunovViewer.h"
 #include "toml11/toml.hpp"
 #include "Utility.h"
+#include <commdlg.h>
 
 #define MAX_LOADSTRING 100
 
@@ -141,6 +142,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 10, 32, 300, 24, hWnd, (HMENU)1,
                 ((LPCREATESTRUCT)(lParam))->hInstance, NULL
             );
+            
+            CreateWindow(
+                TEXT("BUTTON"), TEXT("..."),
+                WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+                320, 32, 32, 24,
+                hWnd, (HMENU)BUTTON_ID_OPEN_FILE_DIALOG, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
+            );
+
             /*
             * WM_COMMANDで文字列を取得可能
             * PSTR pStr[2048];
@@ -173,9 +182,23 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             case IDM_EXIT:
                 DestroyWindow(hWnd);
                 break;
+            case BUTTON_ID_OPEN_FILE_DIALOG:
+                static OPENFILENAME ofn = { 0 };
+                TCHAR filename[MAX_PATH];
+                ZeroMemory(&ofn, sizeof(OPENFILENAME));
+                ofn.lStructSize = sizeof(OPENFILENAME);
+                ofn.hwndOwner = hWnd;
+                ofn.lpstrFilter = TEXT("Text files {*.txt}\0*.txt\0")
+                    TEXT("All files {*.*}\0*.*\0\0");
+                ofn.lpstrFile = filename;
+                ofn.nMaxFile = MAX_PATH;
+                ofn.Flags = OFN_FILEMUSTEXIST | OFN_OVERWRITEPROMPT;
+
+                break;
             default:
                 return DefWindowProc(hWnd, message, wParam, lParam);
             }
+
         }
         break;
     case WM_PAINT:

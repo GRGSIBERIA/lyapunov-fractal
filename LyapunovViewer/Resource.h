@@ -28,3 +28,5 @@
 #define _APS_NEXT_SYMED_VALUE		110
 #endif
 #endif
+
+#define BUTTON_ID_OPEN_FILE_DIALOG 200
