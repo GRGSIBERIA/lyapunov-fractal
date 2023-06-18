@@ -124,8 +124,24 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    static HWND editTomlPath;
+
     switch (message)
     {
+    case WM_CREATE:
+        {
+            editTomlPath = CreateWindow(
+                TEXT("EDIT"), TEXT("Kitty on your lap"),
+                WS_CHILD | WS_VISIBLE | WS_BORDER | ES_LEFT,
+                10, 32, 300, 30, hWnd, (HMENU)1,
+                ((LPCREATESTRUCT)(lParam))->hInstance, NULL
+            );
+            /*
+            * WM_COMMANDで文字列を取得可能
+            * PSTR pStr[2048];
+            * GetWindowText(editTomlPath, pStr, 2048);
+            */
+        }
     case WM_COMMAND:
         {
             int wmId = LOWORD(wParam);
@@ -148,6 +164,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
             // TODO: HDC を使用する描画コードをここに追加してください...
+
+            auto labToml = L"TOML Setting file path";
+            auto labWidth = L"Width";
+            auto labHeight = L"Height";
+
+            TextOut(hdc, 10, 10, labToml, lstrlen(labToml));
+            TextOut(hdc, 10, 80, labWidth, lstrlen(labWidth));
+            TextOut(hdc, 10, 80 + 32, labHeight, lstrlen(labHeight));
+
             EndPaint(hWnd, &ps);
         }
         break;
