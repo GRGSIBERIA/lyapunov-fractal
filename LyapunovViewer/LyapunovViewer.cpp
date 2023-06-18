@@ -112,6 +112,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    return TRUE;
 }
 
+void LabelOut(HDC& hdc, const int x, const int y, LPCWSTR label)
+{
+    TextOut(hdc, x, y, label, lstrlen(label));
+}
+
 //
 //  関数: WndProc(HWND, UINT, WPARAM, LPARAM)
 //
@@ -165,14 +170,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             HDC hdc = BeginPaint(hWnd, &ps);
             // TODO: HDC を使用する描画コードをここに追加してください...
 
-            auto labToml = L"TOML Setting file path";
-            auto labWidth = L"Width";
-            auto labHeight = L"Height";
+            LabelOut(hdc, 10, 10, L"TOML Setting file path");
+            
+            LabelOut(hdc, 10, 80, L"Width");
 
-            TextOut(hdc, 10, 10, labToml, lstrlen(labToml));
-            TextOut(hdc, 10, 80, labWidth, lstrlen(labWidth));
-            TextOut(hdc, 10, 80 + 32, labHeight, lstrlen(labHeight));
+            LabelOut(hdc, 10, 112, L"Height");
 
+            LabelOut(hdc, 10, 112 + 32, L"Number of iterations");
+
+            LabelOut(hdc, 10, 112 + 64, L"Initial x value");
+            
             EndPaint(hWnd, &ps);
         }
         break;
