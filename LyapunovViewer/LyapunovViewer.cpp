@@ -4,6 +4,7 @@
 #include "framework.h"
 #include "LyapunovViewer.h"
 #include "toml11/toml.hpp"
+#include "Utility.h"
 
 #define MAX_LOADSTRING 100
 
@@ -112,11 +113,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    return TRUE;
 }
 
-void LabelOut(HDC& hdc, const int x, const int y, LPCWSTR label)
-{
-    TextOut(hdc, x, y, label, lstrlen(label));
-}
-
 //
 //  関数: WndProc(HWND, UINT, WPARAM, LPARAM)
 //
@@ -138,7 +134,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             editTomlPath = CreateWindow(
                 TEXT("EDIT"), TEXT("Kitty on your lap"),
                 WS_CHILD | WS_VISIBLE | WS_BORDER | ES_LEFT,
-                10, 32, 300, 30, hWnd, (HMENU)1,
+                10, 32, 300, 24, hWnd, (HMENU)1,
                 ((LPCREATESTRUCT)(lParam))->hInstance, NULL
             );
             /*
@@ -171,13 +167,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             // TODO: HDC を使用する描画コードをここに追加してください...
 
             LabelOut(hdc, 10, 10, L"TOML Setting file path");
-            
             LabelOut(hdc, 10, 80, L"Width");
-
             LabelOut(hdc, 10, 112, L"Height");
-
             LabelOut(hdc, 10, 112 + 32, L"Number of iterations");
-
             LabelOut(hdc, 10, 112 + 64, L"Initial x value");
             
             EndPaint(hWnd, &ps);
