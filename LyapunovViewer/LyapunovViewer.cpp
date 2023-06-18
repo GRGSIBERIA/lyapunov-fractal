@@ -126,6 +126,10 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     static HWND editTomlPath;
+    static HWND 
+        editWidth, editHeight, editSequence, editN, 
+        editAmax, editAmin, editBmax, editBmin, 
+        editFunc, editConst1, editConst2;
 
     switch (message)
     {
@@ -166,11 +170,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             HDC hdc = BeginPaint(hWnd, &ps);
             // TODO: HDC を使用する描画コードをここに追加してください...
 
+            int c = 0;
             LabelOut(hdc, 10, 10, L"TOML Setting file path");
-            LabelOut(hdc, 10, 80, L"Width");
-            LabelOut(hdc, 10, 112, L"Height");
-            LabelOut(hdc, 10, 112 + 32, L"Number of iterations");
-            LabelOut(hdc, 10, 112 + 64, L"Initial x value");
+
+            LabelOut(hdc, 40, 80 + 32 * c++, L"Width");
+            LabelOut(hdc, 40, 80 + 32 * c++, L"Height");
+            LabelOut(hdc, 40, 80 + 32 * c++, L"Sequence");
+            LabelOut(hdc, 40, 80 + 32 * c++, L"Number of iterations");
+            LabelOut(hdc, 40, 80 + 32 * c++, L"Initial x value");
+            LabelOut(hdc, 40, 80 + 32 * c++, L"a_min");
+            LabelOut(hdc, 40, 80 + 32 * c++, L"a_max");
+            LabelOut(hdc, 40, 80 + 32 * c++, L"b_min");
+            LabelOut(hdc, 40, 80 + 32 * c++, L"b_max");
+            LabelOut(hdc, 40, 80 + 32 * c++, L"func");
+            LabelOut(hdc, 40, 80 + 32 * c++, L"constance 1");
+            LabelOut(hdc, 40, 80 + 32 * c++, L"constance 2");
             
             EndPaint(hWnd, &ps);
         }
