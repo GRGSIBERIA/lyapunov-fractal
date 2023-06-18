@@ -127,7 +127,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     static HWND editTomlPath;
     static HWND 
-        editWidth, editHeight, editSequence, editN, 
+        editWidth, editHeight, editSequence, editN, editInitX,
         editAmax, editAmin, editBmax, editBmin, 
         editFunc, editConst1, editConst2;
 
@@ -146,8 +146,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             * PSTR pStr[2048];
             * GetWindowText(editTomlPath, pStr, 2048);
             */
+            
             int c = 0;
-            editWidth = CreateEdit(hWnd, 200, 80, 100, 25, lParam);
+            CreateEdit(hWnd, 200, 80 + 32 * c++, 100, 25, lParam, editWidth);
+            CreateEdit(hWnd, 200, 80 + 32 * c++, 100, 25, lParam, editHeight);
+            CreateEdit(hWnd, 200, 80 + 32 * c++, 100, 25, lParam, editSequence);
+            CreateEdit(hWnd, 200, 80 + 32 * c++, 100, 25, lParam, editN);
+            CreateEdit(hWnd, 200, 80 + 32 * c++, 100, 25, lParam, editInitX);
+            CreateEdit(hWnd, 200, 80 + 32 * c++, 100, 25, lParam, editAmin);
+            CreateEdit(hWnd, 200, 80 + 32 * c++, 100, 25, lParam, editAmax);
+            CreateEdit(hWnd, 200, 80 + 32 * c++, 100, 25, lParam, editBmin);
+            CreateEdit(hWnd, 200, 80 + 32 * c++, 100, 25, lParam, editBmax);
+            CreateEdit(hWnd, 200, 80 + 32 * c++, 100, 25, lParam, editFunc);
+            CreateEdit(hWnd, 200, 80 + 32 * c++, 100, 25, lParam, editConst1);
+            CreateEdit(hWnd, 200, 80 + 32 * c++, 100, 25, lParam, editConst2);
         }
     case WM_COMMAND:
         {
