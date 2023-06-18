@@ -136,7 +136,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_CREATE:
         {
             editTomlPath = CreateWindow(
-                TEXT("EDIT"), TEXT("Kitty on your lap"),
+                TEXT("EDIT"), TEXT(""),
                 WS_CHILD | WS_VISIBLE | WS_BORDER | ES_LEFT,
                 10, 32, 300, 24, hWnd, (HMENU)1,
                 ((LPCREATESTRUCT)(lParam))->hInstance, NULL
@@ -146,6 +146,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             * PSTR pStr[2048];
             * GetWindowText(editTomlPath, pStr, 2048);
             */
+            int c = 0;
+            editWidth = CreateEdit(hWnd, 200, 80, 100, 25, lParam);
         }
     case WM_COMMAND:
         {
