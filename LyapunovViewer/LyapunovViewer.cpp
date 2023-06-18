@@ -184,15 +184,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 break;
             case BUTTON_ID_OPEN_FILE_DIALOG:
                 static OPENFILENAME ofn = { 0 };
-                TCHAR filename[MAX_PATH];
+                TCHAR filename[MAX_PATH], strCustom[256] = TEXT("Before files\0*.*\0\0");;
+                
                 ZeroMemory(&ofn, sizeof(OPENFILENAME));
+
                 ofn.lStructSize = sizeof(OPENFILENAME);
                 ofn.hwndOwner = hWnd;
                 ofn.lpstrFilter = TEXT("Text files {*.txt}\0*.txt\0")
+                    TEXT("HTML files {*.htm}\0*.htm;*.html\0")
                     TEXT("All files {*.*}\0*.*\0\0");
+                ofn.lpstrCustomFilter = strCustom;
+                ofn.nMaxCustFilter = 256;
+                ofn.nFilterIndex = 0;
                 ofn.lpstrFile = filename;
                 ofn.nMaxFile = MAX_PATH;
-                ofn.Flags = OFN_FILEMUSTEXIST | OFN_OVERWRITEPROMPT;
+                ofn.Flags = OFN_FILEMUSTEXIST;
 
                 break;
             default:
