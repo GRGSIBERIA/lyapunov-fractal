@@ -13,6 +13,7 @@
 #define IDI_SMALL				108
 #define IDC_LYAPUNOVVIEWER			109
 #define IDC_MYICON				2
+#define BUTTON_ID_OPEN_FILE_DIALOG 200
 #ifndef IDC_STATIC
 #define IDC_STATIC				-1
 #endif
@@ -29,4 +30,3 @@
 #endif
 #endif
 
-#define BUTTON_ID_OPEN_FILE_DIALOG 200

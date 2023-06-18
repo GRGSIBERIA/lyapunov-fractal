@@ -124,13 +124,13 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //  WM_DESTROY  - 中止メッセージを表示して戻る
 //
 //
+#include "EditContexts.h"
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     static HWND editTomlPath;
-    static HWND 
-        editWidth, editHeight, editSequence, editN, editInitX,
-        editAmax, editAmin, editBmax, editBmin, 
-        editFunc, editConst1, editConst2;
+    static EditContext edit;
+    static OPENFILENAME ofn = { 0 };
+    static TCHAR filename[MAX_PATH], strCustom[256] = TEXT("Before files\0*.*\0\0");
 
     switch (message)
     {
@@ -156,19 +156,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             * GetWindowText(editTomlPath, pStr, 2048);
             */
             
-            int c = 0;
-            CreateEdit(hWnd, 200, 80 + 32 * c++, 100, 25, lParam, editWidth);
-            CreateEdit(hWnd, 200, 80 + 32 * c++, 100, 25, lParam, editHeight);
-            CreateEdit(hWnd, 200, 80 + 32 * c++, 100, 25, lParam, editSequence);
-            CreateEdit(hWnd, 200, 80 + 32 * c++, 100, 25, lParam, editN);
-            CreateEdit(hWnd, 200, 80 + 32 * c++, 100, 25, lParam, editInitX);
-            CreateEdit(hWnd, 200, 80 + 32 * c++, 100, 25, lParam, editAmin);
-            CreateEdit(hWnd, 200, 80 + 32 * c++, 100, 25, lParam, editAmax);
-            CreateEdit(hWnd, 200, 80 + 32 * c++, 100, 25, lParam, editBmin);
-            CreateEdit(hWnd, 200, 80 + 32 * c++, 100, 25, lParam, editBmax);
-            CreateEdit(hWnd, 200, 80 + 32 * c++, 100, 25, lParam, editFunc);
-            CreateEdit(hWnd, 200, 80 + 32 * c++, 100, 25, lParam, editConst1);
-            CreateEdit(hWnd, 200, 80 + 32 * c++, 100, 25, lParam, editConst2);
+            edit.initialize(hWnd, 200, 80, 32, lParam);
         }
     case WM_COMMAND:
         {
@@ -183,24 +171,27 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 DestroyWindow(hWnd);
                 break;
             case BUTTON_ID_OPEN_FILE_DIALOG:
-                static OPENFILENAME ofn = { 0 };
-                TCHAR filename[MAX_PATH], strCustom[256] = TEXT("Before files\0*.*\0\0");;
-                
-                ZeroMemory(&ofn, sizeof(OPENFILENAME));
+                {
+                    ZeroMemory(&ofn, sizeof(OPENFILENAME));
 
-                ofn.lStructSize = sizeof(OPENFILENAME);
-                ofn.hwndOwner = hWnd;
-                ofn.lpstrFilter = TEXT("Text files {*.txt}\0*.txt\0")
-                    TEXT("HTML files {*.htm}\0*.htm;*.html\0")
-                    TEXT("All files {*.*}\0*.*\0\0");
-                ofn.lpstrCustomFilter = strCustom;
-                ofn.nMaxCustFilter = 256;
-                ofn.nFilterIndex = 0;
-                ofn.lpstrFile = filename;
-                ofn.nMaxFile = MAX_PATH;
-                ofn.Flags = OFN_FILEMUSTEXIST;
+                    ofn.lStructSize = sizeof(OPENFILENAME);
+                    ofn.hwndOwner = hWnd;
+                    ofn.lpstrFilter = TEXT("TOML files {*.toml}\0*.toml\0");
+                    ofn.lpstrCustomFilter = strCustom;
+                    ofn.nMaxCustFilter = 256;
+                    ofn.nFilterIndex = 0;
+                    ofn.lpstrFile = filename;
+                    ofn.nMaxFile = MAX_PATH;
+                    ofn.Flags = OFN_FILEMUSTEXIST;
 
-                break;
+                    if (GetOpenFileName(&ofn))
+                    {
+                        // filenameにデータが格納される
+                        // TOMLを読み込んでGetWindowTextでEditに格納していく
+                    }
+                    
+                    break;
+                }
             default:
                 return DefWindowProc(hWnd, message, wParam, lParam);
             }
