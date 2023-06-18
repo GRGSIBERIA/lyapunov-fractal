@@ -8,13 +8,12 @@ void LabelOut(HDC& hdc, const int x, const int y, LPCWSTR label)
     LineTo(hdc, 300, y + 24);
 }
 
-HWND CreateEdit(HWND hWnd, const int x, const int y, const int w, const int h, LPARAM& lParam)
+void CreateEdit(HWND hWnd, const int x, const int y, const int w, const int h, LPARAM& lParam, HWND& edit)
 {
-    auto ret = CreateWindow(
+    edit = CreateWindow(
         TEXT("EDIT"), TEXT(""),
         WS_CHILD | WS_VISIBLE | ES_LEFT | WS_BORDER,
         x, y, w, h, hWnd, (HMENU)1,
         ((LPCREATESTRUCT)(lParam))->hInstance, NULL
     );
-    return ret;
 }
