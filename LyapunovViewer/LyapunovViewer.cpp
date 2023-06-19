@@ -14,7 +14,7 @@
 HINSTANCE hInst;                                // 現在のインターフェイス
 WCHAR szTitle[MAX_LOADSTRING];                  // タイトル バーのテキスト
 WCHAR szWindowClass[MAX_LOADSTRING];            // メイン ウィンドウ クラス名
-
+#define MDI_CHILD TEXT("MDICHILD")
 // このコード モジュールに含まれる関数の宣言を転送します:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
@@ -84,6 +84,12 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.lpszClassName  = szWindowClass;
     wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
     // RGB(212, 207, 201)
+    RegisterClassExW(&wcex);
+
+    wcex.lpfnWndProc = DefMDIChildProc;
+    wcex.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+    wcex.lpszClassName = MDI_CHILD;
+
     return RegisterClassExW(&wcex);
 }
 
@@ -135,7 +141,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     static OpenTomlContext open;
     static LyapunovWindow lyapunov;
     static TCHAR currentDir[MAX_PATH];
-    static CLIENTCREATESTRUCT ccs;
     static HWND hClient;
 
     switch (message)
@@ -167,6 +172,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
             // MDIクライアントウィンドウを作る
             // まずはフレームの作成
+            CLIENTCREATESTRUCT ccs;
+            MDICREATESTRUCT mdic;
+
             ccs.hWindowMenu = NULL;
             ccs.idFirstChild = 50000;
             hClient = CreateWindow(TEXT("MDICLIENT"), NULL,
@@ -174,12 +182,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 320, 0, 480, 640, hWnd, (HMENU)1, hInst, &ccs
             );
             // 小窓の作成
-            CreateMDIWindow(TEXT("FRAMEWINDOW"), TEXT("Kitty on your lap"),
-                WS_MAXIMIZE | WS_HSCROLL | WS_VSCROLL,
+            CreateMDIWindow(TEXT("FRAMEWINDOW"), NULL,
+                WS_HSCROLL | WS_VSCROLL,
                 CW_USEDEFAULT, CW_USEDEFAULT,
                 CW_USEDEFAULT, CW_USEDEFAULT,
                 hClient, hInst, 0
             );
+
+            mdic.szClass = MDI_CHILD;
+            mdic.szTitle = szTitle;
+            mdic.x = mdic.y = mdic.cx = mdic.cy = CW_USEDEFAULT;
+            mdic.style = mdic.lParam = 0;
+            SendMessage(hClient, WM_MDICREATE, 0, (LPARAM)&mdic);
 
             /*
             * WM_COMMANDで文字列を取得可能
@@ -253,10 +267,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         PostQuitMessage(0);
         break;
     default:
-        return DefWindowProc(hWnd, message, wParam, lParam);
+        return DefFrameProc(hWnd, hClient, message, wParam, lParam);
     }
     return 0;
 }
+
 
 // バージョン情報ボックスのメッセージ ハンドラーです。
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
