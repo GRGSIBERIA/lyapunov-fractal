@@ -134,12 +134,10 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 #include "EditContexts.h"
 #include "OpenTomlContext.h"
-#include "LyapunovWindow.h"
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     static EditContext edit;
     static OpenTomlContext open;
-    static LyapunovWindow lyapunov;
     static TCHAR currentDir[MAX_PATH];
     static HWND hClient;
 
@@ -169,31 +167,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 40, 512, 260, 24,
                 hWnd, (HMENU)BUTTON_ID_SAVE_FILE_DIALOG, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
             );
-
-            // MDIクライアントウィンドウを作る
-            // まずはフレームの作成
-            CLIENTCREATESTRUCT ccs;
-            MDICREATESTRUCT mdic;
-
-            ccs.hWindowMenu = NULL;
-            ccs.idFirstChild = 50000;
-            hClient = CreateWindow(TEXT("MDICLIENT"), NULL,
-                WS_CHILD | WS_CLIPCHILDREN | WS_VISIBLE,
-                320, 0, 480, 640, hWnd, (HMENU)1, hInst, &ccs
-            );
-            // 小窓の作成
-            CreateMDIWindow(TEXT("FRAMEWINDOW"), NULL,
-                WS_HSCROLL | WS_VSCROLL,
-                CW_USEDEFAULT, CW_USEDEFAULT,
-                CW_USEDEFAULT, CW_USEDEFAULT,
-                hClient, hInst, 0
-            );
-
-            mdic.szClass = MDI_CHILD;
-            mdic.szTitle = szTitle;
-            mdic.x = mdic.y = mdic.cx = mdic.cy = CW_USEDEFAULT;
-            mdic.style = mdic.lParam = 0;
-            SendMessage(hClient, WM_MDICREATE, 0, (LPARAM)&mdic);
 
             /*
             * WM_COMMANDで文字列を取得可能
@@ -228,7 +201,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
             case BUTTON_ID_RUN_LYANUNOV:
             {
-                lyapunov.initWindow(hInst, hWnd);
+                //lyapunov.initWindow(hInst, hWnd);
                 break;
             }
             default:
@@ -258,7 +231,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             LabelOut(hdc, 40, 80 + 32 * c++, L"func");
             LabelOut(hdc, 40, 80 + 32 * c++, L"constance 1");
             LabelOut(hdc, 40, 80 + 32 * c++, L"constance 2");
-            int hoge = 80 + 32 * c++ + 16;
             
             EndPaint(hWnd, &ps);
         }
@@ -267,7 +239,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         PostQuitMessage(0);
         break;
     default:
-        return DefFrameProc(hWnd, hClient, message, wParam, lParam);
+        return DefWindowProc(hWnd, message, wParam, lParam);
     }
     return 0;
 }
