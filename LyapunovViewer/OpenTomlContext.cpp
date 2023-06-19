@@ -5,10 +5,11 @@ OpenTomlContext::OpenTomlContext()
     GetCurrentDirectory(MAX_PATH, initialCurrentDir);
 }
 
+
 #include <string>
 #include <iostream>
 #include "toml11/toml.hpp"
-void OpenTomlContext::LoadToml(HWND hWnd, const EditContext& edit)
+void OpenTomlContext::LoadToml(HWND hWnd, EditContext& edit)
 {
     ZeroMemory(&ofn, sizeof(OPENFILENAME));
 
@@ -32,36 +33,22 @@ void OpenTomlContext::LoadToml(HWND hWnd, const EditContext& edit)
         auto parse = toml::parse(ifs);
 
         auto plot = toml::find(parse, "plottings");
-        auto param = toml::find(parse, "parameters");
+        auto params = toml::find(parse, "parameters");
 
-        auto mode = toml::find<std::string>(plot, "mode");
-        auto width = toml::find<int>(plot, "width");
-        auto height = toml::find<int>(plot, "height");
+        edit.PWidth = toml::find<int>(plot, "width");
+        edit.PHeight = toml::find<int>(plot, "height");
+
+        edit.PSequence = toml::find<std::string>(params, "param");
+        edit.PInitX = toml::find<float>(params, "initX");
+        edit.PN = toml::find<int>(params, "N");
+        edit.PAmax = toml::find<float>(params, "amax");
+        edit.PAmin = toml::find<float>(params, "amin");
+        edit.PBmax = toml::find<float>(params, "bmax");
+        edit.PBmin = toml::find<float>(params, "bmin");
+        edit.PFunc = toml::find<std::string>(params, "func");
+        edit.PConst1 = toml::find<float>(params, "const1");
+        edit.PConst2 = toml::find<float>(params, "const2");
+
+        edit.convertWString();
     }
-    /*
-    [plottings]
-    # plot: matplotlibで描画, 3d: STLファイルに出力
-    mode = "plot"
-
-    # 描画範囲
-    width   = 512     # 横
-    height  = 512     # 縦
-
-    [parameters]
-    # paramは、"AABAB"等の文字と、41243等の数値を渡せる
-    param = "AABBAB"
-    # 成長の初期値
-    initX = 0.5
-    # 反復計算回数
-    N = 10
-    # aとbがそれぞれ取り得る最小値と最大値, a,b in [0, 4]
-    amin = 2
-    amax = 4
-    bmin = 2
-    bmax = 4
-    # simple, sin2
-    func = "simple"
-    # 定数
-    const = 2.7
-    */
 }

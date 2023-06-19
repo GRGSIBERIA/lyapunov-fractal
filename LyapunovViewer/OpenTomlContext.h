@@ -12,5 +12,5 @@ class OpenTomlContext {
 public:
 	OpenTomlContext();
 
-	void LoadToml(HWND hWnd, const EditContext& edit);
+	void LoadToml(HWND hWnd, EditContext& edit);
 };
