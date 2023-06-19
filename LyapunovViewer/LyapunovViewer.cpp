@@ -79,11 +79,11 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.hInstance      = hInstance;
     wcex.hIcon          = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_LYAPUNOVVIEWER));
     wcex.hCursor        = LoadCursor(nullptr, IDC_ARROW);
-    wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
+    wcex.hbrBackground  = (HBRUSH)GetStockObject(LTGRAY_BRUSH);
     wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_LYAPUNOVVIEWER);
     wcex.lpszClassName  = szWindowClass;
     wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
-
+    // RGB(212, 207, 201)
     return RegisterClassExW(&wcex);
 }
 
@@ -129,7 +129,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 #include "OpenTomlContext.h"
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    static HWND editTomlPath, editSavePath;
+    
     static EditContext edit;
     static OpenTomlContext open;
     static TCHAR currentDir[MAX_PATH];
@@ -140,31 +140,24 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             GetCurrentDirectory(MAX_PATH, currentDir);
 
-            editTomlPath = CreateWindow(
-                TEXT("EDIT"), currentDir,
-                WS_CHILD | WS_VISIBLE | WS_BORDER | ES_LEFT,
-                10, 42, 300, 24, hWnd, (HMENU)1,
-                ((LPCREATESTRUCT)(lParam))->hInstance, NULL
-            );
-            
             CreateWindow(
-                TEXT("BUTTON"), TEXT("..."),
+                TEXT("BUTTON"), TEXT("LOAD SETTING FILE"),
                 WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-                320, 42, 32, 24,
+                40, 42, 260, 24,
                 hWnd, (HMENU)BUTTON_ID_OPEN_FILE_DIALOG, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
             );
 
             CreateWindow(
                 TEXT("BUTTON"), TEXT("RUN LYAPUNOV FRACTAL"),
                 WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-                40, 512 - 32, 200, 24,
+                40, 512 - 32, 260, 24,
                 hWnd, (HMENU)BUTTON_ID_RUN_LYANUNOV, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
             );
             
             CreateWindow(
                 TEXT("BUTTON"), TEXT("SAVE CURRENT SETTINGS"),
                 WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-                40, 512, 200, 24,
+                40, 512, 260, 24,
                 hWnd, (HMENU)BUTTON_ID_SAVE_FILE_DIALOG, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
             );
 
@@ -210,9 +203,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             HDC hdc = BeginPaint(hWnd, &ps);
             // TODO: HDC を使用する描画コードをここに追加してください...
 
-            int c = 0;
-            LabelOut(hdc, 10, 10, L"TOML Setting file path");
+            SetBkColor(hdc, RGB(192,192,192));
 
+            int c = 0;
             LabelOut(hdc, 40, 80 + 32 * c++, L"Width");
             LabelOut(hdc, 40, 80 + 32 * c++, L"Height");
             LabelOut(hdc, 40, 80 + 32 * c++, L"Sequence");
