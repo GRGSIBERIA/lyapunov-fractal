@@ -64,3 +64,20 @@ void EditContext::convertWString()
     SConst1 = std::to_wstring(PConst1);
     SConst2 = std::to_wstring(PConst2);
 }
+
+void EditContext::applyEditWindows()
+{
+#define SWTM(PARAM) SetWindowText(PARAM, S##PARAM.c_str())
+    SWTM(Width);
+    SWTM(Height);
+    SWTM(Sequence);
+    SWTM(N);
+    SWTM(InitX);
+    SWTM(Amax);
+    SWTM(Amin);
+    SWTM(Bmax);
+    SWTM(Bmin);
+    SWTM(Func);
+    SWTM(Const1);
+    SWTM(Const2);
+}
