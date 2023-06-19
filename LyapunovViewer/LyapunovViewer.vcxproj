@@ -134,6 +134,7 @@
     <ClInclude Include="EditContexts.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="LyapunovViewer.h" />
+    <ClInclude Include="OpenTomlContext.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Utility.h" />

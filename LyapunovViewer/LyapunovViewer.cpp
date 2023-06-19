@@ -6,6 +6,7 @@
 #include "toml11/toml.hpp"
 #include "Utility.h"
 #include <commdlg.h>
+#include <iostream>
 
 #define MAX_LOADSTRING 100
 
@@ -125,19 +126,22 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 //
 #include "EditContexts.h"
+#include "OpenTomlContext.h"
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     static HWND editTomlPath;
     static EditContext edit;
-    static OPENFILENAME ofn = { 0 };
-    static TCHAR filename[MAX_PATH], strCustom[256] = TEXT("Before files\0*.*\0\0");
+    static OpenTomlContext open;
+    static TCHAR currentDir[MAX_PATH];
 
     switch (message)
     {
     case WM_CREATE:
         {
+            GetCurrentDirectory(MAX_PATH, currentDir);
+
             editTomlPath = CreateWindow(
-                TEXT("EDIT"), TEXT(""),
+                TEXT("EDIT"), currentDir,
                 WS_CHILD | WS_VISIBLE | WS_BORDER | ES_LEFT,
                 10, 32, 300, 24, hWnd, (HMENU)1,
                 ((LPCREATESTRUCT)(lParam))->hInstance, NULL
@@ -172,23 +176,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 break;
             case BUTTON_ID_OPEN_FILE_DIALOG:
                 {
-                    ZeroMemory(&ofn, sizeof(OPENFILENAME));
-
-                    ofn.lStructSize = sizeof(OPENFILENAME);
-                    ofn.hwndOwner = hWnd;
-                    ofn.lpstrFilter = TEXT("TOML files {*.toml}\0*.toml\0");
-                    ofn.lpstrCustomFilter = strCustom;
-                    ofn.nMaxCustFilter = 256;
-                    ofn.nFilterIndex = 0;
-                    ofn.lpstrFile = filename;
-                    ofn.nMaxFile = MAX_PATH;
-                    ofn.Flags = OFN_FILEMUSTEXIST;
-
-                    if (GetOpenFileName(&ofn))
-                    {
-                        // filenameにデータが格納される
-                        // TOMLを読み込んでGetWindowTextでEditに格納していく
-                    }
+                    open.LoadToml(hWnd);
                     
                     break;
                 }
