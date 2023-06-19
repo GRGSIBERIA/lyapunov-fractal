@@ -22,7 +22,7 @@ LRESULT CALLBACK LyapunovWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 }
 
 
-void LyapunovWindow::initWindow(HINSTANCE hInstance)
+void LyapunovWindow::initWindow(HINSTANCE hInstance, HWND parent)
 {
     ZeroMemory(&wcex, sizeof(WNDCLASSEXW));
 
@@ -39,4 +39,8 @@ void LyapunovWindow::initWindow(HINSTANCE hInstance)
     wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
     RegisterClassExW(&wcex);
+
+    sub = CreateWindowW(TEXT(""), TEXT("Title"), WS_CHILDWINDOW | WS_VISIBLE | WS_OVERLAPPEDWINDOW,
+        CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, parent, nullptr, hInstance, nullptr);
+    ShowWindow(sub, SW_SHOW);
 }

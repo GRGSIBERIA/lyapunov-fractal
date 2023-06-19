@@ -133,6 +133,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     static EditContext edit;
     static OpenTomlContext open;
+    static LyapunovWindow lyapunov;
     static TCHAR currentDir[MAX_PATH];
 
     switch (message)
@@ -195,9 +196,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
             case BUTTON_ID_RUN_LYANUNOV:
             {
-                HWND sub = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-                    CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, nullptr, nullptr);
-                ShowWindow(sub, SW_SHOW);
+                lyapunov.initWindow(hInst, hWnd);
                 break;
             }
             default:
