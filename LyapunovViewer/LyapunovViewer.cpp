@@ -102,13 +102,14 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    hInst = hInstance; // グローバル変数にインスタンス ハンドルを格納する
 
    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+      CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, nullptr, nullptr, hInstance, nullptr);
 
-   if (!hWnd)
-   {
-      return FALSE;
-   }
+   if (!hWnd) return FALSE;
+   
+   RECT rect;
+   GetClientRect(hWnd, &rect);
 
+   SetWindowPos(hWnd, NULL, rect.left, rect.top, 350, 640, (SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOMOVE));
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 
@@ -127,9 +128,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 #include "EditContexts.h"
 #include "OpenTomlContext.h"
+#include "LyapunovWindow.h"
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    
     static EditContext edit;
     static OpenTomlContext open;
     static TCHAR currentDir[MAX_PATH];
@@ -189,6 +190,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
             case BUTTON_ID_SAVE_FILE_DIALOG:
             {
+                break;
+            }
+            case BUTTON_ID_RUN_LYANUNOV:
+            {
+                HWND sub = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+                    CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, nullptr, nullptr);
+                ShowWindow(sub, SW_SHOW);
                 break;
             }
             default:
