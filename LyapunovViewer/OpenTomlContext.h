@@ -1,6 +1,7 @@
 #pragma once
 #include <Windows.h>
 #include <commdlg.h>
+#include "EditContexts.h"
 
 class OpenTomlContext {
 	OPENFILENAME ofn = { 0 };
@@ -11,5 +12,5 @@ class OpenTomlContext {
 public:
 	OpenTomlContext();
 
-	void LoadToml(HWND hWnd);
+	void LoadToml(HWND hWnd, const EditContext& edit);
 };
