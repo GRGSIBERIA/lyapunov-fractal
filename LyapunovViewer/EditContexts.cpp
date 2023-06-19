@@ -28,7 +28,7 @@ void EditContext::initialize(HWND hWnd, const int x, const int y, const int skip
 }
 
 // https://www.wabiapp.com/WabiSampleSource/windows/string_to_wstring.html
-std::wstring StringToWString(std::string oString)
+std::wstring EditContext::StringToWString(std::string oString) const
 {
     // SJIS Å® wstring
     int iBufferSize = MultiByteToWideChar(CP_ACP, 0, oString.c_str(), -1, (wchar_t*)NULL, 0);
@@ -51,5 +51,16 @@ std::wstring StringToWString(std::string oString)
 
 void EditContext::convertWString()
 {
-
+    SWidth = std::to_wstring(PWidth);
+    SHeight = std::to_wstring(PHeight);
+    SSequence = StringToWString(PSequence);
+    SN = std::to_wstring(PN);
+    SInitX = std::to_wstring(PInitX);
+    SAmax = std::to_wstring(PAmax);
+    SAmin = std::to_wstring(PAmin);
+    SBmax = std::to_wstring(PBmax);
+    SBmin = std::to_wstring(PBmin);
+    SFunc = StringToWString(PFunc);
+    SConst1 = std::to_wstring(PConst1);
+    SConst2 = std::to_wstring(PConst2);
 }

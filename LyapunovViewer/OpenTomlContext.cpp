@@ -35,19 +35,30 @@ void OpenTomlContext::LoadToml(HWND hWnd, EditContext& edit)
         auto plot = toml::find(parse, "plottings");
         auto params = toml::find(parse, "parameters");
 
-        edit.PWidth = toml::find<int>(plot, "width");
-        edit.PHeight = toml::find<int>(plot, "height");
+        try {
+            edit.PWidth = toml::find<int>(plot, "width");
+            edit.PHeight = toml::find<int>(plot, "height");
 
-        edit.PSequence = toml::find<std::string>(params, "param");
-        edit.PInitX = toml::find<float>(params, "initX");
-        edit.PN = toml::find<int>(params, "N");
-        edit.PAmax = toml::find<float>(params, "amax");
-        edit.PAmin = toml::find<float>(params, "amin");
-        edit.PBmax = toml::find<float>(params, "bmax");
-        edit.PBmin = toml::find<float>(params, "bmin");
-        edit.PFunc = toml::find<std::string>(params, "func");
-        edit.PConst1 = toml::find<float>(params, "const1");
-        edit.PConst2 = toml::find<float>(params, "const2");
+            edit.PSequence = toml::find<std::string>(params, "param");
+            edit.PInitX = toml::find<float>(params, "initX");
+            edit.PN = toml::find<int>(params, "N");
+            edit.PAmax = toml::find<float>(params, "amax");
+            edit.PAmin = toml::find<float>(params, "amin");
+            edit.PBmax = toml::find<float>(params, "bmax");
+            edit.PBmin = toml::find<float>(params, "bmin");
+            edit.PFunc = toml::find<std::string>(params, "func");
+            edit.PConst1 = toml::find<float>(params, "const1");
+            edit.PConst2 = toml::find<float>(params, "const2");
+        }
+        catch (toml::type_error e) {
+            auto what = edit.StringToWString(e.what());
+            auto loc = edit.StringToWString(e.location().line_str());
+            auto mes = what + L":" + loc;
+
+            MessageBox(NULL, mes.c_str(), TEXT("Invalid Toml Error"), MB_OK | MB_ICONERROR);
+            return;
+        }
+        
 
         edit.convertWString();
     }
