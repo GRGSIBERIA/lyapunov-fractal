@@ -176,7 +176,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 break;
             case BUTTON_ID_OPEN_FILE_DIALOG:
                 {
-                    open.LoadToml(hWnd);
+                    open.LoadToml(hWnd, edit);
                     
                     break;
                 }
