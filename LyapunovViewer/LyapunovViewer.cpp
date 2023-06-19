@@ -109,7 +109,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    RECT rect;
    GetClientRect(hWnd, &rect);
 
-   SetWindowPos(hWnd, NULL, rect.left, rect.top, 350, 640, (SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOMOVE));
+   SetWindowPos(hWnd, NULL, rect.left, rect.top, 800, 640, (SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOMOVE));
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 
@@ -135,6 +135,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     static OpenTomlContext open;
     static LyapunovWindow lyapunov;
     static TCHAR currentDir[MAX_PATH];
+    static CLIENTCREATESTRUCT ccs;
+    static HWND hClient;
 
     switch (message)
     {
@@ -161,6 +163,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
                 40, 512, 260, 24,
                 hWnd, (HMENU)BUTTON_ID_SAVE_FILE_DIALOG, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
+            );
+
+            // MDIクライアントウィンドウを作る
+            // まずはフレームの作成
+            ccs.hWindowMenu = NULL;
+            ccs.idFirstChild = 50000;
+            hClient = CreateWindow(TEXT("MDICLIENT"), NULL,
+                WS_CHILD | WS_CLIPCHILDREN | WS_VISIBLE,
+                320, 0, 480, 640, hWnd, (HMENU)1, hInst, &ccs
+            );
+            // 小窓の作成
+            CreateMDIWindow(TEXT("FRAMEWINDOW"), TEXT("Kitty on your lap"),
+                WS_MAXIMIZE | WS_HSCROLL | WS_VSCROLL,
+                CW_USEDEFAULT, CW_USEDEFAULT,
+                CW_USEDEFAULT, CW_USEDEFAULT,
+                hClient, hInst, 0
             );
 
             /*
