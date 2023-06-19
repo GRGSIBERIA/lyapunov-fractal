@@ -129,7 +129,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 #include "OpenTomlContext.h"
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    static HWND editTomlPath;
+    static HWND editTomlPath, editSavePath;
     static EditContext edit;
     static OpenTomlContext open;
     static TCHAR currentDir[MAX_PATH];
@@ -143,15 +143,29 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             editTomlPath = CreateWindow(
                 TEXT("EDIT"), currentDir,
                 WS_CHILD | WS_VISIBLE | WS_BORDER | ES_LEFT,
-                10, 32, 300, 24, hWnd, (HMENU)1,
+                10, 42, 300, 24, hWnd, (HMENU)1,
                 ((LPCREATESTRUCT)(lParam))->hInstance, NULL
             );
             
             CreateWindow(
                 TEXT("BUTTON"), TEXT("..."),
                 WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-                320, 32, 32, 24,
+                320, 42, 32, 24,
                 hWnd, (HMENU)BUTTON_ID_OPEN_FILE_DIALOG, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
+            );
+
+            CreateWindow(
+                TEXT("BUTTON"), TEXT("RUN LYAPUNOV FRACTAL"),
+                WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+                40, 512 - 32, 200, 24,
+                hWnd, (HMENU)BUTTON_ID_RUN_LYANUNOV, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
+            );
+            
+            CreateWindow(
+                TEXT("BUTTON"), TEXT("SAVE CURRENT SETTINGS"),
+                WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+                40, 512, 200, 24,
+                hWnd, (HMENU)BUTTON_ID_SAVE_FILE_DIALOG, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
             );
 
             /*
@@ -175,11 +189,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 DestroyWindow(hWnd);
                 break;
             case BUTTON_ID_OPEN_FILE_DIALOG:
-                {
-                    open.LoadToml(hWnd, edit);
+            {
+                open.LoadToml(hWnd, edit);
                     
-                    break;
-                }
+                break;
+            }
+            case BUTTON_ID_SAVE_FILE_DIALOG:
+            {
+                break;
+            }
             default:
                 return DefWindowProc(hWnd, message, wParam, lParam);
             }
@@ -207,6 +225,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             LabelOut(hdc, 40, 80 + 32 * c++, L"func");
             LabelOut(hdc, 40, 80 + 32 * c++, L"constance 1");
             LabelOut(hdc, 40, 80 + 32 * c++, L"constance 2");
+            int hoge = 80 + 32 * c++ + 16;
             
             EndPaint(hWnd, &ps);
         }

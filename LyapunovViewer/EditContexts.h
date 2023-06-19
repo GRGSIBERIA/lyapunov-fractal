@@ -46,6 +46,7 @@ public:
     void initialize(HWND hWnd, const int x, const int y, const int skip, LPARAM lParam);
 
     void convertWString();
+    void applyEditWindows();
 
     std::wstring StringToWString(std::string oString) const;
 };

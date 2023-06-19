@@ -59,7 +59,7 @@ void OpenTomlContext::LoadToml(HWND hWnd, EditContext& edit)
             return;
         }
         
-
         edit.convertWString();
+        edit.applyEditWindows();
     }
 }
