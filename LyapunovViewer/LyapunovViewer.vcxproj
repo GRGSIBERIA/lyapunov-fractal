@@ -143,6 +143,7 @@
   <ItemGroup>
     <ClCompile Include="EditContexts.cpp" />
     <ClCompile Include="LyapunovViewer.cpp" />
+    <ClCompile Include="LyapunovWindow.cpp" />
     <ClCompile Include="OpenTomlContext.cpp" />
   </ItemGroup>
   <ItemGroup>
