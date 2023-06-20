@@ -122,18 +122,12 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    return TRUE;
 }
 
-//
-//  関数: WndProc(HWND, UINT, WPARAM, LPARAM)
-//
-//  目的: メイン ウィンドウのメッセージを処理します。
-//
-//  WM_COMMAND  - アプリケーション メニューの処理
-//  WM_PAINT    - メイン ウィンドウを描画する
-//  WM_DESTROY  - 中止メッセージを表示して戻る
-//
-//
+
+
+
 #include "EditContexts.h"
 #include "OpenTomlContext.h"
+#include "GeneratorContext.h"
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     static EditContext edit;
@@ -167,6 +161,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 40, 512, 260, 24,
                 hWnd, (HMENU)BUTTON_ID_SAVE_FILE_DIALOG, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
             );
+
+            GenerateSpoitButton(hWnd, lParam);
 
             /*
             * WM_COMMANDで文字列を取得可能
@@ -218,19 +214,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
             SetBkColor(hdc, RGB(192,192,192));
 
-            int c = 0;
-            LabelOut(hdc, 40, 80 + 32 * c++, L"Width");
-            LabelOut(hdc, 40, 80 + 32 * c++, L"Height");
-            LabelOut(hdc, 40, 80 + 32 * c++, L"Sequence");
-            LabelOut(hdc, 40, 80 + 32 * c++, L"Number of iterations");
-            LabelOut(hdc, 40, 80 + 32 * c++, L"Initial x value");
-            LabelOut(hdc, 40, 80 + 32 * c++, L"a_min");
-            LabelOut(hdc, 40, 80 + 32 * c++, L"a_max");
-            LabelOut(hdc, 40, 80 + 32 * c++, L"b_min");
-            LabelOut(hdc, 40, 80 + 32 * c++, L"b_max");
-            LabelOut(hdc, 40, 80 + 32 * c++, L"func");
-            LabelOut(hdc, 40, 80 + 32 * c++, L"constance 1");
-            LabelOut(hdc, 40, 80 + 32 * c++, L"constance 2");
+            GenerateLabels(hdc);
+            TextOut(hdc, 320, 10, L"Spoit", lstrlen(L"Spoit"));
             
             EndPaint(hWnd, &ps);
         }

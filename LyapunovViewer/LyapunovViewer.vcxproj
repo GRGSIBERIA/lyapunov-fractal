@@ -133,6 +133,7 @@
   <ItemGroup>
     <ClInclude Include="EditContexts.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="GeneratorContext.h" />
     <ClInclude Include="LyapunovViewer.h" />
     <ClInclude Include="LyapunovWindow.h" />
     <ClInclude Include="OpenTomlContext.h" />
@@ -142,6 +143,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EditContexts.cpp" />
+    <ClCompile Include="GeneratorContext.cpp" />
     <ClCompile Include="LyapunovViewer.cpp" />
     <ClCompile Include="LyapunovWindow.cpp" />
     <ClCompile Include="OpenTomlContext.cpp" />
