@@ -46,7 +46,7 @@ public:
     EditContext() {}
     virtual ~EditContext() {}
 
-    EditContext(HWND hWnd, const int x, const int y, const int skip, LPARAM lParam);
+    void initialize(HWND hWnd, const int x, const int y, const int skip, LPARAM lParam);
 
     void convertWString();
     void applyEditWindows();
