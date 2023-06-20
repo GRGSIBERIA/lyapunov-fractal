@@ -50,6 +50,7 @@ public:
 
     void convertWString();
     void applyEditWindows();
+    void applyValues();
 
     std::wstring StringToWString(std::string oString) const;
 };

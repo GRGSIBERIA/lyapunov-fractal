@@ -173,7 +173,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             */
             
             edit.initialize(hWnd, 200, 80, 32, lParam);
-            image.initialize(hWnd);
+            image.initialize(hWnd, 512, 512);
         }
         break;
     case WM_COMMAND:
@@ -202,7 +202,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
             case BUTTON_ID_RUN_LYANUNOV:
             {
-                //lyapunov.initWindow(hInst, hWnd);
+                edit.applyValues();
+                image.initialize(hWnd, edit.PWidth, edit.PHeight);
                 break;
             }
             default:
@@ -222,13 +223,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             GenerateLabels(hdc);
             TextOut(hdc, 320, 10, L"Spoit", lstrlen(L"Spoit"));
             
-            image.Draw(hdc);
+            image.draw(hdc);
 
             EndPaint(hWnd, &ps);
         }
         break;
     case WM_DESTROY:
-        image.Destroy();
+        image.destroy();
         PostQuitMessage(0);
         break;
     default:

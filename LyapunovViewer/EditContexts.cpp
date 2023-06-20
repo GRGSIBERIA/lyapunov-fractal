@@ -83,3 +83,32 @@ void EditContext::applyEditWindows()
     SWTM(Const1);
     SWTM(Const2);
 }
+
+#include <locale>
+#include <codecvt>
+
+std::string ConvertWstringToUTF8(const std::wstring& src)
+{
+    std::wstring_convert<std::codecvt_utf8<wchar_t> > converter;
+    return converter.to_bytes(src);
+}
+
+void EditContext::applyValues()
+{
+    TCHAR buf[256];
+#define GWTi(PARAM) { GetWindowText(PARAM, buf, 256); P##PARAM = std::stoi(buf); }
+#define GWTs(PARAM) { GetWindowText(PARAM, buf, 256); P##PARAM = ConvertWstringToUTF8(std::wstring(buf)); }
+#define GWTf(PARAM) { GetWindowText(PARAM, buf, 256); P##PARAM = std::stof(buf); }
+    GWTi(Width);
+    GWTi(Height);
+    GWTs(Sequence);
+    GWTi(N);
+    GWTf(InitX);
+    GWTf(Amax);
+    GWTf(Amin);
+    GWTf(Bmax);
+    GWTf(Bmin);
+    GWTs(Func);
+    GWTf(Const1);
+    GWTf(Const2);
+}
