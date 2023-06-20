@@ -13,4 +13,5 @@ public:
 	OpenTomlContext();
 
 	void LoadToml(HWND hWnd, EditContext& edit);
+	void SaveToml(HWND hWnd, EditContext& edit);
 };

@@ -1,4 +1,7 @@
 #include "OpenTomlContext.h"
+#include <string>
+#include <iostream>
+#include "toml11/toml.hpp"
 
 OpenTomlContext::OpenTomlContext()
 {
@@ -6,16 +9,15 @@ OpenTomlContext::OpenTomlContext()
 }
 
 
-#include <string>
-#include <iostream>
-#include "toml11/toml.hpp"
+
 void OpenTomlContext::LoadToml(HWND hWnd, EditContext& edit)
 {
     ZeroMemory(&ofn, sizeof(OPENFILENAME));
+    ZeroMemory(filename, sizeof(TCHAR) * MAX_PATH);
 
     ofn.lStructSize = sizeof(OPENFILENAME);
     ofn.hwndOwner = hWnd;
-    ofn.lpstrFilter = TEXT("TOML files {*.toml}\0*.toml\0");
+    ofn.lpstrFilter = TEXT("TOML file {*.toml}\0*.toml\0");
     ofn.lpstrCustomFilter = strCustom;
     ofn.nMaxCustFilter = 256;
     ofn.nFilterIndex = 0;
@@ -61,5 +63,51 @@ void OpenTomlContext::LoadToml(HWND hWnd, EditContext& edit)
         
         edit.convertWString();
         edit.applyEditWindows();
+    }
+}
+
+void WriteParam(std::ofstream& ofs, HWND& param, const std::wstring& param_name) {
+    TCHAR buffer[256];
+    GetWindowText(param, buffer, 256);
+    std::wstring str = buffer;
+    ofs << param_name.c_str() << L" = " << str.c_str() << std::endl;
+}
+
+void OpenTomlContext::SaveToml(HWND hWnd, EditContext& edit)
+{
+    ZeroMemory(&ofn, sizeof(OPENFILENAME));
+    ZeroMemory(filename, sizeof(TCHAR) * MAX_PATH);
+
+    ofn.lStructSize = sizeof(OPENFILENAME);
+    ofn.hwndOwner = hWnd;
+    ofn.lpstrFilter = TEXT("TOML files {*.toml}\0*.toml\0");
+    ofn.lpstrFile = filename;
+    ofn.nMaxFile = MAX_PATH;
+    ofn.Flags = OFN_FILEMUSTEXIST | OFN_OVERWRITEPROMPT;
+
+    if (GetSaveFileName(&ofn)) {
+        using namespace std;
+        std::wstring fname = filename;
+        std::ofstream ofs(fname);
+
+        ofs << L"[plottings]" << endl;
+        ofs << L"mode = \"plot\"" << endl;
+
+        WriteParam(ofs, edit.Width, L"width");
+        WriteParam(ofs, edit.Height, L"height");
+
+        ofs << endl;
+        ofs << L"[parameters]" << endl;
+
+        WriteParam(ofs, edit.Sequence, L"param");
+        WriteParam(ofs, edit.InitX, L"initX");
+        WriteParam(ofs, edit.N, L"N");
+        WriteParam(ofs, edit.Amin, L"amin");
+        WriteParam(ofs, edit.Amax, L"amax");
+        WriteParam(ofs, edit.Bmin, L"bmin");
+        WriteParam(ofs, edit.Bmax, L"bmax");
+        WriteParam(ofs, edit.Func, L"func");
+        WriteParam(ofs, edit.Const1, L"const1");
+        WriteParam(ofs, edit.Const2, L"const2");
     }
 }

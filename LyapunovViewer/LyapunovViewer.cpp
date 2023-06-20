@@ -192,6 +192,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
             case BUTTON_ID_SAVE_FILE_DIALOG:
             {
+                open.SaveToml(hWnd, edit);
+
                 break;
             }
             case BUTTON_ID_RUN_LYANUNOV:
