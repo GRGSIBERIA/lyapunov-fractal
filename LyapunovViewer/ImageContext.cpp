@@ -23,9 +23,11 @@ void ImageContext::initialize(HWND& hWnd, const int width, const int height)
 void ImageContext::generate(const EditContext& edit)
 {
 	using namespace std;
-	auto r = vector<vector<vector<float>>>(bufH, vector<vector<float>>(bufW, vector<float>(edit.PN+1)));
-	auto x = vector<vector<vector<float>>>(bufH, vector<vector<float>>(bufW, vector<float>(edit.PN+1)));
+	auto r = vector<vector<vector<float>>>(bufH, vector<vector<float>>(bufW, vector<float>(edit.PN + 1)));
+	auto x = vector<vector<vector<float>>>(bufH, vector<vector<float>>(bufW, vector<float>(edit.PN + 1)));
 	auto lam = vector<vector<vector<float>>>(bufH, vector<vector<float>>(bufW, vector<float>(edit.PN + 1)));
+	lambda = vector<vector<float>>(bufH, vector<float>(bufW));
+	pixcels = vector<vector<COLORREF>>(bufH, vector<COLORREF>(bufW));
 	const auto N = edit.PN + 1;
 	// N + 1にしているのは、rとxで系列長が合わないため
 
@@ -118,8 +120,8 @@ void ImageContext::generate(const EditContext& edit)
 			lam[h][w][0] *= dN;
 		}
 	}
-
-	// lam[h][w][0]の結果を画像に書き込む
+	
+	// 最小値と最大値を求める
 	float lammax = 0.0f;
 	float lammin = 0.0f;
 
@@ -132,6 +134,8 @@ void ImageContext::generate(const EditContext& edit)
 			if (lammin > lam[h][w][0]) {
 				lammin = lam[h][w][0];
 			}
+			// lam[h][w][0]の結果を画像に書き込む
+			lambda[h][w] = lam[h][w][0];
 		}
 	}
 }
@@ -139,6 +143,43 @@ void ImageContext::generate(const EditContext& edit)
 void ImageContext::draw(HDC& hdc)
 {
 	SelectObject(buffer, bitmap);
+
+	const float sub = lammax - lammin;
+	const float dif = 1.f / sub;
+	
+	// 色を求める
+#pragma omp parallel for
+	for (int h = 0; h < bufH; ++h) {
+		for (int w = 0; w < bufW; ++w) {
+			// 0以下をカオスとして最小色で塗りつぶす場合は
+			/*
+			if (isChaos) {
+				if (lambda[h][w] < 0.f) pixcels[h][w] = mincolor;
+				else {
+					// 普通の処理
+				}
+			} else {
+				// 普通の処理
+			}
+			*/
+
+			const auto percent = (lambda[h][w] + lammin) * dif;
+
+#define RGBRGB(X) const auto X = (Get##X##Value(maxcolor) - Get##X##Value(mincolor)) * percent + Get##X##Value(mincolor)
+			
+			RGBRGB(R); RGBRGB(G); RGBRGB(B);
+			pixcels[h][w] = RGB(R, G, B);
+
+			//SetPixel(buffer, w, h, color);
+		}
+	}
+
+	// バッファに色を転送する
+	for (int h = 0; h < bufH; ++h) {
+		for (int w = 0; w < bufW; ++w) {
+			SetPixel(buffer, w, h, pixcels[h][w]);
+		}
+	}
 
 	//BitBlt(hdc, 320 + 24, 42, width, height, buffer, 0, 0, SRCCOPY);
 	SetStretchBltMode(hdc, COLORONCOLOR);

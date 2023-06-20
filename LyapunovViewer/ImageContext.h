@@ -1,6 +1,7 @@
 #pragma once
 #include <Windows.h>
 #include "EditContexts.h"
+#include <vector>
 
 class ImageContext {
 	HBITMAP bitmap = { 0 };
@@ -9,6 +10,16 @@ class ImageContext {
 	const int curH = 512;
 	int bufW = 512;
 	int bufH = 512;
+	float lammin = 0.f;
+	float lammax = 0.f;
+	COLORREF mincolor = RGB(0,0,0);
+	COLORREF maxcolor = RGB(255, 255, 255);
+
+	// generateÇ≈Ç‡èâä˙âª
+	std::vector<std::vector<float>> lambda =
+		std::vector<std::vector<float>>(512, std::vector<float>(512, 0.f));
+	std::vector<std::vector<COLORREF>> pixcels =
+		std::vector<std::vector<COLORREF>>(512, std::vector<COLORREF>(512, 0.f));
 
 public:
 	ImageContext() {}
