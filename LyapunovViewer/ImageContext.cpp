@@ -25,16 +25,104 @@ void ImageContext::generate(const EditContext& edit)
 	using namespace std;
 	auto r = vector<vector<vector<float>>>(bufH, vector<vector<float>>(bufW, vector<float>(edit.PN+1)));
 	auto x = vector<vector<vector<float>>>(bufH, vector<vector<float>>(bufW, vector<float>(edit.PN+1)));
+	auto lam = vector<vector<vector<float>>>(bufH, vector<vector<float>>(bufW, vector<float>(edit.PN + 1)));
 	const auto N = edit.PN + 1;
+	// N + 1にしているのは、rとxで系列長が合わないため
 
+	auto func_simple = [](const float x, const float r, const float c1, const float c2) -> float {
+		return r * x * (1.0f - x);
+	};
+	auto func_cyclic = [](const float x, const float r, const float c1, const float c2) -> float {
+		return c1 * powf(sinf(x + r), 2.0f);
+	};
+	auto grad_simple = [](const float x, const float r, const float c1, const float c2) -> float {
+		return logf(fabsf(r * (1.0f - 2.0f * x)));
+	};
+	auto grad_cyclic = [](const float x, const float r, const float c1, const float c2) -> float {
+		return logf(fabsf(2.0f * c1 * sinf(x + r) * cosf(x + r)));
+	};
+	auto func = edit.PFunc.compare("simple") ? func_simple : (edit.PFunc.compare("sin2") ? func_cyclic : nullptr);
+	auto grad = edit.PFunc.compare("simple") ? grad_simple : (edit.PFunc.compare("sin2") ? grad_cyclic : nullptr);
+
+	// nullptrの可能性のある関数があるため、この分岐なしでは警告がでる
+	// or で繋げたいが、繋げてしまうとgradで警告が出たままになるため、わざわざ分けて書いている
+	if (func == nullptr) {
+		MessageBox(NULL, TEXT("INVALID FUNCTION NAME"), TEXT("CAUGHT ERROR"), MB_OK | MB_ICONERROR);
+		return;
+	}
+	if (grad == nullptr) {
+		MessageBox(NULL, TEXT("INVALID FUNCTION NAME"), TEXT("CAUGHT ERROR"), MB_OK | MB_ICONERROR);
+		return;
+	}
+
+	// シーケンスを作る
+	auto s = vector<int>();
+	for (int i = 0; i < edit.PSequence.size(); ++i) {
+		if (edit.PSequence[i] == 'A') {
+			s.push_back(1);
+		}
+		else {
+			s.push_back(0);
+		}
+	}
+
+	// 周期列を作る
+	auto S = vector<int>(edit.PN);
+	for (int i = 0; i < edit.PN; ++i) {
+		S[i] = s[(size_t)i % s.size()];
+	}
+
+	// 縦横の差分
+	const float da = (edit.PAmax - edit.PAmin) / (float)edit.PWidth;
+	const float db = (edit.PBmax - edit.PBmin) / (float)edit.PHeight;
+
+	// ここから先、キャッシュヒットしやすくするため、処理ごとにループを実行する
 #pragma omp parallel for
 	for (int h = 0; h < bufH; ++h) {
 		for (int w = 0; w < bufW; ++w) {
 			for (int n = 1; n < N; ++n) {
-
+				r[h][w][n] = S[n] ? edit.PAmin + da * w : edit.PBmin + db * h;
 			}
 		}
 	}
+
+#pragma omp parallel for
+	for (int h = 0; h < bufH; ++h) {
+		for (int w = 0; w < bufW; ++w) {
+			x[h][w][0] = edit.PInitX;
+
+			for (int n = 1; n < N; ++n) {
+				x[h][w][n] = func(x[h][w][n], r[h][w][n], edit.PConst1, edit.PConst2);
+			}
+		}
+	}
+
+	const float dN = 1.0f / edit.PN;
+#pragma omp parallel for
+	for (int h = 0; h < bufH; ++h) {
+		for (int w = 0; w < bufW; ++w) {
+			for (int n = 1; n < N; ++n) {
+				lam[h][w][n] = grad(x[h][w][n], r[h][w][n], edit.PConst1, edit.PConst2);
+			}
+			
+			lam[h][w][0] = 0.0;
+			for (int n = 1; n < N; ++n) {
+				lam[h][w][0] += lam[h][w][n];
+			}
+		}
+	}
+
+#pragma omp parallel for
+	for (int h = 0; h < bufH; ++h) {
+		for (int w = 0; w < bufW; ++w) {
+			lam[h][w][0] = 0.0;
+			for (int n = 1; n < N; ++n) {
+				lam[h][w][0] += lam[h][w][n];
+			}
+		}
+	}
+
+	// lambdaの結果を画像に書き込む
 }
 
 void ImageContext::draw(HDC& hdc)
