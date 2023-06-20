@@ -30,20 +30,23 @@ public:
     HWND Const1 = NULL;
     HWND Const2 = NULL;
 
-    int PWidth;
-    int PHeight;
-    std::string PSequence;
-    int PN;
-    float PInitX;
-    float PAmax;
-    float PAmin;
-    float PBmax;
-    float PBmin;
-    std::string PFunc;
-    float PConst1;
-    float PConst2;
+    int PWidth = 0;
+    int PHeight = 0;
+    std::string PSequence = "";
+    int PN = 0;
+    float PInitX = 0;
+    float PAmax = 0;
+    float PAmin = 0;
+    float PBmax = 0;
+    float PBmin = 0;
+    std::string PFunc = "";
+    float PConst1 = 0;
+    float PConst2 = 0;
 
-    void initialize(HWND hWnd, const int x, const int y, const int skip, LPARAM lParam);
+    EditContext() {}
+    virtual ~EditContext() {}
+
+    EditContext(HWND hWnd, const int x, const int y, const int skip, LPARAM lParam);
 
     void convertWString();
     void applyEditWindows();
