@@ -4,42 +4,19 @@ void GenerateSpoitButton(HWND hWnd, LPARAM& lParam) {
     int i = 0;
     const int width = 50;
     const int space = 8;
-    CreateWindow(
-        TEXT("BUTTON"), TEXT("a min"),
-        WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-        370 + (width + space) * i++, 8, width, 24,
-        hWnd, (HMENU)BUTTON_ID_SPOIT_AMIN, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
-    );
-    CreateWindow(
-        TEXT("BUTTON"), TEXT("a max"),
-        WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-        370 + (width + space) * i++, 8, width, 24,
-        hWnd, (HMENU)BUTTON_ID_SPOIT_AMAX, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
-    );
-    CreateWindow(
-        TEXT("BUTTON"), TEXT("b min"),
-        WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-        370 + (width + space) * i++, 8, width, 24,
-        hWnd, (HMENU)BUTTON_ID_SPOIT_BMIN, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
-    );
-    CreateWindow(
-        TEXT("BUTTON"), TEXT("b max"),
-        WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-        370 + (width + space) * i++, 8, width, 24,
-        hWnd, (HMENU)BUTTON_ID_SPOIT_BMAX, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
-    );
-    CreateWindow(
-        TEXT("BUTTON"), TEXT("T-L"),
-        WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-        370 + (width + space) * i++, 8, width, 24,
-        hWnd, (HMENU)BUTTON_ID_SPOIT_TL, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
-    );
-    CreateWindow(
-        TEXT("BUTTON"), TEXT("B-R"),
-        WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-        370 + (width + space) * i++, 8, width, 24,
-        hWnd, (HMENU)BUTTON_ID_SPOIT_BR, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
-    );
+#define Button(STR, ID) CreateWindow(\
+    TEXT("BUTTON"), TEXT(STR),\
+    WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,\
+    370 + (width + space) * i++, 8, width, 24,\
+    hWnd, (HMENU)ID, ((LPCREATESTRUCT)(lParam))->hInstance, NULL\
+    )
+
+    Button("a min", BUTTON_ID_SPOIT_AMIN);
+    Button("a max", BUTTON_ID_SPOIT_AMAX);
+    Button("b min", BUTTON_ID_SPOIT_BMIN);
+    Button("b max", BUTTON_ID_SPOIT_BMAX);
+    Button("T-L", BUTTON_ID_SPOIT_TL);
+    Button("B-R", BUTTON_ID_SPOIT_BR);
 }
 
 void LabelOut(HDC& hdc, const int x, const int y, LPCWSTR label)
