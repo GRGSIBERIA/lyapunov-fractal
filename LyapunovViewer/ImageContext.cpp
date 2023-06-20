@@ -144,35 +144,41 @@ void ImageContext::draw(HDC& hdc)
 {
 	SelectObject(buffer, bitmap);
 
-	const float sub = lammax - lammin;
-	const float dif = 1.f / sub;
+#define RGBRGB(X) const auto X = (Get##X##Value(maxcolor) - Get##X##Value(mincolor)) * percent + Get##X##Value(mincolor)
 	
-	// 色を求める
+	// カオスの場合は最小色で塗りつぶす
+	if (isChaos) {
 #pragma omp parallel for
-	for (int h = 0; h < bufH; ++h) {
-		for (int w = 0; w < bufW; ++w) {
-			// 0以下をカオスとして最小色で塗りつぶす場合は
-			/*
-			if (isChaos) {
+		for (int h = 0; h < bufH; ++h) {
+			for (int w = 0; w < bufW; ++w) {
 				if (lambda[h][w] < 0.f) pixcels[h][w] = mincolor;
 				else {
-					// 普通の処理
+					const float diffLAMMAX = 1.f / lammax;
+					const auto percent = lambda[h][w] * diffLAMMAX;
+					RGBRGB(R); RGBRGB(G); RGBRGB(B);
+					pixcels[h][w] = RGB(R, G, B);
 				}
-			} else {
-				// 普通の処理
 			}
-			*/
-
-			const auto percent = (lambda[h][w] + lammin) * dif;
-
-#define RGBRGB(X) const auto X = (Get##X##Value(maxcolor) - Get##X##Value(mincolor)) * percent + Get##X##Value(mincolor)
-			
-			RGBRGB(R); RGBRGB(G); RGBRGB(B);
-			pixcels[h][w] = RGB(R, G, B);
-
-			//SetPixel(buffer, w, h, color);
 		}
 	}
+	else {
+		// 色を求める
+#pragma omp parallel for
+		for (int h = 0; h < bufH; ++h) {
+			for (int w = 0; w < bufW; ++w) {
+				const float sub = lammax - lammin;
+				const float dif = 1.f / sub;
+				const auto percent = (lambda[h][w] + lammin) * dif;
+
+				RGBRGB(R); RGBRGB(G); RGBRGB(B);
+				pixcels[h][w] = RGB(R, G, B);
+
+				//SetPixel(buffer, w, h, color);
+			}
+		}
+	}
+
+	
 
 	// バッファに色を転送する
 	for (int h = 0; h < bufH; ++h) {

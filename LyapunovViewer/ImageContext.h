@@ -14,6 +14,7 @@ class ImageContext {
 	float lammax = 0.f;
 	COLORREF mincolor = RGB(0,0,0);
 	COLORREF maxcolor = RGB(255, 255, 255);
+	bool isChaos = false;
 
 	// generate‚Å‚à‰Šú‰»
 	std::vector<std::vector<float>> lambda =
