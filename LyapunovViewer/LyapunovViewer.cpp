@@ -114,7 +114,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    RECT rect;
    GetClientRect(hWnd, &rect);
 
-   SetWindowPos(hWnd, NULL, rect.left, rect.top, 800, 640, (SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOMOVE));
+   SetWindowPos(hWnd, NULL, rect.left, rect.top, 900, 640, (SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOMOVE));
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 
@@ -127,10 +127,13 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 #include "EditContexts.h"
 #include "OpenTomlContext.h"
 #include "GeneratorContext.h"
+#include "ImageContext.h"
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     static EditContext edit;
     static OpenTomlContext open;
+    static ImageContext image;
+
     static TCHAR currentDir[MAX_PATH];
     static HWND hClient;
 
@@ -169,7 +172,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             * GetWindowText(editTomlPath, pStr, 2048);
             */
             
-            edit = EditContext(hWnd, 200, 80, 32, lParam);
+            edit.initialize(hWnd, 200, 80, 32, lParam);
+            image.initialize(hWnd);
         }
         break;
     case WM_COMMAND:
@@ -218,10 +222,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             GenerateLabels(hdc);
             TextOut(hdc, 320, 10, L"Spoit", lstrlen(L"Spoit"));
             
+            image.Draw(hdc);
+
             EndPaint(hWnd, &ps);
         }
         break;
     case WM_DESTROY:
+        image.Destroy();
         PostQuitMessage(0);
         break;
     default:

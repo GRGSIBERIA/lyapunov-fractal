@@ -33,10 +33,10 @@
     <ClInclude Include="OpenTomlContext.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="LyapunovWindow.h">
+    <ClInclude Include="GeneratorContext.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="GeneratorContext.h">
+    <ClInclude Include="ImageContext.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -50,10 +50,10 @@
     <ClCompile Include="OpenTomlContext.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="LyapunovWindow.cpp">
+    <ClCompile Include="GeneratorContext.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratorContext.cpp">
+    <ClCompile Include="ImageContext.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
