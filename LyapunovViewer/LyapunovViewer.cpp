@@ -114,7 +114,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    RECT rect;
    GetClientRect(hWnd, &rect);
 
-   SetWindowPos(hWnd, NULL, rect.left, rect.top, 900, 640, (SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOMOVE));
+   SetWindowPos(hWnd, NULL, rect.left, rect.top, 900, 720, (SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOMOVE));
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 
