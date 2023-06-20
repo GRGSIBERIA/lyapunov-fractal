@@ -1,24 +1,31 @@
 #include "ImageContext.h"
 
-void ImageContext::initialize(HWND& hWnd)
+void ImageContext::initialize(HWND& hWnd, const int width, const int height)
 {
+	bufW = width;
+	bufH = height;
+	destroy();
+
 	HDC hdc = GetDC(hWnd);
 
-	bitmap = CreateCompatibleBitmap(hdc, width, height);
+	bitmap = CreateCompatibleBitmap(hdc, bufW, bufH);
 	buffer = CreateCompatibleDC(hdc);
 
 	SelectObject(buffer, bitmap);
 	SelectObject(buffer, GetStockObject(NULL_PEN));
 
-	PatBlt(buffer, 0, 0, width, height, WHITENESS);
+	PatBlt(buffer, 0, 0, bufW, bufH, WHITENESS);
 
 	ReleaseDC(hWnd, hdc);
 }
 
-void ImageContext::Draw(HDC& hdc)
+void ImageContext::draw(HDC& hdc)
 {
 	SelectObject(buffer, bitmap);
-	BitBlt(hdc, 320 + 24, 42, width, height, buffer, 0, 0, SRCCOPY);
+
+	//BitBlt(hdc, 320 + 24, 42, width, height, buffer, 0, 0, SRCCOPY);
+	SetStretchBltMode(hdc, COLORONCOLOR);
+	StretchBlt(hdc, 320 + 24, 42, curW, curH, buffer, 0, 0, bufW, bufH, SRCCOPY);
 
 	TextOut(hdc, 324, 300, L"B", lstrlen(L"B"));
 	TextOut(hdc, 320 + 256, 560, L"A", lstrlen(L"A"));
@@ -28,7 +35,7 @@ void ImageContext::Draw(HDC& hdc)
 	TextOut(hdc, 324 + 512 - 12, 560, L"max", lstrlen(L"max"));
 }
 
-void ImageContext::Destroy()
+void ImageContext::destroy()
 {
 	DeleteObject(bitmap);
 }
