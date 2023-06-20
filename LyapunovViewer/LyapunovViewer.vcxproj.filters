@@ -27,9 +27,6 @@
     <ClInclude Include="LyapunovViewer.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Utility.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="EditContexts.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
