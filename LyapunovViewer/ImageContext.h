@@ -1,5 +1,6 @@
 #pragma once
 #include <Windows.h>
+#include "EditContexts.h"
 
 class ImageContext {
 	HBITMAP bitmap = { 0 };
@@ -12,7 +13,7 @@ class ImageContext {
 public:
 	ImageContext() {}
 	void initialize(HWND& hWnd, const int width, const int height);
-	
+	void generate(const EditContext& edit);
 
 	virtual ~ImageContext() {}
 

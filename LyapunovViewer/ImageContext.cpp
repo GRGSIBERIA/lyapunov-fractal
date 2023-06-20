@@ -19,6 +19,24 @@ void ImageContext::initialize(HWND& hWnd, const int width, const int height)
 	ReleaseDC(hWnd, hdc);
 }
 
+#include <vector>
+void ImageContext::generate(const EditContext& edit)
+{
+	using namespace std;
+	auto r = vector<vector<vector<float>>>(bufH, vector<vector<float>>(bufW, vector<float>(edit.PN+1)));
+	auto x = vector<vector<vector<float>>>(bufH, vector<vector<float>>(bufW, vector<float>(edit.PN+1)));
+	const auto N = edit.PN + 1;
+
+#pragma omp parallel for
+	for (int h = 0; h < bufH; ++h) {
+		for (int w = 0; w < bufW; ++w) {
+			for (int n = 1; n < N; ++n) {
+
+			}
+		}
+	}
+}
+
 void ImageContext::draw(HDC& hdc)
 {
 	SelectObject(buffer, bitmap);
