@@ -71,7 +71,6 @@ void WriteParam(std::wofstream& ofs, HWND& param, const std::wstring& param_name
     GetWindowText(param, buffer, 256);
     std::wstring str = buffer;
     
-
     if (!param_name.compare(L"param") || !param_name.compare(L"func")) {
         ofs << param_name.c_str() << L" = \"" << str.c_str() << "\"" << std::endl;
     }

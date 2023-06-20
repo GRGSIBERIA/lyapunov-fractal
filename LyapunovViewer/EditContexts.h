@@ -3,18 +3,18 @@
 #include <string>
 
 class EditContext {
-    std::wstring SWidth;
-    std::wstring SHeight;
-    std::wstring SSequence;
-    std::wstring SN;
-    std::wstring SInitX;
-    std::wstring SAmax;
-    std::wstring SAmin;
-    std::wstring SBmax;
-    std::wstring SBmin;
-    std::wstring SFunc;
-    std::wstring SConst1;
-    std::wstring SConst2;
+    std::wstring SWidth = L"512";
+    std::wstring SHeight = L"512";
+    std::wstring SSequence = L"AABB";
+    std::wstring SN = L"10";
+    std::wstring SInitX = L"0.5";
+    std::wstring SAmax = L"4.0";
+    std::wstring SAmin = L"0.0";
+    std::wstring SBmax = L"4.0";
+    std::wstring SBmin = L"0.0";
+    std::wstring SFunc = L"simple";
+    std::wstring SConst1 = L"0.0";
+    std::wstring SConst2 = L"0.0";
 
 public:
     HWND Width = NULL;
@@ -30,16 +30,16 @@ public:
     HWND Const1 = NULL;
     HWND Const2 = NULL;
 
-    int PWidth = 0;
-    int PHeight = 0;
-    std::string PSequence = "";
-    int PN = 0;
-    float PInitX = 0;
+    int PWidth = 512;
+    int PHeight = 512;
+    std::string PSequence = "AABB";
+    int PN = 10;
+    float PInitX = 0.5;
     float PAmax = 0;
-    float PAmin = 0;
+    float PAmin = 4;
     float PBmax = 0;
-    float PBmin = 0;
-    std::string PFunc = "";
+    float PBmin = 4;
+    std::string PFunc = "simple";
     float PConst1 = 0;
     float PConst2 = 0;
 

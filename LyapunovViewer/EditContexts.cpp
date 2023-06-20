@@ -1,9 +1,10 @@
 #include "EditContexts.h"
+#include <string>
 
-void CreateEdit(HWND hWnd, const int x, const int y, const int w, const int h, LPARAM& lParam, HWND& edit)
+void CreateEdit(HWND hWnd, const int x, const int y, const int w, const int h, LPARAM& lParam, HWND& edit, std::wstring& value)
 {
     edit = CreateWindow(
-        TEXT("EDIT"), TEXT(""),
+        TEXT("EDIT"), value.c_str(),
         WS_CHILD | WS_VISIBLE | ES_LEFT | WS_BORDER,
         x, y, w, h, hWnd, (HMENU)1,
         ((LPCREATESTRUCT)(lParam))->hInstance, NULL
@@ -12,7 +13,7 @@ void CreateEdit(HWND hWnd, const int x, const int y, const int w, const int h, L
 
 EditContext::EditContext(HWND hWnd, const int x, const int y, const int skip, LPARAM lParam)
 {
-#define INITEDIT(PARAM) CreateEdit(hWnd, x, y + skip * c++, 100, 25, lParam, PARAM)
+#define INITEDIT(PARAM) CreateEdit(hWnd, x, y + skip * c++, 100, 25, lParam, PARAM, S##PARAM)
     int c = 0;
     INITEDIT(Width);
     INITEDIT(Height);
