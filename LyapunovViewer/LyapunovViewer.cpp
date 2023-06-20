@@ -169,7 +169,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             * GetWindowText(editTomlPath, pStr, 2048);
             */
             
-            edit.initialize(hWnd, 200, 80, 32, lParam);
+            edit = EditContext(hWnd, 200, 80, 32, lParam);
         }
         break;
     case WM_COMMAND:

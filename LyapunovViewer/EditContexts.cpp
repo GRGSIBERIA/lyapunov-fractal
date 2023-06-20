@@ -10,7 +10,7 @@ void CreateEdit(HWND hWnd, const int x, const int y, const int w, const int h, L
     );
 }
 
-void EditContext::initialize(HWND hWnd, const int x, const int y, const int skip, LPARAM lParam)
+EditContext::EditContext(HWND hWnd, const int x, const int y, const int skip, LPARAM lParam)
 {
 #define INITEDIT(PARAM) CreateEdit(hWnd, x, y + skip * c++, 100, 25, lParam, PARAM)
     int c = 0;
