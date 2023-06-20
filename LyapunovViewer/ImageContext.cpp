@@ -104,25 +104,36 @@ void ImageContext::generate(const EditContext& edit)
 			for (int n = 1; n < N; ++n) {
 				lam[h][w][n] = grad(x[h][w][n], r[h][w][n], edit.PConst1, edit.PConst2);
 			}
-			
-			lam[h][w][0] = 0.0;
-			for (int n = 1; n < N; ++n) {
-				lam[h][w][0] += lam[h][w][n];
-			}
 		}
 	}
 
 #pragma omp parallel for
 	for (int h = 0; h < bufH; ++h) {
 		for (int w = 0; w < bufW; ++w) {
+			// “Y‚¦Žš‚Ì0”Ô–Ú‚ÅWŒv‚·‚é
 			lam[h][w][0] = 0.0;
 			for (int n = 1; n < N; ++n) {
 				lam[h][w][0] += lam[h][w][n];
 			}
+			lam[h][w][0] *= dN;
 		}
 	}
 
-	// lambda‚ÌŒ‹‰Ê‚ð‰æ‘œ‚É‘‚«ž‚Þ
+	// lam[h][w][0]‚ÌŒ‹‰Ê‚ð‰æ‘œ‚É‘‚«ž‚Þ
+	float lammax = 0.0f;
+	float lammin = 0.0f;
+
+#pragma omp parallel for
+	for (int h = 0; h < bufH; ++h) {
+		for (int w = 0; w < bufW; ++w) {
+			if (lammax < lam[h][w][0]) {
+				lammax = lam[h][w][0];
+			}
+			if (lammin > lam[h][w][0]) {
+				lammin = lam[h][w][0];
+			}
+		}
+	}
 }
 
 void ImageContext::draw(HDC& hdc)
