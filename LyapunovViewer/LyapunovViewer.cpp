@@ -4,7 +4,6 @@
 #include "framework.h"
 #include "LyapunovViewer.h"
 #include "toml11/toml.hpp"
-#include "Utility.h"
 #include <commdlg.h>
 #include <iostream>
 
