@@ -66,11 +66,18 @@ void OpenTomlContext::LoadToml(HWND hWnd, EditContext& edit)
     }
 }
 
-void WriteParam(std::ofstream& ofs, HWND& param, const std::wstring& param_name) {
+void WriteParam(std::wofstream& ofs, HWND& param, const std::wstring& param_name) {
     TCHAR buffer[256];
     GetWindowText(param, buffer, 256);
     std::wstring str = buffer;
-    ofs << param_name.c_str() << L" = " << str.c_str() << std::endl;
+    
+
+    if (!param_name.compare(L"param") || !param_name.compare(L"func")) {
+        ofs << param_name.c_str() << L" = \"" << str.c_str() << "\"" << std::endl;
+    }
+    else {
+        ofs << param_name.c_str() << L" = " << str.c_str() << std::endl;
+    }
 }
 
 void OpenTomlContext::SaveToml(HWND hWnd, EditContext& edit)
@@ -88,8 +95,8 @@ void OpenTomlContext::SaveToml(HWND hWnd, EditContext& edit)
     if (GetSaveFileName(&ofn)) {
         using namespace std;
         std::wstring fname = filename;
-        std::ofstream ofs(fname);
-
+        std::wofstream ofs(fname);
+        
         ofs << L"[plottings]" << endl;
         ofs << L"mode = \"plot\"" << endl;
 
