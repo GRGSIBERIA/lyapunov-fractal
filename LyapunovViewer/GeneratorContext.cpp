@@ -14,19 +14,31 @@ void GenerateSpoitButton(HWND hWnd, LPARAM& lParam) {
         TEXT("BUTTON"), TEXT("a max"),
         WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
         370 + (width + space) * i++, 8, width, 24,
-        hWnd, (HMENU)BUTTON_ID_SPOIT_AMIN, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
+        hWnd, (HMENU)BUTTON_ID_SPOIT_AMAX, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
     );
     CreateWindow(
         TEXT("BUTTON"), TEXT("b min"),
         WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
         370 + (width + space) * i++, 8, width, 24,
-        hWnd, (HMENU)BUTTON_ID_SPOIT_AMIN, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
+        hWnd, (HMENU)BUTTON_ID_SPOIT_BMIN, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
     );
     CreateWindow(
         TEXT("BUTTON"), TEXT("b max"),
         WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
         370 + (width + space) * i++, 8, width, 24,
-        hWnd, (HMENU)BUTTON_ID_SPOIT_AMIN, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
+        hWnd, (HMENU)BUTTON_ID_SPOIT_BMAX, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
+    );
+    CreateWindow(
+        TEXT("BUTTON"), TEXT("T-L"),
+        WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+        370 + (width + space) * i++, 8, width, 24,
+        hWnd, (HMENU)BUTTON_ID_SPOIT_TL, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
+    );
+    CreateWindow(
+        TEXT("BUTTON"), TEXT("B-R"),
+        WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+        370 + (width + space) * i++, 8, width, 24,
+        hWnd, (HMENU)BUTTON_ID_SPOIT_BR, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
     );
 }
 
