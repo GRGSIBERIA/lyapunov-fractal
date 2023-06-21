@@ -204,7 +204,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             {
                 edit.applyValues();
                 image.initialize(hWnd, edit.PWidth, edit.PHeight);
-                image.generate(edit);
+                image.generate(hWnd, edit);
 
                 SendMessage(hWnd, WM_PAINT, wParam, lParam);
                 break;

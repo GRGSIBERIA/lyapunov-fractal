@@ -43,7 +43,7 @@ float grad_cyclic(const float x, const float r, const float c1, const float c2){
 
 #include <vector>
 #include <map>
-void ImageContext::generate(const EditContext& edit)
+void ImageContext::generate(HWND& hWnd, const EditContext& edit)
 {
 	const auto N = edit.PN + 1;	// N + 1Ç…ÇµÇƒÇ¢ÇÈÇÃÇÕÅArÇ∆xÇ≈ånóÒí∑Ç™çáÇÌÇ»Ç¢ÇΩÇﬂ
 
@@ -165,14 +165,11 @@ void ImageContext::generate(const EditContext& edit)
 			}
 		}
 	}
-}
 
-void ImageContext::draw(HDC& hdc, HWND& hWnd)
-{
 	SelectObject(buffer, bitmap);
-	
+
 #define RGBRGB(X) const byte X = (byte)roundf(((float)Get##X##Value(maxcolor) - (float)Get##X##Value(mincolor)) * percent + (float)Get##X##Value(mincolor))
-	
+
 	const float sub = lammax - lammin;
 	const float dif = 1.f / sub;
 	const float diffLAMMAX = 1.f / lammax;
@@ -187,7 +184,8 @@ void ImageContext::draw(HDC& hdc, HWND& hWnd)
 				}
 				else if (lambda[h][w] < 0.f) {
 					pixcels[h][w] = mincolor;
-				} else {
+				}
+				else {
 					const auto percent = lambda[h][w] * diffLAMMAX;
 					RGBRGB(R); RGBRGB(G); RGBRGB(B);
 					pixcels[h][w] = RGB(R, G, B);
@@ -219,12 +217,16 @@ void ImageContext::draw(HDC& hdc, HWND& hWnd)
 	for (int h = 0; h < bufH; ++h) {
 		for (int w = 0; w < bufW; ++w) {
 			const auto color = pixcels[h][w];
-			
+
 			SetPixel(buffer, w, h, color);
 		}
 	}
-	InvalidateRect(hWnd, NULL, FALSE);
 
+	InvalidateRect(hWnd, NULL, FALSE);
+}
+
+void ImageContext::draw(HDC& hdc, HWND& hWnd)
+{
 	SetStretchBltMode(buffer, COLORONCOLOR);
 	StretchBlt(hdc, 344, 42, curW, curH, buffer, 0, 0, bufW, bufH, SRCCOPY);
 	//BitBlt(hdc, 320 + 24, 42, curW, curH, buffer, 0, 0, SRCCOPY);

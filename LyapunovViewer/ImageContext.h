@@ -25,7 +25,7 @@ class ImageContext {
 public:
 	ImageContext() {}
 	void initialize(HWND& hWnd, const int width, const int height);
-	void generate(const EditContext& edit);
+	void generate(HWND& hWnd, const EditContext& edit);
 
 	virtual ~ImageContext() {}
 
