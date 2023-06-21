@@ -29,7 +29,7 @@ public:
 
 	virtual ~ImageContext() {}
 
-	void draw(HDC& hdc);
+	void draw(HDC& hdc, HWND& hWnd);
 
 	void destroy();
 };

@@ -226,7 +226,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             GenerateLabels(hdc);
             TextOut(hdc, 320, 10, L"Spoit", lstrlen(L"Spoit"));
             
-            image.draw(hdc);
+            image.draw(hdc, hWnd);
 
             EndPaint(hWnd, &ps);
         }

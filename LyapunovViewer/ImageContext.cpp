@@ -7,12 +7,11 @@ void ImageContext::initialize(HWND& hWnd, const int width, const int height)
 	destroy();
 
 	HDC hdc = GetDC(hWnd);
-
 	bitmap = CreateCompatibleBitmap(hdc, bufW, bufH);
 	buffer = CreateCompatibleDC(hdc);
 
 	SelectObject(buffer, bitmap);
-	//SelectObject(buffer, GetStockObject(NULL_PEN));
+	SelectObject(buffer, GetStockObject(NULL_PEN));
 
 	PatBlt(buffer, 0, 0, bufW, bufH, WHITENESS);
 
@@ -168,11 +167,11 @@ void ImageContext::generate(const EditContext& edit)
 	}
 }
 
-void ImageContext::draw(HDC& hdc)
+void ImageContext::draw(HDC& hdc, HWND& hWnd)
 {
 	SelectObject(buffer, bitmap);
 	
-#define RGBRGB(X) const byte X = (Get##X##Value(maxcolor) - Get##X##Value(mincolor)) * percent + Get##X##Value(mincolor)
+#define RGBRGB(X) const byte X = (byte)roundf(((float)Get##X##Value(maxcolor) - (float)Get##X##Value(mincolor)) * percent + (float)Get##X##Value(mincolor))
 	
 	const float sub = lammax - lammin;
 	const float dif = 1.f / sub;
@@ -215,19 +214,25 @@ void ImageContext::draw(HDC& hdc)
 			}
 		}
 	}
-
+	static int cnt = 0;
 	// バッファに色を転送する
 	for (int h = 0; h < bufH; ++h) {
 		for (int w = 0; w < bufW; ++w) {
 			const auto color = pixcels[h][w];
 			
+			SelectObject(buffer, CreateSolidBrush(0xFF));
+
+
 			SetPixel(buffer, w, h, color);
+
+			DeleteObject(SelectObject(buffer, GetStockObject(WHITE_BRUSH)));
+			InvalidateRect(hWnd, NULL, FALSE);
 		}
 	}
 
-	//SetStretchBltMode(hdc, COLORONCOLOR);
-	//StretchBlt(hdc, 320 + 24, 42, curW, curH, buffer, 0, 0, bufW, bufH, SRCCOPY);
-	BitBlt(hdc, 320 + 24, 42, curW, curH, buffer, 0, 0, SRCCOPY);
+	SetStretchBltMode(buffer, COLORONCOLOR);
+	StretchBlt(hdc, 344, 42, curW, curH, buffer, 0, 0, bufW, bufH, SRCCOPY);
+	//BitBlt(hdc, 320 + 24, 42, curW, curH, buffer, 0, 0, SRCCOPY);
 
 	TextOut(hdc, 324, 300, L"B", lstrlen(L"B"));
 	TextOut(hdc, 320 + 256, 560, L"A", lstrlen(L"A"));
@@ -240,4 +245,5 @@ void ImageContext::draw(HDC& hdc)
 void ImageContext::destroy()
 {
 	DeleteObject(bitmap);
+	DeleteDC(buffer);
 }
