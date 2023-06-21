@@ -12,39 +12,68 @@ void ImageContext::initialize(HWND& hWnd, const int width, const int height)
 	buffer = CreateCompatibleDC(hdc);
 
 	SelectObject(buffer, bitmap);
-	SelectObject(buffer, GetStockObject(NULL_PEN));
+	//SelectObject(buffer, GetStockObject(NULL_PEN));
 
 	PatBlt(buffer, 0, 0, bufW, bufH, WHITENESS);
 
 	ReleaseDC(hWnd, hdc);
 }
 
+float func_simple(const float x, const float r, const float c1, const float c2) {
+	return r * x * (1.f - x);
+}
+float func_cyclic(const float x, const float r, const float c1, const float c2){
+	return c1 * powf(sinf(x + r), 2.f);
+}
+float grad_simple(const float x, const float r, const float c1, const float c2){
+	const float x2 = 2.f * x;
+	const float sx2 = 1.f - x2;
+	const float rs = r * sx2;
+	const float rsabs = fabsf(rs);
+	const float logabs = logf(rsabs);
+	return logabs;
+}
+float grad_cyclic(const float x, const float r, const float c1, const float c2){
+	const float s = sinf(x + r);
+	const float c = cosf(x + r);
+	const float t = 2.f * c1 * s * c;
+	const float abst = fabs(t);
+	const float logabs = logf(abst);
+	return logabs;
+}
+
 #include <vector>
+#include <map>
 void ImageContext::generate(const EditContext& edit)
 {
-	using namespace std;
-	auto r = vector<vector<vector<float>>>(bufH, vector<vector<float>>(bufW, vector<float>(edit.PN + 1)));
-	auto x = vector<vector<vector<float>>>(bufH, vector<vector<float>>(bufW, vector<float>(edit.PN + 1)));
-	auto lam = vector<vector<vector<float>>>(bufH, vector<vector<float>>(bufW, vector<float>(edit.PN + 1)));
-	lambda = vector<vector<float>>(bufH, vector<float>(bufW));
-	pixcels = vector<vector<COLORREF>>(bufH, vector<COLORREF>(bufW));
-	const auto N = edit.PN + 1;
-	// N + 1にしているのは、rとxで系列長が合わないため
+	const auto N = edit.PN + 1;	// N + 1にしているのは、rとxで系列長が合わないため
 
-	auto func_simple = [](const float x, const float r, const float c1, const float c2) -> float {
-		return r * x * (1.0f - x);
+	using namespace std;
+	typedef vector<vector<vector<float>>> D3;
+	typedef vector<vector<float>> D2;
+	typedef vector<float> D1;
+
+	auto r = D3(bufH, D2(bufW, D1(N, 0.f)));
+	auto x = D3(bufH, D2(bufW, D1(N, 0.f)));
+	auto lam = D3(bufH, D2(bufW, D1(N, 0.f)));
+	lambda = D2(bufH, D1(bufW, 0.f));
+
+	pixcels = vector<vector<COLORREF>>(bufH, vector<COLORREF>(bufW, 0.f));
+	
+	
+	typedef float(*F)(const float, const float, const float, const float);
+	typedef std::pair<std::string, F> P;
+
+	std::map<std::string, F> func_dic {
+		P("simple", &func_simple),
+		P("sin2", &func_cyclic)
 	};
-	auto func_cyclic = [](const float x, const float r, const float c1, const float c2) -> float {
-		return c1 * powf(sinf(x + r), 2.0f);
+	std::map<std::string, F> grad_dic{
+		P("simple", &grad_simple),
+		P("sin2", &grad_cyclic)
 	};
-	auto grad_simple = [](const float x, const float r, const float c1, const float c2) -> float {
-		return logf(fabsf(r * (1.0f - 2.0f * x)));
-	};
-	auto grad_cyclic = [](const float x, const float r, const float c1, const float c2) -> float {
-		return logf(fabsf(2.0f * c1 * sinf(x + r) * cosf(x + r)));
-	};
-	auto func = edit.PFunc.compare("simple") ? func_simple : (edit.PFunc.compare("sin2") ? func_cyclic : nullptr);
-	auto grad = edit.PFunc.compare("simple") ? grad_simple : (edit.PFunc.compare("sin2") ? grad_cyclic : nullptr);
+	auto func = func_dic[edit.PFunc];
+	auto grad = grad_dic[edit.PFunc];
 
 	// nullptrの可能性のある関数があるため、この分岐なしでは警告がでる
 	// or で繋げたいが、繋げてしまうとgradで警告が出たままになるため、わざわざ分けて書いている
@@ -83,7 +112,7 @@ void ImageContext::generate(const EditContext& edit)
 	for (int h = 0; h < bufH; ++h) {
 		for (int w = 0; w < bufW; ++w) {
 			for (int n = 1; n < N; ++n) {
-				r[h][w][n] = S[n] ? edit.PAmin + da * w : edit.PBmin + db * h;
+				r[h][w][n] = S[n - 1] ? edit.PAmin + da * (float)w : edit.PBmin + db * (float)h;
 			}
 		}
 	}
@@ -94,12 +123,12 @@ void ImageContext::generate(const EditContext& edit)
 			x[h][w][0] = edit.PInitX;
 
 			for (int n = 1; n < N; ++n) {
-				x[h][w][n] = func(x[h][w][n], r[h][w][n], edit.PConst1, edit.PConst2);
+				// x[n-1]をしているのは、初期値を計算させるため
+				x[h][w][n] = func(x[h][w][n-1], r[h][w][n], edit.PConst1, edit.PConst2);
 			}
 		}
 	}
 
-	const float dN = 1.0f / edit.PN;
 #pragma omp parallel for
 	for (int h = 0; h < bufH; ++h) {
 		for (int w = 0; w < bufW; ++w) {
@@ -109,7 +138,8 @@ void ImageContext::generate(const EditContext& edit)
 		}
 	}
 
-#pragma omp parallel for
+	const float dN = 1.0f / edit.PN;
+#pragma omp parallel for	// ここはparallel for があるとまずい
 	for (int h = 0; h < bufH; ++h) {
 		for (int w = 0; w < bufW; ++w) {
 			// 添え字の0番目で集計する
@@ -117,25 +147,23 @@ void ImageContext::generate(const EditContext& edit)
 			for (int n = 1; n < N; ++n) {
 				lam[h][w][0] += lam[h][w][n];
 			}
-			lam[h][w][0] *= dN;
+			lambda[h][w] = lam[h][w][0] * dN;
 		}
 	}
 	
 	// 最小値と最大値を求める
-	float lammax = 0.0f;
-	float lammin = 0.0f;
+	lammax = lambda[0][0];
+	lammin = 0.f;
 
-#pragma omp parallel for
 	for (int h = 0; h < bufH; ++h) {
 		for (int w = 0; w < bufW; ++w) {
-			if (lammax < lam[h][w][0]) {
-				lammax = lam[h][w][0];
+			if (lammax < lambda[h][w]) {
+				lammax = lambda[h][w];
 			}
-			if (lammin > lam[h][w][0]) {
-				lammin = lam[h][w][0];
+			// 負の無限大が入ることがあるので、負の無限大は別の処理に
+			if (lammin > lambda[h][w] && lambda[h][w] != -INFINITY) {
+				lammin = lambda[h][w];
 			}
-			// lam[h][w][0]の結果を画像に書き込む
-			lambda[h][w] = lam[h][w][0];
 		}
 	}
 }
@@ -143,17 +171,24 @@ void ImageContext::generate(const EditContext& edit)
 void ImageContext::draw(HDC& hdc)
 {
 	SelectObject(buffer, bitmap);
-
-#define RGBRGB(X) const auto X = (Get##X##Value(maxcolor) - Get##X##Value(mincolor)) * percent + Get##X##Value(mincolor)
 	
+#define RGBRGB(X) const byte X = (Get##X##Value(maxcolor) - Get##X##Value(mincolor)) * percent + Get##X##Value(mincolor)
+	
+	const float sub = lammax - lammin;
+	const float dif = 1.f / sub;
+	const float diffLAMMAX = 1.f / lammax;
+
 	// カオスの場合は最小色で塗りつぶす
 	if (isChaos) {
 #pragma omp parallel for
 		for (int h = 0; h < bufH; ++h) {
 			for (int w = 0; w < bufW; ++w) {
-				if (lambda[h][w] < 0.f) pixcels[h][w] = mincolor;
-				else {
-					const float diffLAMMAX = 1.f / lammax;
+				if (lambda[h][w] == -INFINITY) {
+					pixcels[h][w] = mincolor;
+				}
+				else if (lambda[h][w] < 0.f) {
+					pixcels[h][w] = mincolor;
+				} else {
 					const auto percent = lambda[h][w] * diffLAMMAX;
 					RGBRGB(R); RGBRGB(G); RGBRGB(B);
 					pixcels[h][w] = RGB(R, G, B);
@@ -166,30 +201,33 @@ void ImageContext::draw(HDC& hdc)
 #pragma omp parallel for
 		for (int h = 0; h < bufH; ++h) {
 			for (int w = 0; w < bufW; ++w) {
-				const float sub = lammax - lammin;
-				const float dif = 1.f / sub;
-				const auto percent = (lambda[h][w] + lammin) * dif;
+				if (lambda[h][w] == -INFINITY) {
+					pixcels[h][w] = mincolor;
+				}
+				else {
+					const auto lam = lambda[h][w];
+					const auto percent = (lam - lammin) * dif;
 
-				RGBRGB(R); RGBRGB(G); RGBRGB(B);
-				pixcels[h][w] = RGB(R, G, B);
-
-				//SetPixel(buffer, w, h, color);
+					RGBRGB(R); RGBRGB(G); RGBRGB(B);
+					const auto rgb = RGB((int)R, (int)G, (int)B);
+					pixcels[h][w] = rgb;
+				}
 			}
 		}
 	}
 
-	
-
 	// バッファに色を転送する
 	for (int h = 0; h < bufH; ++h) {
 		for (int w = 0; w < bufW; ++w) {
-			SetPixel(buffer, w, h, pixcels[h][w]);
+			const auto color = pixcels[h][w];
+			
+			SetPixel(buffer, w, h, color);
 		}
 	}
 
-	//BitBlt(hdc, 320 + 24, 42, width, height, buffer, 0, 0, SRCCOPY);
-	SetStretchBltMode(hdc, COLORONCOLOR);
-	StretchBlt(hdc, 320 + 24, 42, curW, curH, buffer, 0, 0, bufW, bufH, SRCCOPY);
+	//SetStretchBltMode(hdc, COLORONCOLOR);
+	//StretchBlt(hdc, 320 + 24, 42, curW, curH, buffer, 0, 0, bufW, bufH, SRCCOPY);
+	BitBlt(hdc, 320 + 24, 42, curW, curH, buffer, 0, 0, SRCCOPY);
 
 	TextOut(hdc, 324, 300, L"B", lstrlen(L"B"));
 	TextOut(hdc, 320 + 256, 560, L"A", lstrlen(L"A"));
