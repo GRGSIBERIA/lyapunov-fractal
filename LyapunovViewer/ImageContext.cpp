@@ -220,15 +220,10 @@ void ImageContext::draw(HDC& hdc, HWND& hWnd)
 		for (int w = 0; w < bufW; ++w) {
 			const auto color = pixcels[h][w];
 			
-			SelectObject(buffer, CreateSolidBrush(0xFF));
-
-
 			SetPixel(buffer, w, h, color);
-
-			DeleteObject(SelectObject(buffer, GetStockObject(WHITE_BRUSH)));
-			InvalidateRect(hWnd, NULL, FALSE);
 		}
 	}
+	InvalidateRect(hWnd, NULL, FALSE);
 
 	SetStretchBltMode(buffer, COLORONCOLOR);
 	StretchBlt(hdc, 344, 42, curW, curH, buffer, 0, 0, bufW, bufH, SRCCOPY);
