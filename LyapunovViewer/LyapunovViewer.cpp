@@ -242,8 +242,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             
             
             image.draw(hdc, hWnd);
-            edit.draw(hdc);
             prefer.draw(hdc);
+            edit.draw(hdc);
 
             EndPaint(hWnd, &ps);
         }
@@ -253,8 +253,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         PostQuitMessage(0);
         break;
     case WM_MOUSEMOVE:
+    {
         edit.setMousePos(lParam);
+        InvalidateRect(hWnd, NULL, FALSE);
         break;
+    }
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
     }

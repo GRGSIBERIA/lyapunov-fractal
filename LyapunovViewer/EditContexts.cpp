@@ -54,14 +54,15 @@ void EditContext::draw(HDC& hdc)
 
     float dw = 1.f / (float)curW;
     float dh = 1.f / (float)curH;
-
+    
     float rx = x / (float)curW;
     float ry = y / (float)curH;
-
+    
     const float dx = (PAmax - PAmin) * rx;
     const float dy = (PBmax - PBmin) * ry;
 
-    const auto str = std::format(L"A={:.5f}, B={:.5f}", dx, dy);
+    // ‚È‚º‚©•„†‚ğ”½“]‚³‚¹‚é•K—v‚ª‚ ‚é
+    const auto str = std::format(L"A={:.5f}, B={:.5f}", -dx, -dy);
     TextOut(hdc, 750, 10, str.c_str(), lstrlen(str.c_str()));
 }
 

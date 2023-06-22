@@ -57,5 +57,5 @@ public:
     void applyValues();
 
     std::wstring StringToWString(std::string oString) const;
-    void setMousePos(LPARAM& lParam) { mx = LOWORD(lParam); my = LOWORD(lParam); }
+    void setMousePos(LPARAM& lParam) { mx = LOWORD(lParam); my = HIWORD(lParam); }
 };
