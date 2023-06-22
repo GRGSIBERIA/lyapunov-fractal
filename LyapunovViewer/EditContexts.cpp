@@ -17,7 +17,13 @@ void EditContext::initialize(HWND hWnd, const int x, const int y, const int skip
     int c = 0;
     INITEDIT(Width);
     INITEDIT(Height);
-    INITEDIT(Sequence);
+    //INITEDIT(Sequence);
+    Sequence = CreateWindow(
+        TEXT("EDIT"), SSequence.c_str(),
+        WS_CHILD | WS_VISIBLE | ES_LEFT | WS_BORDER,
+        40, y + skip * (c + 1), 260, 25, hWnd, (HMENU)1,
+        ((LPCREATESTRUCT)(lParam))->hInstance, NULL);
+    c += 2;
     INITEDIT(N);
     INITEDIT(InitX);
     INITEDIT(Amin);

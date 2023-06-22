@@ -32,6 +32,7 @@ void GenerateLabels(HDC& hdc)
     LabelOut(hdc, 40, 80 + 32 * c++, L"Width");
     LabelOut(hdc, 40, 80 + 32 * c++, L"Height");
     LabelOut(hdc, 40, 80 + 32 * c++, L"Sequence");
+    c += 1;
     LabelOut(hdc, 40, 80 + 32 * c++, L"Number of iterations");
     LabelOut(hdc, 40, 80 + 32 * c++, L"Initial x value");
     LabelOut(hdc, 40, 80 + 32 * c++, L"a_min");

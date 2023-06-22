@@ -153,14 +153,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             CreateWindow(
                 TEXT("BUTTON"), TEXT("RUN LYAPUNOV FRACTAL"),
                 WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-                40, 512 - 32, 260, 24,
+                40, 512, 260, 24,
                 hWnd, (HMENU)BUTTON_ID_RUN_LYANUNOV, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
             );
             
             CreateWindow(
                 TEXT("BUTTON"), TEXT("SAVE CURRENT SETTINGS"),
                 WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-                40, 512, 260, 24,
+                40, 512 + 32, 260, 24,
                 hWnd, (HMENU)BUTTON_ID_SAVE_FILE_DIALOG, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
             );
 

@@ -168,6 +168,7 @@ void ImageContext::generate(HWND& hWnd, const EditContext& edit)
 
 	SelectObject(buffer, bitmap);
 
+	// byte‚É’¼‚·•K—v‚ª‚ ‚Á‚½
 #define RGBRGB(X) const byte X = (byte)roundf(((float)Get##X##Value(maxcolor) - (float)Get##X##Value(mincolor)) * percent + (float)Get##X##Value(mincolor))
 
 	const float sub = lammax - lammin;
@@ -222,6 +223,7 @@ void ImageContext::generate(HWND& hWnd, const EditContext& edit)
 		}
 	}
 
+	// InvalidateRect‚ğ‚©‚¯‚È‚¢‚Æbuffer‚ÉF‚ª“]‘—‚³‚ê‚È‚¢
 	InvalidateRect(hWnd, NULL, FALSE);
 }
 
