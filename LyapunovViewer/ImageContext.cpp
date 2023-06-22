@@ -88,11 +88,38 @@ void ImageContext::generate(HWND& hWnd, const EditContext& edit)
 	// シーケンスを作る
 	auto s = vector<int>();
 	for (int i = 0; i < edit.PSequence.size(); ++i) {
-		if (edit.PSequence[i] == 'A') {
+		const char ps = edit.PSequence[i];
+		if (ps == 'A') {
 			s.push_back(1);
 		}
-		else {
+		else if (ps == 'B') {
 			s.push_back(0);
+		}
+		else {
+			// A,Bのあとに数字が来たら、その数字の回数だけ繰り返す
+			int n = 0;
+			int j = 0;
+			while (true) {
+				const char pp = edit.PSequence[i+j];
+				if ('0' <= pp && pp <= '9') {
+					n *= 10;
+					n += pp - (int)'0';
+				}
+				else {
+					break;
+				}
+				++j;
+			}
+			for (int k = 0; k < n; ++k) {
+				s.push_back(edit.PSequence[i - 1]);
+			}
+			/*
+			* s A62B
+			* i  1
+			* j  01
+			* i   23
+			*/
+			i += j;
 		}
 	}
 
