@@ -230,6 +230,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             TextOut(hdc, 320, 10, L"Spoit", lstrlen(L"Spoit"));
             
             image.draw(hdc, hWnd);
+            prefer.draw(hdc);
 
             EndPaint(hWnd, &ps);
         }

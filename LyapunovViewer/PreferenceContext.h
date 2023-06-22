@@ -1,5 +1,6 @@
 #pragma once
 #include <Windows.h>
+#include "Resource.h"
 
 class PreferenceContext {
 	HWND _isChaos = NULL;
@@ -19,6 +20,7 @@ public:
 	virtual ~PreferenceContext() {}
 
 	void initialize(HWND &hWnd, HINSTANCE& hInstance);
+	void draw(HDC& hdc);
 
 	const bool isChaos() const;
 };
