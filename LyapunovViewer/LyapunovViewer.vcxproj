@@ -139,6 +139,7 @@
     <ClInclude Include="ImageContext.h" />
     <ClInclude Include="LyapunovViewer.h" />
     <ClInclude Include="OpenTomlContext.h" />
+    <ClInclude Include="PreferenceContext.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -148,6 +149,7 @@
     <ClCompile Include="ImageContext.cpp" />
     <ClCompile Include="LyapunovViewer.cpp" />
     <ClCompile Include="OpenTomlContext.cpp" />
+    <ClCompile Include="PreferenceContext.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LyapunovViewer.rc" />

@@ -114,7 +114,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    RECT rect;
    GetClientRect(hWnd, &rect);
 
-   SetWindowPos(hWnd, NULL, rect.left, rect.top, 900, 720, (SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOMOVE));
+   SetWindowPos(hWnd, NULL, rect.left, rect.top, 1080, 680, (SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOMOVE));
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 
@@ -128,11 +128,13 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 #include "OpenTomlContext.h"
 #include "GeneratorContext.h"
 #include "ImageContext.h"
+#include "PreferenceContext.h"
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     static EditContext edit;
     static OpenTomlContext open;
     static ImageContext image;
+    static PreferenceContext prefer;
 
     static TCHAR currentDir[MAX_PATH];
     static HWND hClient;
@@ -174,6 +176,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             
             edit.initialize(hWnd, 200, 80, 32, lParam);
             image.initialize(hWnd, 512, 512);
+            prefer.initialize(hWnd, ((LPCREATESTRUCT)(lParam))->hInstance);
         }
         break;
     case WM_COMMAND:
