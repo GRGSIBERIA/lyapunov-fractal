@@ -212,6 +212,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 SendMessage(hWnd, WM_PAINT, wParam, lParam);
                 break;
             }
+            case BUTTON_ID_SET_MIN_COLOR:
+            {
+                prefer.chooseColor(hWnd, PreferenceContext::Choose::MIN);
+                break;
+            }
+            case BUTTON_ID_SET_MAX_COLOR:
+            {
+                prefer.chooseColor(hWnd, PreferenceContext::Choose::MAX);
+                break;
+            }
             default:
                 return DefWindowProc(hWnd, message, wParam, lParam);
             }

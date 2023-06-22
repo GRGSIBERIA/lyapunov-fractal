@@ -23,4 +23,14 @@ public:
 	void draw(HDC& hdc);
 
 	const bool isChaos() const;
+
+	enum Choose{
+		MIN,
+		MAX
+	};
+
+	const bool chooseColor(HWND& hWnd, const Choose& chooser);
+
+	const COLORREF getMinColor() const { return minchoose.rgbResult; }
+	const COLORREF getMaxColor() const { return maxchoose.rgbResult; }
 };

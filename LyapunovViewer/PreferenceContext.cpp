@@ -39,11 +39,11 @@ void PreferenceContext::initialize(HWND& hWnd, HINSTANCE& hInstance)
 
 void PreferenceContext::draw(HDC& hdc)
 {
-	SelectObject(hdc, CreateSolidBrush(mincolor));
+	SelectObject(hdc, CreateSolidBrush(minchoose.rgbResult));
 	PatBlt(hdc, 880 + 128 + 8, 42 + 32, 24, 24, PATCOPY);
 	DeleteObject(SelectObject(hdc, GetStockObject(WHITE_BRUSH)));
 
-	SelectObject(hdc, CreateSolidBrush(maxcolor));
+	SelectObject(hdc, CreateSolidBrush(maxchoose.rgbResult));
 	PatBlt(hdc, 880 + 128 + 8, 42 + 32 + 32, 24, 24, PATCOPY);
 	DeleteObject(SelectObject(hdc, GetStockObject(WHITE_BRUSH)));
 }
@@ -51,4 +51,20 @@ void PreferenceContext::draw(HDC& hdc)
 const bool PreferenceContext::isChaos() const
 {
 	return BST_CHECKED == SendMessage(_isChaos, BM_GETCHECK, 0, 0);
+}
+
+const bool PreferenceContext::chooseColor(HWND& hWnd, const Choose& chooser)
+{
+	switch (chooser) {
+	case Choose::MIN:
+		ChooseColor(&minchoose);
+		break;
+	case Choose::MAX:
+		ChooseColor(&maxchoose);
+		break;
+	default:
+		return false;
+	}
+	InvalidateRect(hWnd, NULL, TRUE);
+	return true;
 }
