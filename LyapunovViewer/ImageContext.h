@@ -14,7 +14,7 @@ class ImageContext {
 	float lammax = 0.f;
 	COLORREF mincolor = RGB(0,0,0);
 	COLORREF maxcolor = RGB(255, 255, 255);
-	bool isChaos = false;
+	bool isChaos = true;
 
 	// generateÇ≈Ç‡èâä˙âª
 	std::vector<std::vector<float>> lambda =
@@ -32,4 +32,8 @@ public:
 	void draw(HDC& hdc, HWND& hWnd);
 
 	void destroy();
+
+	void setMinColor(const COLORREF color) { mincolor = color; }
+	void setMaxColor(const COLORREF color) { maxcolor = color; }
+	void setIsChaos(const bool chaos) { isChaos = chaos; }
 };

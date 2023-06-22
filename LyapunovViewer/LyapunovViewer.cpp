@@ -207,6 +207,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             {
                 edit.applyValues();
                 image.initialize(hWnd, edit.PWidth, edit.PHeight);
+                image.setIsChaos(prefer.isChaos());
                 image.generate(hWnd, edit);
 
                 SendMessage(hWnd, WM_PAINT, wParam, lParam);
@@ -215,11 +216,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             case BUTTON_ID_SET_MIN_COLOR:
             {
                 prefer.chooseColor(hWnd, PreferenceContext::Choose::MIN);
+                image.setMinColor(prefer.getMinColor());
                 break;
             }
             case BUTTON_ID_SET_MAX_COLOR:
             {
                 prefer.chooseColor(hWnd, PreferenceContext::Choose::MAX);
+                image.setMaxColor(prefer.getMaxColor());
                 break;
             }
             default:
@@ -227,6 +230,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
 
         }
+
         break;
     case WM_PAINT:
         {
