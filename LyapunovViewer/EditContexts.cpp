@@ -36,6 +36,35 @@ void EditContext::initialize(HWND hWnd, const int x, const int y, const int skip
     INITEDIT(Const2);
 }
 
+#include <format>
+void EditContext::draw(HDC& hdc)
+{
+    const int curW = 512;
+    const int curH = 512;
+    const int cx = 344;
+    const int cy = 42;
+
+    float x = (float)mx - (float)cx;
+    float y = (float)my - (float)cy;
+
+    x = x >= 0.f ? x : 0.f;
+    x = x <= (float)curW ? x : (float)curW;
+    y = y >= 0.f ? y : 0.f;
+    y = y <= (float)curH ? y : (float)curH;
+
+    float dw = 1.f / (float)curW;
+    float dh = 1.f / (float)curH;
+
+    float rx = x / (float)curW;
+    float ry = y / (float)curH;
+
+    const float dx = (PAmax - PAmin) * rx;
+    const float dy = (PBmax - PBmin) * ry;
+
+    const auto str = std::format(L"A={:.5f}, B={:.5f}", dx, dy);
+    TextOut(hdc, 750, 10, str.c_str(), lstrlen(str.c_str()));
+}
+
 // https://www.wabiapp.com/WabiSampleSource/windows/string_to_wstring.html
 std::wstring EditContext::StringToWString(std::string oString) const
 {

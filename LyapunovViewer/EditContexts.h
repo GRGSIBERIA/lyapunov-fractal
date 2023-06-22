@@ -16,6 +16,9 @@ class EditContext {
     std::wstring SConst1 = L"0.0";
     std::wstring SConst2 = L"0.0";
 
+    int mx = 0;
+    int my = 0;
+
 public:
     HWND Width = NULL;
     HWND Height = NULL;
@@ -47,10 +50,12 @@ public:
     virtual ~EditContext() {}
 
     void initialize(HWND hWnd, const int x, const int y, const int skip, LPARAM lParam);
+    void draw(HDC& hdc);
 
     void convertWString();
     void applyEditWindows();
     void applyValues();
 
     std::wstring StringToWString(std::string oString) const;
+    void setMousePos(LPARAM& lParam) { mx = LOWORD(lParam); my = LOWORD(lParam); }
 };

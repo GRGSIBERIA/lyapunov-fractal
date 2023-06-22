@@ -270,22 +270,6 @@ void ImageContext::draw(HDC& hdc, HWND& hWnd)
 	TextOut(hdc, 324 - 12, 512 + 16, L"max", lstrlen(L"max"));
 	TextOut(hdc, 324 + 24, 560, L"min", lstrlen(L"min"));
 	TextOut(hdc, 324 + 512 - 12, 560, L"max", lstrlen(L"max"));
-
-	float x = (float)mx - (float)cx;
-	float y = (float)my - (float)cy;
-
-	x = x >= 0.f ? x : 0.f;
-	x = x <= (float)curW ? x : (float)curW;
-	y = y >= 0.f ? y : 0.f;
-	y = y <= (float)curH ? y : (float)curH;
-
-	float dw = 1.f / (float)curW;
-	float dh = 1.f / (float)curH;
-
-	float rx = x / (float)curW;
-	float ry = y / (float)curH;
-
-	
 }
 
 void ImageContext::destroy()
