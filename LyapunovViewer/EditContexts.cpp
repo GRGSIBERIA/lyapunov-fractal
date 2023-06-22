@@ -18,6 +18,7 @@ void EditContext::initialize(HWND hWnd, const int x, const int y, const int skip
     INITEDIT(Width);
     INITEDIT(Height);
     //INITEDIT(Sequence);
+    // 幅が異なるので、マクロは使えない
     Sequence = CreateWindow(
         TEXT("EDIT"), SSequence.c_str(),
         WS_CHILD | WS_VISIBLE | ES_LEFT | WS_BORDER,
