@@ -16,6 +16,9 @@ class ImageContext {
 	COLORREF maxcolor = RGB(255, 255, 255);
 	bool isChaos = true;
 
+	int mx = 0;
+	int my = 0;
+
 	// generateÇ≈Ç‡èâä˙âª
 	std::vector<std::vector<float>> lambda =
 		std::vector<std::vector<float>>(512, std::vector<float>(512, 0.f));
@@ -36,4 +39,6 @@ public:
 	void setMinColor(const COLORREF color) { mincolor = color; }
 	void setMaxColor(const COLORREF color) { maxcolor = color; }
 	void setIsChaos(const bool chaos) { isChaos = chaos; }
+
+	void setMousePos(LPARAM& lParam) { mx = LOWORD(lParam); my = LOWORD(lParam); }
 };

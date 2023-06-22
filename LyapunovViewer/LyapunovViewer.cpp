@@ -121,9 +121,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    return TRUE;
 }
 
-
-
-
 #include "EditContexts.h"
 #include "OpenTomlContext.h"
 #include "GeneratorContext.h"
@@ -243,6 +240,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             GenerateLabels(hdc);
             TextOut(hdc, 320, 10, L"Spoit", lstrlen(L"Spoit"));
             
+            
             image.draw(hdc, hWnd);
             prefer.draw(hdc);
 
@@ -252,6 +250,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_DESTROY:
         image.destroy();
         PostQuitMessage(0);
+        break;
+    case WM_MOUSEMOVE:
+        image.setMousePos(lParam);
         break;
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);

@@ -93,11 +93,21 @@ void EditContext::applyEditWindows()
 
 #include <locale>
 #include <codecvt>
-
+#include <Windows.h>
 std::string ConvertWstringToUTF8(const std::wstring& src)
 {
-    std::wstring_convert<std::codecvt_utf8<wchar_t> > converter;
-    return converter.to_bytes(src);
+    const size_t N = 1024;
+    char local[N] = { 0 };
+    WideCharToMultiByte(
+        CP_ACP,
+        0,
+        src.c_str(),
+        -1,
+        local,
+        N + 1,
+        NULL,
+        NULL);
+    return std::string(local);
 }
 
 void EditContext::applyValues()

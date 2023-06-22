@@ -14,6 +14,7 @@ class PreferenceContext {
 
 	void initializeChoose(HWND& hWnd, CHOOSECOLOR& choose, COLORREF color);
 
+
 public:
 	PreferenceContext() {}
 

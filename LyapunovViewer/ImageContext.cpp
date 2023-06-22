@@ -196,7 +196,7 @@ void ImageContext::generate(HWND& hWnd, const EditContext& edit)
 	SelectObject(buffer, bitmap);
 
 	// byte‚É’¼‚·•K—v‚ª‚ ‚Á‚½
-#define RGBRGB(X) const byte X = (byte)roundf(((float)Get##X##Value(maxcolor) - (float)Get##X##Value(mincolor)) * percent + (float)Get##X##Value(mincolor))
+#define RGBRGB(X) const std::byte X = (std::byte)roundf(((float)Get##X##Value(maxcolor) - (float)Get##X##Value(mincolor)) * percent + (float)Get##X##Value(mincolor))
 
 	const float sub = lammax - lammin;
 	const float dif = 1.f / sub;
@@ -254,10 +254,14 @@ void ImageContext::generate(HWND& hWnd, const EditContext& edit)
 	InvalidateRect(hWnd, NULL, FALSE);
 }
 
+#include <format>
 void ImageContext::draw(HDC& hdc, HWND& hWnd)
 {
+	const int cx = 344;
+	const int cy = 42;
+
 	SetStretchBltMode(buffer, COLORONCOLOR);
-	StretchBlt(hdc, 344, 42, curW, curH, buffer, 0, 0, bufW, bufH, SRCCOPY);
+	StretchBlt(hdc, cx, cy, curW, curH, buffer, 0, 0, bufW, bufH, SRCCOPY);
 	//BitBlt(hdc, 320 + 24, 42, curW, curH, buffer, 0, 0, SRCCOPY);
 
 	TextOut(hdc, 324, 300, L"B", lstrlen(L"B"));
@@ -266,6 +270,22 @@ void ImageContext::draw(HDC& hdc, HWND& hWnd)
 	TextOut(hdc, 324 - 12, 512 + 16, L"max", lstrlen(L"max"));
 	TextOut(hdc, 324 + 24, 560, L"min", lstrlen(L"min"));
 	TextOut(hdc, 324 + 512 - 12, 560, L"max", lstrlen(L"max"));
+
+	float x = (float)mx - (float)cx;
+	float y = (float)my - (float)cy;
+
+	x = x >= 0.f ? x : 0.f;
+	x = x <= (float)curW ? x : (float)curW;
+	y = y >= 0.f ? y : 0.f;
+	y = y <= (float)curH ? y : (float)curH;
+
+	float dw = 1.f / (float)curW;
+	float dh = 1.f / (float)curH;
+
+	float rx = x / (float)curW;
+	float ry = y / (float)curH;
+
+	
 }
 
 void ImageContext::destroy()
