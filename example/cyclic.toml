@@ -21,4 +21,5 @@ bmax = 3.5
 # simple, sin2
 func = "sin2"
 # 定数
-const = 2.7
+const1 = 2.7
+const2 = 0.0
