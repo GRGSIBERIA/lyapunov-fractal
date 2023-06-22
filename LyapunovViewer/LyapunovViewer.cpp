@@ -188,19 +188,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             case IDM_ABOUT:
                 DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
                 break;
+
             case IDM_EXIT:
                 DestroyWindow(hWnd);
                 break;
+
             case BUTTON_ID_OPEN_FILE_DIALOG:
             {
                 open.LoadToml(hWnd, edit);
-                    
                 break;
             }
             case BUTTON_ID_SAVE_FILE_DIALOG:
             {
                 open.SaveToml(hWnd, edit);
-
                 break;
             }
             case BUTTON_ID_RUN_LYANUNOV:
