@@ -206,7 +206,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         case BUTTON_ID_RUN_LYANUNOV:
         {
             if (!edit.applyValues()) break;
-            if (!edit.validateValues()) break;
+            if (!edit.validateValues(hWnd)) break;
 
             image.initialize(hWnd, edit.PWidth, edit.PHeight);
             image.setIsChaos(prefer.isChaos());
@@ -338,6 +338,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         r.bottom = 40;
         
         InvalidateRect(hWnd, &r, FALSE);
+        break;
+    }
+    case WM_CTLCOLOREDIT:
+    {
+        if (lParam != NULL) {
+            SetBkColor((HDC)wParam, RGB(255, 255, 255));
+        }
+        else if ((int)lParam) {
+            SetBkColor((HDC)wParam, RGB(255, 128, 128));
+        }
         break;
     }
     default:
