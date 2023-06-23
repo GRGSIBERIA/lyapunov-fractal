@@ -80,7 +80,7 @@ void EditContext::draw(HDC& hdc)
 
     // ‰‰ñ‹N“®‚Í‚È‚º‚©•„†‚ª”½“]‚µ‚Ä‚¢‚é
     const auto str = std::format(L"A={:.6f}, B={:.6f}", p.x, p.y);
-    TextOut(hdc, 880, 10, str.c_str(), lstrlen(str.c_str()));
+    TextOut(hdc, 880, 10 + 32 * 4, str.c_str(), lstrlen(str.c_str()));
 }
 
 // https://www.wabiapp.com/WabiSampleSource/windows/string_to_wstring.html

@@ -4,6 +4,7 @@ void GenerateSpoitButton(HWND hWnd, LPARAM& lParam) {
     int i = 0;
     const int width = 58;
     const int space = 8;
+
 #define Button(STR, ID) CreateWindow(\
     TEXT("BUTTON"), TEXT(STR),\
     WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,\
@@ -11,6 +12,7 @@ void GenerateSpoitButton(HWND hWnd, LPARAM& lParam) {
     hWnd, (HMENU)ID, ((LPCREATESTRUCT)(lParam))->hInstance, NULL\
     )
 
+    Button("HOME", BUTTON_ID_SPOIT_HOME);
     Button("a min", BUTTON_ID_SPOIT_AMIN);
     Button("a max", BUTTON_ID_SPOIT_AMAX);
     Button("b min", BUTTON_ID_SPOIT_BMIN);
