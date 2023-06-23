@@ -66,6 +66,9 @@ public:
     bool bmaxTrig = false;
     bool bminTrig = false;
 
+    // トリガーのすべてをオフにする
     void offTriggers();
+
+    // トリガーのいずれかがオンになっていたらtrue
     const bool enableTriggers() const { return amaxTrig || aminTrig || bmaxTrig || bminTrig; }
 };
