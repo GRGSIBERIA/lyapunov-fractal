@@ -65,14 +65,22 @@ const POINTFLOAT EditContext::getABPos() const
     return p;
 }
 
+void EditContext::offTriggers()
+{
+    amaxTrig = false;
+    aminTrig = false;
+    bmaxTrig = false;
+    bminTrig = false;
+}
+
 #include <format>
 void EditContext::draw(HDC& hdc)
 {
     const auto p = getABPos();
 
     // ‰‰ñ‹N“®‚Í‚È‚º‚©•„†‚ª”½“]‚µ‚Ä‚¢‚é
-    const auto str = std::format(L"A={:.5f}, B={:.5f}", p.x, p.y);
-    TextOut(hdc, 750, 10, str.c_str(), lstrlen(str.c_str()));
+    const auto str = std::format(L"A={:.6f}, B={:.6f}", p.x, p.y);
+    TextOut(hdc, 880, 10, str.c_str(), lstrlen(str.c_str()));
 }
 
 // https://www.wabiapp.com/WabiSampleSource/windows/string_to_wstring.html

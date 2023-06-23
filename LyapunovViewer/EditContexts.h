@@ -65,4 +65,7 @@ public:
     bool aminTrig = false;
     bool bmaxTrig = false;
     bool bminTrig = false;
+
+    void offTriggers();
+    const bool enableTriggers() const { return amaxTrig || aminTrig || bmaxTrig || bminTrig; }
 };

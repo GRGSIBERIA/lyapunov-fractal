@@ -227,34 +227,45 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         case BUTTON_ID_SPOIT_AMAX:
         {
+            edit.offTriggers();
             edit.amaxTrig = !edit.amaxTrig;
             break;
         }
         case BUTTON_ID_SPOIT_AMIN:
         {
+            edit.offTriggers();
             edit.aminTrig = !edit.aminTrig;
             break;
         }
         case BUTTON_ID_SPOIT_BMAX:
         {
+            edit.offTriggers();
             edit.bmaxTrig = !edit.bmaxTrig;
             break;
         }
         case BUTTON_ID_SPOIT_BMIN:
         {
+            edit.offTriggers();
             edit.bminTrig = !edit.bminTrig;
             break;
         }
         case BUTTON_ID_SPOIT_TL:
         {
+            edit.offTriggers();
             edit.aminTrig = !edit.aminTrig;
             edit.bminTrig = !edit.bminTrig;
             break;
         }
         case BUTTON_ID_SPOIT_BR:
         {
+            edit.offTriggers();
             edit.amaxTrig = !edit.amaxTrig;
             edit.bmaxTrig = !edit.bmaxTrig;
+            break;
+        }
+        case BUTTON_ID_SPOIT_CANCEL:
+        {
+            edit.offTriggers();
             break;
         }
         default:
@@ -265,8 +276,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_LBUTTONDOWN:
     {
         // トリガーがオンになっていたら、AB座標の更新を行う
-        if (edit.amaxTrig || edit.aminTrig || edit.bmaxTrig || edit.bminTrig) {
-            edit.setMousePos(lParam);
+        if (edit.enableTriggers()) {
+            //edit.setMousePos(lParam); // WM_MOUSEMOVEとでマウス座標がずれる可能性がある
             const auto p = edit.getABPos();
 
             if (edit.amaxTrig) edit.PAmax = p.x;
@@ -276,11 +287,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
             edit.convertWString();
             edit.applyEditWindows();
-
-            edit.amaxTrig = false;
-            edit.aminTrig = false;
-            edit.bmaxTrig = false;
-            edit.bminTrig = false;
+            edit.offTriggers();
         }
         
         break;
@@ -295,7 +302,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         GenerateLabels(hdc);
         TextOut(hdc, 320, 10, L"Spoit", lstrlen(L"Spoit"));
-            
             
         image.draw(hdc, hWnd);
         prefer.draw(hdc);
