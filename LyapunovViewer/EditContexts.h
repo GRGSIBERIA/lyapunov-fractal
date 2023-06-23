@@ -58,4 +58,6 @@ public:
 
     std::wstring StringToWString(std::string oString) const;
     void setMousePos(LPARAM& lParam) { mx = LOWORD(lParam); my = HIWORD(lParam); }
+
+    const POINTFLOAT getABPos() const;
 };
