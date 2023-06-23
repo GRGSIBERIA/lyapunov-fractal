@@ -8,6 +8,8 @@
 #include <iostream>
 
 #define MAX_LOADSTRING 100
+#define WINDOW_WIDTH 1080
+#define WINDOW_HEIGHT 680
 
 // グローバル変数:
 HINSTANCE hInst;                                // 現在のインターフェイス
@@ -114,7 +116,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    RECT rect;
    GetClientRect(hWnd, &rect);
 
-   SetWindowPos(hWnd, NULL, rect.left, rect.top, 1080, 680, (SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOMOVE));
+   SetWindowPos(hWnd, NULL, rect.left, rect.top, WINDOW_WIDTH, WINDOW_HEIGHT, (SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOMOVE));
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 
@@ -225,7 +227,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             default:
                 return DefWindowProc(hWnd, message, wParam, lParam);
             }
-
         }
 
         break;
