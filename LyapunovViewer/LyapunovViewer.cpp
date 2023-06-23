@@ -302,6 +302,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         GenerateLabels(hdc);
         TextOut(hdc, 320, 10, L"Spoit", lstrlen(L"Spoit"));
+        
+        // 記録の有無を判定して表示する
+        if (!edit.enableTriggers()) {
+            SelectObject(hdc, CreateSolidBrush(RGB(0, 255, 0)));
+        }
+        else {
+            SelectObject(hdc, CreateSolidBrush(RGB(255, 0, 0)));
+        }
+        Ellipse(hdc, 832, 10, 832 + 20, 10 + 20);
+        DeleteObject(SelectObject(hdc, GetStockObject(WHITE_BRUSH)));
             
         image.draw(hdc, hWnd);
         prefer.draw(hdc);
