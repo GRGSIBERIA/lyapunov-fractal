@@ -157,12 +157,14 @@ std::string ConvertWstringToUTF8(const std::wstring& src)
     return std::string(local);
 }
 
-void EditContext::applyValues()
+const bool EditContext::applyValues()
 {
     TCHAR buf[256];
-#define GWTi(PARAM) { GetWindowText(PARAM, buf, 256); P##PARAM = std::stoi(buf); }
-#define GWTs(PARAM) { GetWindowText(PARAM, buf, 256); P##PARAM = ConvertWstringToUTF8(std::wstring(buf)); }
-#define GWTf(PARAM) { GetWindowText(PARAM, buf, 256); P##PARAM = std::stof(buf); }
+
+#define GWTi(PARAM) try { GetWindowText(PARAM, buf, 256); P##PARAM = std::stoi(buf); } catch(...) { MessageBox(NULL, TEXT("Invalid Value: See Red Edit"), TEXT("INVALID VALUE ERROR"), MB_OK | MB_ICONERROR); return false; }
+#define GWTs(PARAM) try { GetWindowText(PARAM, buf, 256); P##PARAM = ConvertWstringToUTF8(std::wstring(buf)); } catch(...) { MessageBox(NULL, TEXT("Invalid Value: See Red Edit"), TEXT("INVALID VALUE ERROR"), MB_OK | MB_ICONERROR); return false; }
+#define GWTf(PARAM) try { GetWindowText(PARAM, buf, 256); P##PARAM = std::stof(buf); } catch(...) { MessageBox(NULL, TEXT("Invalid Value: See Red Edit"), TEXT("INVALID VALUE ERROR"), MB_OK | MB_ICONERROR); return false; }
+    
     GWTi(Width);
     GWTi(Height);
     GWTs(Sequence);
@@ -175,4 +177,15 @@ void EditContext::applyValues()
     GWTs(Func);
     GWTf(Const1);
     GWTf(Const2);
+}
+
+const bool EditContext::validateValues(HWND& hWnd) const
+{
+    if (PWidth < 1) {
+        MessageBox(NULL, TEXT("Width is not over 0"), TEXT(""), MB_OK | MB_ICONERROR);
+        SendMessage(hWnd, WM_CTLCOLOREDIT, (WPARAM)Width, (LPARAM)1);
+        return false;
+    }
+
+    return true;
 }

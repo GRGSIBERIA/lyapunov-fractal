@@ -16,6 +16,19 @@ class EditContext {
     std::wstring SConst1 = L"0.0";
     std::wstring SConst2 = L"0.0";
 
+    bool VWidth = true;
+    bool VHeight = true;
+    bool VSequence = true;
+    bool VN = true;
+    bool VInitX = true;
+    bool VAmax = true;
+    bool VAmin = true;
+    bool VBmax = true;
+    bool VBmin = true;
+    bool VFunc = true;
+    bool VConst1 = true;
+    bool VConst2 = true;
+
     int mx = 0;
     int my = 0;
 
@@ -54,7 +67,7 @@ public:
 
     void convertWString();
     void applyEditWindows();
-    void applyValues();
+    const bool applyValues();
 
     std::wstring StringToWString(std::string oString) const;
     void setMousePos(LPARAM& lParam) { mx = LOWORD(lParam); my = HIWORD(lParam); }
@@ -71,4 +84,6 @@ public:
 
     // ÉgÉäÉKÅ[ÇÃÇ¢Ç∏ÇÍÇ©Ç™ÉIÉìÇ…Ç»Ç¡ÇƒÇ¢ÇΩÇÁtrue
     const bool enableTriggers() const { return amaxTrig || aminTrig || bmaxTrig || bminTrig; }
+
+    const bool validateValues(HWND& hWnd) const;
 };
