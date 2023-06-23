@@ -86,40 +86,62 @@ void ImageContext::generate(HWND& hWnd, const EditContext& edit)
 	}
 
 	// シーケンスを作る
-	auto s = vector<int>();
+	// A4B2 = AAAABB
+	// テストケース
+	// A15 = AAAAAAAAAAAAAAA
+	auto sequence = std::string("");
+	int numcnt = 0;
+	char prev;
 	for (int i = 0; i < edit.PSequence.size(); ++i) {
-		const char ps = edit.PSequence[i];
+		const auto ps = edit.PSequence[i];
+
+		if (ps == 'A') {
+			sequence.push_back(ps);
+			prev = ps;
+		}
+		else if (ps == 'B') {
+			sequence.push_back(ps);
+			prev = ps;
+		}
+		else {
+			// 数字を順番に舐めていく
+			while (true) {
+				const auto pp = edit.PSequence[i];
+				if ('0' <= pp && pp <= '9') {
+					if ('0' <= edit.PSequence[i - 1] && edit.PSequence[i - 1] <= '9')
+					{
+						/*
+						11の順番なら、1 + 1 = 2となるため、事前に1つ前に数があるかどうか確認して、数値なら10進数だから10倍すればいい
+						A123であっても、1, 1*10+2, 1*10^2+2*10+3=123
+						*/
+						numcnt *= 10;
+					}
+					numcnt += pp - (int)'0';
+
+					++i;
+				}
+				else {
+					--i;	// 数字じゃないところに突き当たったから添え字を1個戻す
+					break;
+				}
+			}
+			// 最後にA,Bだったときの記憶を呼び戻してsequenceに追加する
+			for (int j = 1; j < numcnt; ++j) {
+				sequence.push_back(prev);
+			}
+			numcnt = 0;
+		}
+	}
+
+	// シーケンス
+	auto s = vector<int>();
+	for (int i = 0; i < sequence.size(); ++i) {
+		const char ps = sequence[i];
 		if (ps == 'A') {
 			s.push_back(1);
 		}
 		else if (ps == 'B') {
 			s.push_back(0);
-		}
-		else {
-			// A,Bのあとに数字が来たら、その数字の回数だけ繰り返す
-			int n = 0;
-			int j = 0;
-			while (true) {
-				const char pp = edit.PSequence[i+j];
-				if ('0' <= pp && pp <= '9') {
-					n *= 10;
-					n += pp - (int)'0';
-				}
-				else {
-					break;
-				}
-				++j;
-			}
-			for (int k = 0; k < n; ++k) {
-				s.push_back(edit.PSequence[i - 1]);
-			}
-			/*
-			* s A62B
-			* i  1
-			* j  01
-			* i   23
-			*/
-			i += j;
 		}
 	}
 

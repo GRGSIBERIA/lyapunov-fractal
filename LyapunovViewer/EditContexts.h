@@ -58,4 +58,17 @@ public:
 
     std::wstring StringToWString(std::string oString) const;
     void setMousePos(LPARAM& lParam) { mx = LOWORD(lParam); my = HIWORD(lParam); }
+
+    const POINTFLOAT getABPos() const;
+
+    bool amaxTrig = false;
+    bool aminTrig = false;
+    bool bmaxTrig = false;
+    bool bminTrig = false;
+
+    // トリガーのすべてをオフにする
+    void offTriggers();
+
+    // トリガーのいずれかがオンになっていたらtrue
+    const bool enableTriggers() const { return amaxTrig || aminTrig || bmaxTrig || bminTrig; }
 };

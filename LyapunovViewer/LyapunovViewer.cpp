@@ -8,6 +8,8 @@
 #include <iostream>
 
 #define MAX_LOADSTRING 100
+#define WINDOW_WIDTH 1080
+#define WINDOW_HEIGHT 680
 
 // グローバル変数:
 HINSTANCE hInst;                                // 現在のインターフェイス
@@ -114,7 +116,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    RECT rect;
    GetClientRect(hWnd, &rect);
 
-   SetWindowPos(hWnd, NULL, rect.left, rect.top, 1080, 680, (SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOMOVE));
+   SetWindowPos(hWnd, NULL, rect.left, rect.top, WINDOW_WIDTH, WINDOW_HEIGHT, (SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_NOMOVE));
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 
@@ -139,119 +141,191 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     switch (message)
     {
     case WM_CREATE:
-        {
-            GetCurrentDirectory(MAX_PATH, currentDir);
+    {
+        GetCurrentDirectory(MAX_PATH, currentDir);
 
-            CreateWindow(
-                TEXT("BUTTON"), TEXT("LOAD SETTING FILE"),
-                WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-                40, 42, 260, 24,
-                hWnd, (HMENU)BUTTON_ID_OPEN_FILE_DIALOG, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
-            );
+        CreateWindow(
+            TEXT("BUTTON"), TEXT("LOAD SETTING FILE"),
+            WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+            40, 42, 260, 24,
+            hWnd, (HMENU)BUTTON_ID_OPEN_FILE_DIALOG, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
+        );
 
-            CreateWindow(
-                TEXT("BUTTON"), TEXT("RUN LYAPUNOV FRACTAL"),
-                WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-                40, 512, 260, 24,
-                hWnd, (HMENU)BUTTON_ID_RUN_LYANUNOV, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
-            );
+        CreateWindow(
+            TEXT("BUTTON"), TEXT("RUN LYAPUNOV FRACTAL"),
+            WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+            40, 512, 260, 24,
+            hWnd, (HMENU)BUTTON_ID_RUN_LYANUNOV, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
+        );
             
-            CreateWindow(
-                TEXT("BUTTON"), TEXT("SAVE CURRENT SETTINGS"),
-                WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-                40, 512 + 32, 260, 24,
-                hWnd, (HMENU)BUTTON_ID_SAVE_FILE_DIALOG, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
-            );
+        CreateWindow(
+            TEXT("BUTTON"), TEXT("SAVE CURRENT SETTINGS"),
+            WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+            40, 512 + 32, 260, 24,
+            hWnd, (HMENU)BUTTON_ID_SAVE_FILE_DIALOG, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
+        );
 
-            GenerateSpoitButton(hWnd, lParam);
+        GenerateSpoitButton(hWnd, lParam);
 
-            /*
-            * WM_COMMANDで文字列を取得可能
-            * PSTR pStr[2048];
-            * GetWindowText(editTomlPath, pStr, 2048);
-            */
+        /*
+        * WM_COMMANDで文字列を取得可能
+        * PSTR pStr[2048];
+        * GetWindowText(editTomlPath, pStr, 2048);
+        */
             
-            edit.initialize(hWnd, 200, 80, 32, lParam);
-            image.initialize(hWnd, 512, 512);
-            prefer.initialize(hWnd, ((LPCREATESTRUCT)(lParam))->hInstance);
-        }
+        edit.initialize(hWnd, 200, 80, 32, lParam);
+        image.initialize(hWnd, 512, 512);
+        prefer.initialize(hWnd, ((LPCREATESTRUCT)(lParam))->hInstance);
+
         break;
+    }
     case WM_COMMAND:
+    {
+        int wmId = LOWORD(wParam);
+        // 選択されたメニューの解析:
+        switch (wmId)
         {
-            int wmId = LOWORD(wParam);
-            // 選択されたメニューの解析:
-            switch (wmId)
-            {
-            case IDM_ABOUT:
-                DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-                break;
+        case IDM_ABOUT:
+            DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+            break;
 
-            case IDM_EXIT:
-                DestroyWindow(hWnd);
-                break;
+        case IDM_EXIT:
+            DestroyWindow(hWnd);
+            break;
 
-            case BUTTON_ID_OPEN_FILE_DIALOG:
-            {
-                open.LoadToml(hWnd, edit);
-                break;
-            }
-            case BUTTON_ID_SAVE_FILE_DIALOG:
-            {
-                open.SaveToml(hWnd, edit);
-                break;
-            }
-            case BUTTON_ID_RUN_LYANUNOV:
-            {
-                edit.applyValues();
-                image.initialize(hWnd, edit.PWidth, edit.PHeight);
-                image.setIsChaos(prefer.isChaos());
-                image.generate(hWnd, edit);
-
-                SendMessage(hWnd, WM_PAINT, wParam, lParam);
-                break;
-            }
-            case BUTTON_ID_SET_MIN_COLOR:
-            {
-                prefer.chooseColor(hWnd, PreferenceContext::Choose::MIN);
-                image.setMinColor(prefer.getMinColor());
-                break;
-            }
-            case BUTTON_ID_SET_MAX_COLOR:
-            {
-                prefer.chooseColor(hWnd, PreferenceContext::Choose::MAX);
-                image.setMaxColor(prefer.getMaxColor());
-                break;
-            }
-            default:
-                return DefWindowProc(hWnd, message, wParam, lParam);
-            }
-
+        case BUTTON_ID_OPEN_FILE_DIALOG:
+        {
+            open.LoadToml(hWnd, edit);
+            break;
         }
+        case BUTTON_ID_SAVE_FILE_DIALOG:
+        {
+            open.SaveToml(hWnd, edit);
+            break;
+        }
+        case BUTTON_ID_RUN_LYANUNOV:
+        {
+            edit.applyValues();
+            image.initialize(hWnd, edit.PWidth, edit.PHeight);
+            image.setIsChaos(prefer.isChaos());
+            image.generate(hWnd, edit);
 
+            SendMessage(hWnd, WM_PAINT, wParam, lParam);
+            break;
+        }
+        case BUTTON_ID_SET_MIN_COLOR:
+        {
+            prefer.chooseColor(hWnd, PreferenceContext::Choose::MIN);
+            image.setMinColor(prefer.getMinColor());
+            break;
+        }
+        case BUTTON_ID_SET_MAX_COLOR:
+        {
+            prefer.chooseColor(hWnd, PreferenceContext::Choose::MAX);
+            image.setMaxColor(prefer.getMaxColor());
+            break;
+        }
+        case BUTTON_ID_SPOIT_AMAX:
+        {
+            edit.offTriggers();
+            edit.amaxTrig = !edit.amaxTrig;
+            break;
+        }
+        case BUTTON_ID_SPOIT_AMIN:
+        {
+            edit.offTriggers();
+            edit.aminTrig = !edit.aminTrig;
+            break;
+        }
+        case BUTTON_ID_SPOIT_BMAX:
+        {
+            edit.offTriggers();
+            edit.bmaxTrig = !edit.bmaxTrig;
+            break;
+        }
+        case BUTTON_ID_SPOIT_BMIN:
+        {
+            edit.offTriggers();
+            edit.bminTrig = !edit.bminTrig;
+            break;
+        }
+        case BUTTON_ID_SPOIT_TL:
+        {
+            edit.offTriggers();
+            edit.aminTrig = !edit.aminTrig;
+            edit.bminTrig = !edit.bminTrig;
+            break;
+        }
+        case BUTTON_ID_SPOIT_BR:
+        {
+            edit.offTriggers();
+            edit.amaxTrig = !edit.amaxTrig;
+            edit.bmaxTrig = !edit.bmaxTrig;
+            break;
+        }
+        case BUTTON_ID_SPOIT_CANCEL:
+        {
+            edit.offTriggers();
+            break;
+        }
+        default:
+            return DefWindowProc(hWnd, message, wParam, lParam);
+        }
         break;
+    }
+    case WM_LBUTTONDOWN:
+    {
+        // トリガーがオンになっていたら、AB座標の更新を行う
+        if (edit.enableTriggers()) {
+            //edit.setMousePos(lParam); // WM_MOUSEMOVEとでマウス座標がずれる可能性がある
+            const auto p = edit.getABPos();
+
+            if (edit.amaxTrig) edit.PAmax = p.x;
+            if (edit.aminTrig) edit.PAmin = p.x;
+            if (edit.bmaxTrig) edit.PBmax = p.y;
+            if (edit.bminTrig) edit.PBmin = p.y;
+
+            edit.convertWString();
+            edit.applyEditWindows();
+            edit.offTriggers();
+        }
+        
+        break;
+    }
     case WM_PAINT:
-        {
-            PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(hWnd, &ps);
-            // TODO: HDC を使用する描画コードをここに追加してください...
+    {
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hWnd, &ps);
+        // TODO: HDC を使用する描画コードをここに追加してください...
 
-            SetBkColor(hdc, RGB(192,192,192));
+        SetBkColor(hdc, RGB(192,192,192));
 
-            GenerateLabels(hdc);
-            TextOut(hdc, 320, 10, L"Spoit", lstrlen(L"Spoit"));
-            
-            
-            image.draw(hdc, hWnd);
-            prefer.draw(hdc);
-            edit.draw(hdc);
-
-            EndPaint(hWnd, &ps);
+        GenerateLabels(hdc);
+        TextOut(hdc, 320, 10, L"Spoit", lstrlen(L"Spoit"));
+        
+        // 記録の有無を判定して表示する
+        if (!edit.enableTriggers()) {
+            SelectObject(hdc, CreateSolidBrush(RGB(0, 255, 0)));
         }
+        else {
+            SelectObject(hdc, CreateSolidBrush(RGB(255, 0, 0)));
+        }
+        Ellipse(hdc, 832, 10, 832 + 20, 10 + 20);
+        DeleteObject(SelectObject(hdc, GetStockObject(WHITE_BRUSH)));
+            
+        image.draw(hdc, hWnd);
+        prefer.draw(hdc);
+        edit.draw(hdc);
+
+        EndPaint(hWnd, &ps);
         break;
+    }
     case WM_DESTROY:
+    {
         image.destroy();
         PostQuitMessage(0);
         break;
+    }
     case WM_MOUSEMOVE:
     {
         edit.setMousePos(lParam);

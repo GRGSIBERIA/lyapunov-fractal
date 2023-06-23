@@ -2,7 +2,7 @@
 
 void GenerateSpoitButton(HWND hWnd, LPARAM& lParam) {
     int i = 0;
-    const int width = 50;
+    const int width = 58;
     const int space = 8;
 #define Button(STR, ID) CreateWindow(\
     TEXT("BUTTON"), TEXT(STR),\
@@ -17,6 +17,7 @@ void GenerateSpoitButton(HWND hWnd, LPARAM& lParam) {
     Button("b max", BUTTON_ID_SPOIT_BMAX);
     Button("T-L", BUTTON_ID_SPOIT_TL);
     Button("B-R", BUTTON_ID_SPOIT_BR);
+    Button("Cancel", BUTTON_ID_SPOIT_CANCEL);
 }
 
 void LabelOut(HDC& hdc, const int x, const int y, LPCWSTR label)
