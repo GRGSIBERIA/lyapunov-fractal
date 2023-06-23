@@ -225,9 +225,64 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             image.setMaxColor(prefer.getMaxColor());
             break;
         }
+        case BUTTON_ID_SPOIT_AMAX:
+        {
+            edit.amaxTrig = !edit.amaxTrig;
+            break;
+        }
+        case BUTTON_ID_SPOIT_AMIN:
+        {
+            edit.aminTrig = !edit.aminTrig;
+            break;
+        }
+        case BUTTON_ID_SPOIT_BMAX:
+        {
+            edit.bmaxTrig = !edit.bmaxTrig;
+            break;
+        }
+        case BUTTON_ID_SPOIT_BMIN:
+        {
+            edit.bminTrig = !edit.bminTrig;
+            break;
+        }
+        case BUTTON_ID_SPOIT_TL:
+        {
+            edit.aminTrig = !edit.aminTrig;
+            edit.bminTrig = !edit.bminTrig;
+            break;
+        }
+        case BUTTON_ID_SPOIT_BR:
+        {
+            edit.amaxTrig = !edit.amaxTrig;
+            edit.bmaxTrig = !edit.bmaxTrig;
+            break;
+        }
         default:
             return DefWindowProc(hWnd, message, wParam, lParam);
         }
+        break;
+    }
+    case WM_LBUTTONDOWN:
+    {
+        // トリガーがオンになっていたら、AB座標の更新を行う
+        if (edit.amaxTrig || edit.aminTrig || edit.bmaxTrig || edit.bminTrig) {
+            edit.setMousePos(lParam);
+            const auto p = edit.getABPos();
+
+            if (edit.amaxTrig) edit.PAmax = p.x;
+            if (edit.aminTrig) edit.PAmin = p.x;
+            if (edit.bmaxTrig) edit.PBmax = p.y;
+            if (edit.bminTrig) edit.PBmin = p.y;
+
+            edit.convertWString();
+            edit.applyEditWindows();
+
+            edit.amaxTrig = false;
+            edit.aminTrig = false;
+            edit.bmaxTrig = false;
+            edit.bminTrig = false;
+        }
+        
         break;
     }
     case WM_PAINT:
