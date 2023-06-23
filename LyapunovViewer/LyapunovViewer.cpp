@@ -205,7 +205,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         case BUTTON_ID_RUN_LYANUNOV:
         {
-            edit.applyValues();
+            if (!edit.applyValues()) break;
+            if (!edit.validateValues()) break;
+
             image.initialize(hWnd, edit.PWidth, edit.PHeight);
             image.setIsChaos(prefer.isChaos());
             image.generate(hWnd, edit);
@@ -329,7 +331,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_MOUSEMOVE:
     {
         edit.setMousePos(lParam);
-        InvalidateRect(hWnd, NULL, FALSE);
+        RECT r;
+        r.left = 880;
+        r.top = 10;
+        r.right = 1080;
+        r.bottom = 40;
+        
+        InvalidateRect(hWnd, &r, FALSE);
         break;
     }
     default:
