@@ -80,7 +80,7 @@ void EditContext::draw(HDC& hdc)
 
     // èââÒãNìÆéûÇÕÇ»Ç∫Ç©ïÑçÜÇ™îΩì]ÇµÇƒÇ¢ÇÈ
     const auto str = std::format(L"A={:.6f}, B={:.6f}", p.x, p.y);
-    TextOut(hdc, 880, 10, str.c_str(), lstrlen(str.c_str()));
+    TextOut(hdc, 880, 10 + 32 * 4, str.c_str(), lstrlen(str.c_str()));
 }
 
 // https://www.wabiapp.com/WabiSampleSource/windows/string_to_wstring.html
@@ -157,12 +157,14 @@ std::string ConvertWstringToUTF8(const std::wstring& src)
     return std::string(local);
 }
 
-void EditContext::applyValues()
+const bool EditContext::applyValues()
 {
     TCHAR buf[256];
+
 #define GWTi(PARAM) { GetWindowText(PARAM, buf, 256); P##PARAM = std::stoi(buf); }
 #define GWTs(PARAM) { GetWindowText(PARAM, buf, 256); P##PARAM = ConvertWstringToUTF8(std::wstring(buf)); }
 #define GWTf(PARAM) { GetWindowText(PARAM, buf, 256); P##PARAM = std::stof(buf); }
+    
     GWTi(Width);
     GWTi(Height);
     GWTs(Sequence);
@@ -175,4 +177,175 @@ void EditContext::applyValues()
     GWTs(Func);
     GWTf(Const1);
     GWTf(Const2);
+
+    return true;
+}
+
+const bool ValidateDecodeStoI(const HWND& hWnd, const std::wstring& name) {
+    const size_t N = 256;
+    TCHAR buf[N];
+    int itest;
+
+    GetWindowText(hWnd, buf, N);
+    try {
+        itest = std::stoi(buf);
+    }
+    catch (...) {
+        std::wstring str;
+
+        if (str.size() <= 0)
+            str = std::format(L"Empty {}", name);
+        else
+            str = std::format(L"Can't decode text box\n {} = {}", name, buf);
+
+        MessageBox(NULL, str.c_str(), TEXT("ERROR"), MB_OK | MB_ICONERROR);
+        return false;
+    }
+
+    return true;
+}
+
+const bool ValidateDecodeStoF(const HWND& hWnd, const std::wstring& name) {
+    const size_t size = 256;
+    TCHAR buf[size];
+    float ftest;
+
+    GetWindowText(hWnd, buf, size);
+    try {
+        ftest = std::stof(buf);
+    }
+    catch (...) {
+        std::wstring str;
+
+        if (str.size() <= 0)
+            str = std::format(L"Empty {}", name);
+        else
+            str = std::format(L"Can't decode text box\n {} = {}", name, buf);
+
+        MessageBox(NULL, str.c_str(), TEXT("ERROR"), MB_OK | MB_ICONERROR);
+        return false;
+    }
+
+    return true;
+}
+
+template <class T>
+const T GetValue(const HWND& hWnd) {
+    const size_t size = 256;
+    TCHAR buf[size];
+    T test;
+
+    GetWindowText(hWnd, buf, size);
+    std::wstringstream ws;
+    ws << std::wstring(buf);
+    ws >> test;
+
+    return test;
+}
+
+template <class T>
+const bool ValidateRange(const HWND& hWnd, const std::wstring& name, const T vmin, const T vmax) {
+    T test = GetValue<T>(hWnd);
+
+    try {
+        if (!(vmin <= test && test <= vmax)) throw std::exception();
+    }
+    catch (...) {
+        const auto str = std::format(L"Falls within the range\n{} <= {} <= {}\n{} = {}", vmin, name, vmax, name, test);
+        MessageBox(NULL, str.c_str(), TEXT("ERROR"), MB_OK | MB_ICONERROR);
+        return false;
+    }
+
+    return true;
+}
+
+template <class T>
+const bool ValidateUnderCover(const HWND& hWnd, const std::wstring& name) {
+    T test = GetValue<T>(hWnd);
+    
+    try {
+        if (!((T)0 < test)) throw std::exception();
+    }
+    catch (...) {
+        const auto str = std::format(L"{} less than 1\n{} = {}", name, name, test);
+        MessageBox(NULL, str.c_str(), TEXT("ERROR"), MB_OK | MB_ICONERROR);
+        return false;
+    }
+
+    return true;
+}
+
+template <class T>
+const bool ValidateModulo4(const HWND& hWnd, const std::wstring& name) {
+    T test = GetValue<T>(hWnd);
+    
+    try {
+        if (!(test % 4 == 0)) throw std::exception();
+    }
+    catch (...) {
+        const auto str = std::format(L"{} is not modulo 0 when divided by 4\n{} = {} mod 4 = ", name, name, test, test % 4);
+        MessageBox(NULL, str.c_str(), TEXT("ERROR"), MB_OK | MB_ICONERROR);
+        return false;
+    }
+
+    return true;
+}
+
+const bool ValidateSequence(const HWND& hWnd) {
+    std::wstring seq = GetValue<std::wstring>(hWnd);
+
+    if (seq.size() == 0) {
+        const auto str = std::format(L"Sequence is empty");
+        MessageBox(NULL, str.c_str(), TEXT("ERROR"), MB_OK | MB_ICONERROR);
+        return false;
+    }
+
+    if ((L'0' <= seq[0] && seq[0] <= L'9')) {
+        const auto str = std::format(L"Invalid Sequence\nSequence = {}", seq);
+        MessageBox(NULL, str.c_str(), TEXT("ERROR"), MB_OK | MB_ICONERROR);
+        return false;
+    }
+
+    for (int i = 0; i < seq.size(); ++i) {
+        if (!(seq[i] == L'A' || seq[i] == L'B' || (L'0' <= seq[0] && seq[0] <= L'9'))) {
+            const auto str = std::format(L"Sequence can has A,B,0-9\nSequence = {}", seq);
+            MessageBox(NULL, str.c_str(), TEXT("ERROR"), MB_OK | MB_ICONERROR);
+            return false;
+        }
+    }
+
+    return true;
+}
+
+const bool EditContext::validateValues(HWND& hWnd) const
+{
+    bool valid = true;
+
+    valid = valid && ValidateDecodeStoI(Width, L"Width");
+    valid = valid && ValidateDecodeStoI(Height, L"Height");
+    valid = valid && ValidateDecodeStoI(N, L"Number of iterations");
+    
+    valid = valid && ValidateDecodeStoF(Amax, L"Amax");
+    valid = valid && ValidateDecodeStoF(Amin, L"Amin");
+    valid = valid && ValidateDecodeStoF(Bmax, L"Bmax");
+    valid = valid && ValidateDecodeStoF(Bmin, L"Bmin");
+    valid = valid && ValidateDecodeStoF(Const1, L"Const1");
+    valid = valid && ValidateDecodeStoF(Const2, L"Const2");
+    valid = valid && ValidateDecodeStoF(InitX, L"Initial x value");
+
+    valid = valid && ValidateRange<float>(Amax, L"Amax", 0.f, 4.f);
+    valid = valid && ValidateRange<float>(Amin, L"Amin", 0.f, 4.f);
+    valid = valid && ValidateRange<float>(Bmax, L"Bmax", 0.f, 4.f);
+    valid = valid && ValidateRange<float>(Bmin, L"Bmin", 0.f, 4.f);
+    
+    valid = valid && ValidateUnderCover<int>(Width, L"Width");
+    valid = valid && ValidateUnderCover<int>(Height, L"Height");
+    valid = valid && ValidateUnderCover<int>(N, L"Number of iterations");
+
+    valid = valid && ValidateModulo4<int>(Width, L"Width");
+    valid = valid && ValidateModulo4<int>(Height, L"Height");
+
+    valid = valid && ValidateSequence(Sequence);
+
+    return valid;
 }

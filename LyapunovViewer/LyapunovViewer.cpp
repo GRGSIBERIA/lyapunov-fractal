@@ -205,7 +205,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         case BUTTON_ID_RUN_LYANUNOV:
         {
-            edit.applyValues();
+            if (!edit.validateValues(hWnd)) break;
+            if (!edit.applyValues()) break;
+
             image.initialize(hWnd, edit.PWidth, edit.PHeight);
             image.setIsChaos(prefer.isChaos());
             image.generate(hWnd, edit);
@@ -268,6 +270,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             edit.offTriggers();
             break;
         }
+        case BUTTON_ID_SPOIT_HOME :
+        {
+            edit.PAmax = 4.f;
+            edit.PAmin = 0.f;
+            edit.PBmax = 4.f;
+            edit.PBmin = 0.f;
+            edit.convertWString();
+            edit.applyEditWindows();
+            break;
+        }
         default:
             return DefWindowProc(hWnd, message, wParam, lParam);
         }
@@ -310,7 +322,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         else {
             SelectObject(hdc, CreateSolidBrush(RGB(255, 0, 0)));
         }
-        Ellipse(hdc, 832, 10, 832 + 20, 10 + 20);
+        Ellipse(hdc, 900, 10, 900 + 20, 10 + 20);
         DeleteObject(SelectObject(hdc, GetStockObject(WHITE_BRUSH)));
             
         image.draw(hdc, hWnd);
@@ -329,7 +341,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_MOUSEMOVE:
     {
         edit.setMousePos(lParam);
-        InvalidateRect(hWnd, NULL, FALSE);
+        RECT r;
+        r.left = 880;
+        r.top = 10 + 32 * 4;
+        r.right = 1080;
+        r.bottom = 40 + 32 * 4;
+        
+        InvalidateRect(hWnd, &r, FALSE);
         break;
     }
     default:

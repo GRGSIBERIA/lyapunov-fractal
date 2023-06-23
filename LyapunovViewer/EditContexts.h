@@ -1,6 +1,7 @@
 #pragma once
 #include <Windows.h>
 #include <string>
+#include <sstream>
 
 class EditContext {
     std::wstring SWidth = L"512";
@@ -54,7 +55,7 @@ public:
 
     void convertWString();
     void applyEditWindows();
-    void applyValues();
+    const bool applyValues();
 
     std::wstring StringToWString(std::string oString) const;
     void setMousePos(LPARAM& lParam) { mx = LOWORD(lParam); my = HIWORD(lParam); }
@@ -71,4 +72,6 @@ public:
 
     // ÉgÉäÉKÅ[ÇÃÇ¢Ç∏ÇÍÇ©Ç™ÉIÉìÇ…Ç»Ç¡ÇƒÇ¢ÇΩÇÁtrue
     const bool enableTriggers() const { return amaxTrig || aminTrig || bmaxTrig || bminTrig; }
+
+    const bool validateValues(HWND& hWnd) const;
 };
