@@ -1,6 +1,7 @@
 #pragma once
 #include <Windows.h>
 #include <string>
+#include <sstream>
 
 class EditContext {
     std::wstring SWidth = L"512";
@@ -15,19 +16,6 @@ class EditContext {
     std::wstring SFunc = L"simple";
     std::wstring SConst1 = L"0.0";
     std::wstring SConst2 = L"0.0";
-
-    bool VWidth = true;
-    bool VHeight = true;
-    bool VSequence = true;
-    bool VN = true;
-    bool VInitX = true;
-    bool VAmax = true;
-    bool VAmin = true;
-    bool VBmax = true;
-    bool VBmin = true;
-    bool VFunc = true;
-    bool VConst1 = true;
-    bool VConst2 = true;
 
     int mx = 0;
     int my = 0;

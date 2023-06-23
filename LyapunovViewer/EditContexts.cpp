@@ -161,9 +161,9 @@ const bool EditContext::applyValues()
 {
     TCHAR buf[256];
 
-#define GWTi(PARAM) try { GetWindowText(PARAM, buf, 256); P##PARAM = std::stoi(buf); } catch(...) { MessageBox(NULL, TEXT("Invalid Value: See Red Edit"), TEXT("INVALID VALUE ERROR"), MB_OK | MB_ICONERROR); return false; }
-#define GWTs(PARAM) try { GetWindowText(PARAM, buf, 256); P##PARAM = ConvertWstringToUTF8(std::wstring(buf)); } catch(...) { MessageBox(NULL, TEXT("Invalid Value: See Red Edit"), TEXT("INVALID VALUE ERROR"), MB_OK | MB_ICONERROR); return false; }
-#define GWTf(PARAM) try { GetWindowText(PARAM, buf, 256); P##PARAM = std::stof(buf); } catch(...) { MessageBox(NULL, TEXT("Invalid Value: See Red Edit"), TEXT("INVALID VALUE ERROR"), MB_OK | MB_ICONERROR); return false; }
+#define GWTi(PARAM) { GetWindowText(PARAM, buf, 256); P##PARAM = std::stoi(buf); }
+#define GWTs(PARAM) { GetWindowText(PARAM, buf, 256); P##PARAM = ConvertWstringToUTF8(std::wstring(buf)); }
+#define GWTf(PARAM) { GetWindowText(PARAM, buf, 256); P##PARAM = std::stof(buf); }
     
     GWTi(Width);
     GWTi(Height);
@@ -177,15 +177,77 @@ const bool EditContext::applyValues()
     GWTs(Func);
     GWTf(Const1);
     GWTf(Const2);
+
+    return true;
+}
+
+const bool ValidateDecodeStoI(const HWND& hWnd, const std::wstring& name) {
+    const size_t N = 256;
+    TCHAR buf[N];
+    int itest;
+
+    GetWindowText(hWnd, buf, N);
+    try {
+        itest = std::stoi(buf);
+    }
+    catch (...) {
+        const auto str = std::format(L"Can't decode text box\n {} = {}", name, buf);
+        MessageBox(NULL, str.c_str(), TEXT("ERROR"), MB_OK | MB_ICONERROR);
+        return false;
+    }
+}
+
+const bool ValidateDecodeStoF(const HWND& hWnd, const std::wstring& name) {
+    const size_t size = 256;
+    TCHAR buf[size];
+    float ftest;
+
+    GetWindowText(hWnd, buf, size);
+    try {
+        ftest = std::stof(buf);
+    }
+    catch (...) {
+        const auto str = std::format(L"Can't decode text box\n {} = {}", name, buf);
+        MessageBox(NULL, str.c_str(), TEXT("ERROR"), MB_OK | MB_ICONERROR);
+        return false;
+    }
+}
+
+template <class T>
+const bool ValidateRange(const HWND& hWnd, const std::wstring& name, const T vmin, const T vmax) {
+    const size_t size = 256;
+    TCHAR buf[size];
+    T test;
+
+    GetWindowText(hWnd, buf, size);
+    try {
+        std::wstringstream ws;
+        ws << std::wstring(buf);
+        ws >> test;
+
+        if (!(vmin <= test && test <= vmax)) throw std::exception();
+    }
+    catch (...) {
+        const auto str = std::format(L"Can't decode text box\n {} = {}", name, buf);
+        MessageBox(NULL, str.c_str(), TEXT("ERROR"), MB_OK | MB_ICONERROR);
+        return false;
+    }
 }
 
 const bool EditContext::validateValues(HWND& hWnd) const
 {
-    if (PWidth < 1) {
-        MessageBox(NULL, TEXT("Width is not over 0"), TEXT(""), MB_OK | MB_ICONERROR);
-        SendMessage(hWnd, WM_CTLCOLOREDIT, (WPARAM)Width, (LPARAM)1);
-        return false;
-    }
+    ValidateDecodeStoI(Width, L"Width");
+    ValidateDecodeStoI(Height, L"Height");
+    ValidateDecodeStoI(N, L"Number of iterations");
+    
+    ValidateDecodeStoF(Amax, L"Amax");
+    ValidateDecodeStoF(Amin, L"Amin");
+    ValidateDecodeStoF(Bmax, L"Bmax");
+    ValidateDecodeStoF(Bmin, L"Bmin");
+    ValidateDecodeStoF(Const1, L"Const1");
+    ValidateDecodeStoF(Const2, L"Const2");
+    ValidateDecodeStoF(InitX, L"Initial x value");
+
 
     return true;
 }
