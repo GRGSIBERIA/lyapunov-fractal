@@ -22,7 +22,9 @@ float func_simple(const float x, const float r, const float c1, const float c2) 
 	return r * x * (1.f - x);
 }
 float func_cyclic(const float x, const float r, const float c1, const float c2){
-	return c1 * powf(sinf(x + r), 2.f);
+	const float sf = sinf(x + r);
+	const float pf = powf(sf, 2.f);
+	return c1 * pf;
 }
 float grad_simple(const float x, const float r, const float c1, const float c2){
 	const float x2 = 2.f * x;
@@ -65,11 +67,11 @@ void ImageContext::generate(HWND& hWnd, const EditContext& edit)
 
 	std::map<std::string, F> func_dic {
 		P("simple", &func_simple),
-		P("sin2", &func_cyclic)
+		P("cyclic", &func_cyclic)
 	};
 	std::map<std::string, F> grad_dic{
 		P("simple", &grad_simple),
-		P("sin2", &grad_cyclic)
+		P("cyclic", &grad_cyclic)
 	};
 	auto func = func_dic[edit.PFunc];
 	auto grad = grad_dic[edit.PFunc];

@@ -14,7 +14,7 @@ class EditContext {
     std::wstring SBmax = L"4.0";
     std::wstring SBmin = L"0.0";
     std::wstring SFunc = L"simple";
-    std::wstring SConst1 = L"0.0";
+    std::wstring SConst1 = L"2.7";
     std::wstring SConst2 = L"0.0";
 
     int mx = 0;
@@ -44,7 +44,7 @@ public:
     float PBmax = 0;
     float PBmin = 4;
     std::string PFunc = "simple";
-    float PConst1 = 0;
+    float PConst1 = 2.7f;
     float PConst2 = 0;
 
     EditContext() {}
