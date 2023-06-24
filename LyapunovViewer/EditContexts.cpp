@@ -192,8 +192,9 @@ const bool ValidateDecodeStoI(const HWND& hWnd, const std::wstring& name) {
     }
     catch (...) {
         std::wstring str;
+        std::wstring bufStr(buf);
 
-        if (str.size() <= 0)
+        if (bufStr.size() <= 0)
             str = std::format(L"Empty {}", name);
         else
             str = std::format(L"Can't decode text box\n {} = {}", name, buf);
@@ -317,6 +318,22 @@ const bool ValidateSequence(const HWND& hWnd) {
     return true;
 }
 
+const bool ValidateEmpty(const HWND& hWnd, const std::wstring& name) {
+    const size_t size = 256;
+    TCHAR buf[size];
+    std::wstring test;
+
+    GetWindowText(hWnd, buf, size);
+
+    test = std::wstring(buf);
+    if (test.size() <= 0) {
+        const auto str = std::format(L"Empty textbox: {}", name);
+        MessageBox(NULL, str.c_str(), TEXT("ERROR"), MB_OK | MB_ICONERROR);
+        return false;
+    }
+    return true;
+}
+
 const bool EditContext::validateValues(HWND& hWnd) const
 {
     bool valid = true;
@@ -324,6 +341,9 @@ const bool EditContext::validateValues(HWND& hWnd) const
     valid = valid && ValidateDecodeStoI(Width, L"Width");
     valid = valid && ValidateDecodeStoI(Height, L"Height");
     valid = valid && ValidateDecodeStoI(N, L"Number of iterations");
+    
+    valid = valid && ValidateEmpty(Sequence, L"Sequence");
+    valid = valid && ValidateEmpty(Func, L"Func");
     
     valid = valid && ValidateDecodeStoF(Amax, L"Amax");
     valid = valid && ValidateDecodeStoF(Amin, L"Amin");
@@ -344,6 +364,7 @@ const bool EditContext::validateValues(HWND& hWnd) const
 
     valid = valid && ValidateModulo4<int>(Width, L"Width");
     valid = valid && ValidateModulo4<int>(Height, L"Height");
+    valid = valid && ValidateModulo4<int>(N, L"Number of iterations");
 
     valid = valid && ValidateSequence(Sequence);
 
