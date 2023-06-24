@@ -181,6 +181,12 @@ const bool EditContext::applyValues()
     return true;
 }
 
+const std::wstring GetName(const HWND& hWnd, const std::wstring& name) {
+    const size_t N = 256;
+    TCHAR buf[N];
+    GetWindowText(hWnd, buf, N);
+}
+
 const bool ValidateDecodeStoI(const HWND& hWnd, const std::wstring& name) {
     const size_t N = 256;
     TCHAR buf[N];
@@ -320,13 +326,8 @@ const bool ValidateSequence(const HWND& hWnd) {
 }
 
 const bool ValidateEmpty(const HWND& hWnd, const std::wstring& name) {
-    const size_t size = 256;
-    TCHAR buf[size];
-    std::wstring test;
+    const auto test = GetName(hWnd, name);
 
-    GetWindowText(hWnd, buf, size);
-
-    test = std::wstring(buf);
     if (test.size() <= 0) {
         const auto str = std::format(L"Empty textbox: {}", name);
         MessageBox(NULL, str.c_str(), TEXT("ERROR"), MB_OK | MB_ICONERROR);
@@ -335,39 +336,56 @@ const bool ValidateEmpty(const HWND& hWnd, const std::wstring& name) {
     return true;
 }
 
-const bool EditContext::validateValues(HWND& hWnd) const
+const bool ValidateCrossing(const HWND& hWnd, const std::wstring& name) {
+
+}
+
+const bool EditContext::validateValues(HWND& hWnd)
 {
     bool valid = true;
 
-    valid = valid && ValidateDecodeStoI(Width, L"Width");
-    valid = valid && ValidateDecodeStoI(Height, L"Height");
-    valid = valid && ValidateDecodeStoI(N, L"Number of iterations");
+    VWidth = ValidateDecodeStoI(Width, L"Width");
+    VHeight = ValidateDecodeStoI(Height, L"Height");
+    VHeight = ValidateDecodeStoI(N, L"Number of iterations");
     
-    valid = valid && ValidateEmpty(Sequence, L"Sequence");
-    valid = valid && ValidateEmpty(Func, L"Func");
+    VSequence = ValidateEmpty(Sequence, L"Sequence");
+    VFunc = ValidateEmpty(Func, L"Func");
     
-    valid = valid && ValidateDecodeStoF(Amax, L"Amax");
-    valid = valid && ValidateDecodeStoF(Amin, L"Amin");
-    valid = valid && ValidateDecodeStoF(Bmax, L"Bmax");
-    valid = valid && ValidateDecodeStoF(Bmin, L"Bmin");
-    valid = valid && ValidateDecodeStoF(Const1, L"Const1");
-    valid = valid && ValidateDecodeStoF(Const2, L"Const2");
-    valid = valid && ValidateDecodeStoF(InitX, L"Initial x value");
-
-    valid = valid && ValidateRange<float>(Amax, L"Amax", 0.f, 4.f);
-    valid = valid && ValidateRange<float>(Amin, L"Amin", 0.f, 4.f);
-    valid = valid && ValidateRange<float>(Bmax, L"Bmax", 0.f, 4.f);
-    valid = valid && ValidateRange<float>(Bmin, L"Bmin", 0.f, 4.f);
+    VAmax = ValidateDecodeStoF(Amax, L"Amax");
+    VAmin = ValidateDecodeStoF(Amin, L"Amin");
+    VBmax = ValidateDecodeStoF(Bmax, L"Bmax");
+    VBmin = ValidateDecodeStoF(Bmin, L"Bmin");
+    VConst1 = ValidateDecodeStoF(Const1, L"Const1");
+    VConst2 = ValidateDecodeStoF(Const2, L"Const2");
+    VInitX = ValidateDecodeStoF(InitX, L"Initial x value");
     
-    valid = valid && ValidateUnderCover<int>(Width, L"Width");
-    valid = valid && ValidateUnderCover<int>(Height, L"Height");
-    valid = valid && ValidateUnderCover<int>(N, L"Number of iterations");
+    VAmax = ValidateRange<float>(Amax, L"Amax", 0.f, 4.f);
+    VAmin = ValidateRange<float>(Amin, L"Amin", 0.f, 4.f);
+    VBmax = ValidateRange<float>(Bmax, L"Bmax", 0.f, 4.f);
+    VBmin = ValidateRange<float>(Bmin, L"Bmin", 0.f, 4.f);
+    
+    VWidth = ValidateUnderCover<int>(Width, L"Width");
+    VHeight = ValidateUnderCover<int>(Height, L"Height");
+    VN = ValidateUnderCover<int>(N, L"Number of iterations");
+    
+    VWidth = ValidateModulo4<int>(Width, L"Width");
+    VHeight = ValidateModulo4<int>(Height, L"Height");
+    VN = ValidateModulo4<int>(N, L"Number of iterations");
 
-    valid = valid && ValidateModulo4<int>(Width, L"Width");
-    valid = valid && ValidateModulo4<int>(Height, L"Height");
-    valid = valid && ValidateModulo4<int>(N, L"Number of iterations");
+    VSequence = ValidateSequence(Sequence);
 
-    valid = valid && ValidateSequence(Sequence);
+    valid = valid && VWidth;
+    valid = valid && VHeight;
+    valid = valid && VSequence;
+    valid = valid && VFunc;
+    valid = valid && VAmax;
+    valid = valid && VAmin;
+    valid = valid && VBmax;
+    valid = valid && VBmin;
+    valid = valid && VConst1;
+    valid = valid && VConst2;
+    valid = valid && VInitX;
+    valid = valid && VN;
 
     return valid;
 }

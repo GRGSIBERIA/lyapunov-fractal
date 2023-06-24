@@ -34,6 +34,19 @@ public:
     HWND Const1 = NULL;
     HWND Const2 = NULL;
 
+    bool VWidth = true;
+    bool VHeight = true;
+    bool VSequence = true;
+    bool VN = true;
+    bool VInitX = true;
+    bool VAmax = true;
+    bool VAmin = true;
+    bool VBmax = true;
+    bool VBmin = true;
+    bool VFunc = true;
+    bool VConst1 = true;
+    bool VConst2 = true;
+
     int PWidth = 512;
     int PHeight = 512;
     std::string PSequence = "AABB";
@@ -73,5 +86,5 @@ public:
     // ÉgÉäÉKÅ[ÇÃÇ¢Ç∏ÇÍÇ©Ç™ÉIÉìÇ…Ç»Ç¡ÇƒÇ¢ÇΩÇÁtrue
     const bool enableTriggers() const { return amaxTrig || aminTrig || bmaxTrig || bminTrig; }
 
-    const bool validateValues(HWND& hWnd) const;
+    const bool validateValues(HWND& hWnd);
 };
