@@ -302,17 +302,18 @@ const bool ValidateSequence(const HWND& hWnd) {
     }
 
     if ((L'0' <= seq[0] && seq[0] <= L'9')) {
-        const auto str = std::format(L"Invalid Sequence\nSequence = {}", seq);
+        const auto str = std::format(L"Sequence's first character is number\nSequence = {}", seq);
         MessageBox(NULL, str.c_str(), TEXT("ERROR"), MB_OK | MB_ICONERROR);
         return false;
     }
 
     for (int i = 0; i < seq.size(); ++i) {
-        if (!(seq[i] == L'A' || seq[i] == L'B' || (L'0' <= seq[0] && seq[0] <= L'9'))) {
-            const auto str = std::format(L"Sequence can has A,B,0-9\nSequence = {}", seq);
-            MessageBox(NULL, str.c_str(), TEXT("ERROR"), MB_OK | MB_ICONERROR);
-            return false;
-        }
+        if (seq[i] == L'A' || seq[i] == L'B') continue;
+        if (L'0' <= seq[i] && seq[i] <= L'9') continue;
+
+        const auto str = std::format(L"Sequence can has A,B,0-9\nSequence = {}", seq);
+        MessageBox(NULL, str.c_str(), TEXT("ERROR"), MB_OK | MB_ICONERROR);
+        return false;
     }
 
     return true;
