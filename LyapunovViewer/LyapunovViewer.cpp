@@ -312,7 +312,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         SetBkColor(hdc, RGB(192,192,192));
 
-        GenerateLabels(hdc);
+        GenerateLabels(hWnd, hdc, edit);
         TextOut(hdc, 320, 10, L"Spoit", lstrlen(L"Spoit"));
         
         // 記録の有無を判定して表示する
