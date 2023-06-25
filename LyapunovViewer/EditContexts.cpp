@@ -286,14 +286,14 @@ const bool ValidateUnderCover(const HWND& hWnd, const std::wstring& name) {
 }
 
 template <class T>
-const bool ValidateModulo4(const HWND& hWnd, const std::wstring& name) {
+const bool ValidateModulo8(const HWND& hWnd, const std::wstring& name) {
     T test = GetValue<T>(hWnd);
     
     try {
-        if (!(test % 4 == 0)) throw std::exception();
+        if (!(test % 8 == 0)) throw std::exception();
     }
     catch (...) {
-        const auto str = std::format(L"{} is not modulo 0 when divided by 4\n{} = {} mod 4 = ", name, name, test, test % 4);
+        const auto str = std::format(L"{} is not modulo 0 when divided by 8\n{} = {} mod 4 = ", name, name, test, test % 4);
         SHOWMSGBOX;
         return false;
     }
@@ -392,9 +392,9 @@ const bool EditContext::validateValues(HWND& hWnd)
     VHeight &= ValidateUnderCover<int>(Height, L"Height");
     VN &= ValidateUnderCover<int>(N, L"Number of iterations");
     
-    VWidth &= ValidateModulo4<int>(Width, L"Width");
-    VHeight &= ValidateModulo4<int>(Height, L"Height");
-    VN &= ValidateModulo4<int>(N, L"Number of iterations");
+    VWidth &= ValidateModulo8<int>(Width, L"Width");
+    VHeight &= ValidateModulo8<int>(Height, L"Height");
+    VN &= ValidateModulo8<int>(N, L"Number of iterations");
 
     VSequence &= ValidateSequence(Sequence);
 
