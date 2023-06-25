@@ -128,12 +128,14 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 #include "GeneratorContext.h"
 #include "ImageContext.h"
 #include "PreferenceContext.h"
+#include "PlotterContext.h"
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     static EditContext edit;
     static OpenTomlContext open;
     static ImageContext image;
     static PreferenceContext prefer;
+    static PlotterContext plotter;
 
     static TCHAR currentDir[MAX_PATH];
     static HWND hClient;
@@ -292,7 +294,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         case BUTTON_ID_OPEN_3D_WINDOW:
         {
-
+            plotter.initialize(hInst, hWnd);
             break;
         }
         default:
