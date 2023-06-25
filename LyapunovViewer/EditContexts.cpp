@@ -293,7 +293,7 @@ const bool ValidateModulo8(const HWND& hWnd, const std::wstring& name) {
         if (!(test % 8 == 0)) throw std::exception();
     }
     catch (...) {
-        const auto str = std::format(L"{} is not modulo 0 when divided by 8\n{} = {} mod 4 = ", name, name, test, test % 4);
+        const auto str = std::format(L"{} is not modulo 0 when divided by 8\n{} = {} mod 8 = ", name, name, test, test % 4);
         SHOWMSGBOX;
         return false;
     }
