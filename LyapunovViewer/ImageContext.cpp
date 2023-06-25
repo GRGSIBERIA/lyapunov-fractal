@@ -71,7 +71,7 @@ void ImageContext::generate(HWND& hWnd, const EditContext& edit)
 	auto lam = V3D(bufH, V2D(bufW, V1D(N, 0.f)));
 	lambda = V2D(bufH, V1D(bufW, 0.f));
 
-	pixels = C2D(bufH, C1D(bufW, 0.f));
+	pixels = C2D(bufH, C1D(bufW, 0));
 	
 	typedef const __m256(*F)(const __m256& mx, const __m256& mr, const float c1, const float c2);
 	typedef std::pair<std::string, F> P;
