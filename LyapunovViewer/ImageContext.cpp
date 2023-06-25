@@ -178,10 +178,6 @@ void ImageContext::generate(HWND& hWnd, const EditContext& edit)
 		}
 	}
 
-#define UNLOOP(FUNC_NAME, RETURN_NAME) \
-	for (int n = 1; n < N; ++n) {\
-		
-
 #pragma omp parallel for
 	for (int h = 0; h < bufH; ++h) {
 		for (int w = 0; w < bufW; w += 8) {
