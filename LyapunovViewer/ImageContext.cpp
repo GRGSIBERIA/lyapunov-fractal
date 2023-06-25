@@ -37,17 +37,15 @@ const __m256 func_cyclic(const __m256& mx, const __m256& mr, const float c1, con
 	return _mm256_mul_ps(constance, powsin);
 }
 const __m256 grad_simple(const __m256& mx, const __m256& mr, const float c1, const float c2) {
-	const float onef = 1.f;
-	const float twof = 2.f;
-	const auto one = _mm256_broadcast_ss(&onef);
-	const auto two = _mm256_broadcast_ss(&twof);
+	const auto one = _mm256_set1_ps(1.f);
+	const auto two = _mm256_set1_ps(2.f);
 
 	const auto x2 = _mm256_mul_ps(two, mx);
 	const auto sx2 = _mm256_sub_ps(one, x2);
 	const auto rs = _mm256_mul_ps(mr, sx2);
 	
 	const auto mask = _mm256_set1_ps(-0.f);
-	const auto rsabs = _mm256_andnot_ps(rs, mask);
+	const auto rsabs = _mm256_andnot_ps(mask, rs);
 	return _mm256_log_ps(rsabs);
 }
 const __m256 grad_cyclic(const __m256& mx, const __m256& mr, const float c1, const float c2) {
@@ -61,7 +59,7 @@ const __m256 grad_cyclic(const __m256& mx, const __m256& mr, const float c1, con
 	const auto t = _mm256_mul_ps(two, _mm256_mul_ps(mc1, _mm256_mul_ps(s, c)));
 
 	const auto mask = _mm256_set1_ps(-0.f);
-	const auto rsabs = _mm256_andnot_ps(t, mask);
+	const auto rsabs = _mm256_andnot_ps(mask, t);
 	return _mm256_log_ps(rsabs);
 }
 
@@ -185,17 +183,7 @@ void ImageContext::generate(HWND& hWnd, const EditContext& edit)
 
 #define UNLOOP(FUNC_NAME, RETURN_NAME) \
 	for (int n = 1; n < N; ++n) {\
-		__m256 mr, mx;\
-		for (int i = 0; i < 8; ++i) {\
-			mr.m256_f32[i] = r[h][w + i][n];\
-			mx.m256_f32[i] = x[h][w + i][n - 1];\
-		}\
-		\
-		const auto retval = FUNC_NAME(mx, mr, edit.PConst1, edit.PConst2);\
-		\
-		for (int i = 0; i < 8; ++i)\
-			RETURN_NAME[h][w + i][n] = retval.m256_f32[i];\
-		}
+		
 
 #pragma omp parallel for
 	for (int h = 0; h < bufH; ++h) {
@@ -205,32 +193,35 @@ void ImageContext::generate(HWND& hWnd, const EditContext& edit)
 				x[h][w + i][0] = edit.PInitX;
 				
 			for (int n = 1; n < N; ++n) {
-				UNLOOP(func, x)
+				__m256 mr, mx;
+				for (int i = 0; i < 8; ++i) {
+						mr.m256_f32[i] = r[h][w + i][n];
+						mx.m256_f32[i] = x[h][w + i][n - 1];
+				}
+				const auto retval = func(mx, mr, edit.PConst1, edit.PConst2);
+
+				for (int i = 0; i < 8; ++i)
+					x[h][w + i][n] = retval.m256_f32[i];
 			}
 		}
 	}
 	
-	
-
-	/*
 #pragma omp parallel for
 	for (int h = 0; h < bufH; ++h) {
-		for (int w = 0; w < bufW; ++w) {
-			x[h][w][0] = edit.PInitX;
-
+		for (int w = 0; w < bufW; w += 8) {
 			for (int n = 1; n < N; ++n) {
-				// x[n-1]‚ð‚µ‚Ä‚¢‚é‚Ì‚ÍA‰Šú’l‚ðŒvŽZ‚³‚¹‚é‚½‚ß
-				x[h][w][n] = func(x[h][w][n-1], r[h][w][n], edit.PConst1, edit.PConst2);
-			}
-		}
-	}
-	*/
+				// lam[h][w][n] = grad(x[h][w][n], r[h][w][n], edit.PConst1, edit.PConst2);
 
-#pragma omp parallel for
-	for (int h = 0; h < bufH; ++h) {
-		for (int w = 0; w < bufW; ++w) {
-			for (int n = 1; n < N; ++n) {
-				UNLOOP(grad, lam)
+				__m256 mr, mx;
+				for (int i = 0; i < 8; ++i) {
+					mr.m256_f32[i] = r[h][w + i][n];
+					mx.m256_f32[i] = x[h][w + i][n];
+				}
+				const auto retval = grad(mx, mr, edit.PConst1, edit.PConst2);
+
+				for (int i = 0; i < 8; ++i)
+					lam[h][w + i][n] = retval.m256_f32[i];
+				
 			}
 		}
 	}
