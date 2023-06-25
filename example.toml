@@ -18,7 +18,7 @@ amin = 2.0
 amax = 4.0
 bmin = 2.0
 bmax = 4.0
-# simple, sin2
+# simple, cyclic
 func = "simple"
 # 定数
 const1 = 2.7

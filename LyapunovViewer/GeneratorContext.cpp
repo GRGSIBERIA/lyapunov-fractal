@@ -29,20 +29,57 @@ void LabelOut(HDC& hdc, const int x, const int y, LPCWSTR label)
     LineTo(hdc, 300, y + 24);
 }
 
-void GenerateLabels(HDC& hdc)
+void ValidateText(HWND& hWnd, HDC& hdc, const int c, const bool valid) {
+    RECT r{ 
+        12,
+        80 + 32 * c + 5,
+        28,
+        80 + 32 * (c + 1) - 15
+    };
+    
+    if (valid) {
+        SelectObject(hdc, CreateSolidBrush(RGB(0, 0xff, 0)));
+    }
+    else {
+        SelectObject(hdc, CreateSolidBrush(RGB(0xff, 0, 0)));
+    }
+
+    RoundRect(hdc, r.left, r.top, r.right, r.bottom, 16, 16);
+    DeleteObject(SelectObject(hdc, GetStockObject(WHITE_BRUSH)));
+}
+
+void GenerateLabels(HWND& hWnd, HDC& hdc, const EditContext& edit)
 {
     int c = 0;
-    LabelOut(hdc, 40, 80 + 32 * c++, L"Width");
-    LabelOut(hdc, 40, 80 + 32 * c++, L"Height");
-    LabelOut(hdc, 40, 80 + 32 * c++, L"Sequence");
+
+#define VALIDATE(NAME) ValidateText(hWnd, hdc, c, edit.##NAME)
+#define LABELOUT(WSTR) LabelOut(hdc, 40, 80 + 32 * c++, WSTR);
+
+    VALIDATE(VWidth);
+    LABELOUT(L"Width");
+    VALIDATE(VHeight);
+    LABELOUT(L"Height");
+    VALIDATE(VSequence);
+    LABELOUT(L"Sequence");
     c += 1;
-    LabelOut(hdc, 40, 80 + 32 * c++, L"Number of iterations");
-    LabelOut(hdc, 40, 80 + 32 * c++, L"Initial x value");
-    LabelOut(hdc, 40, 80 + 32 * c++, L"a_min");
-    LabelOut(hdc, 40, 80 + 32 * c++, L"a_max");
-    LabelOut(hdc, 40, 80 + 32 * c++, L"b_min");
-    LabelOut(hdc, 40, 80 + 32 * c++, L"b_max");
-    LabelOut(hdc, 40, 80 + 32 * c++, L"func");
-    LabelOut(hdc, 40, 80 + 32 * c++, L"constance 1");
-    LabelOut(hdc, 40, 80 + 32 * c++, L"constance 2");
+    VALIDATE(VN);
+    LABELOUT(L"Number of iterations");
+    VALIDATE(VInitX);
+    LABELOUT(L"Initial x value");
+    VALIDATE(VAmin);
+    LABELOUT(L"a_min");
+    VALIDATE(VAmax);
+    LABELOUT(L"a_max");
+    VALIDATE(VBmin);
+    LABELOUT(L"b_min");
+    VALIDATE(VBmax);
+    LABELOUT(L"b_max");
+    VALIDATE(VFunc);
+    LABELOUT(L"func");
+    VALIDATE(VConst1);
+    LABELOUT(L"constance 1");
+    VALIDATE(VConst2);
+    LABELOUT(L"constance 2");
+
+    SetTextColor(hdc, RGB(0, 0, 0));
 }
