@@ -85,11 +85,6 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.lpszClassName  = szWindowClass;
     wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
     // RGB(212, 207, 201)
-    RegisterClassExW(&wcex);
-
-    wcex.lpfnWndProc = DefMDIChildProc;
-    wcex.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
-    wcex.lpszClassName = MDI_CHILD;
 
     return RegisterClassExW(&wcex);
 }

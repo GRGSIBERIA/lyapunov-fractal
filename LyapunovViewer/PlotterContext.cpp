@@ -2,40 +2,43 @@
 
 LRESULT CALLBACK WndProcSub(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
     switch (message) {
-    default:
-        return DefWindowProc(hWnd, message, wParam, lParam);
+    case WM_CREATE:
+    {
+        break;
     }
-
-    return 0;
+    case WM_PAINT:
+    {
+        break;
+    }
+    case WM_DESTROY:
+    {
+        CloseWindow(hWnd);
+        break;
+    }
+    }
+    return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
 void PlotterContext::initialize(HINSTANCE& hInst, HWND& hWnd)
 {
-    WNDCLASSEXW wcex;
-    const auto plotterName = TEXT("3D PLOT");
+    const auto plotterName = TEXT("3D PLOT WINDOW");
 
-    wcex.cbSize = sizeof(WNDCLASSEX);
+    WNDCLASS winc;
 
-    wcex.style = CS_HREDRAW | CS_VREDRAW;
-    wcex.lpfnWndProc = WndProcSub;
-    wcex.cbClsExtra = 0;
-    wcex.cbWndExtra = 0;
-    wcex.hInstance = hInst;
-    //wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_LYAPUNOVVIEWER));
-    wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
-    wcex.hbrBackground = (HBRUSH)GetStockObject(LTGRAY_BRUSH);
-    //wcex.lpszMenuName = MAKEINTRESOURCEW(IDC_LYAPUNOVVIEWER);
-    wcex.lpszClassName = plotterName;
-    //wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
-    // RGB(212, 207, 201)
-    RegisterClassExW(&wcex);
+    winc.style = CS_HREDRAW | CS_VREDRAW;
+    winc.lpfnWndProc = WndProcSub;
+    winc.cbClsExtra = winc.cbWndExtra = 0;
+    winc.hInstance = hInst;
+    winc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+    winc.hCursor = LoadCursor(NULL, IDC_ARROW);
+    winc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+    winc.lpszMenuName = NULL;
+    winc.lpszClassName = TEXT("STATIC");
 
-    wcex.lpfnWndProc = DefMDIChildProc;
-    wcex.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
-    wcex.lpszClassName = TEXT("MDICHILD");
+    if (!RegisterClass(&winc)) return;
 
-    RegisterClassExW(&wcex);
+	window = CreateWindowW(TEXT("STATIC"), plotterName, WS_OVERLAPPEDWINDOW,
+		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, nullptr, nullptr, hInst, nullptr);
 
-	window = CreateWindowW(plotterName, plotterName, WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, hWnd, nullptr, hInst, nullptr);
+    ShowWindow(window, SW_SHOW);
 }
