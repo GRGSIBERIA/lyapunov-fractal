@@ -49,18 +49,12 @@ void ImageContext::generate(HWND& hWnd, const EditContext& edit)
 {
 	const auto N = edit.PN + 1;	// N + 1にしているのは、rとxで系列長が合わないため
 
-	using namespace std;
-	typedef vector<vector<vector<float>>> D3;
-	typedef vector<vector<float>> D2;
-	typedef vector<float> D1;
+	auto r = V3D(bufH, V2D(bufW, V1D(N, 0.f)));
+	auto x = V3D(bufH, V2D(bufW, V1D(N, 0.f)));
+	auto lam = V3D(bufH, V2D(bufW, V1D(N, 0.f)));
+	lambda = V2D(bufH, V1D(bufW, 0.f));
 
-	auto r = D3(bufH, D2(bufW, D1(N, 0.f)));
-	auto x = D3(bufH, D2(bufW, D1(N, 0.f)));
-	auto lam = D3(bufH, D2(bufW, D1(N, 0.f)));
-	lambda = D2(bufH, D1(bufW, 0.f));
-
-	pixels = vector<vector<COLORREF>>(bufH, vector<COLORREF>(bufW, 0.f));
-	
+	pixels = C2D(bufH, C1D(bufW, 0.f));
 	
 	typedef float(*F)(const float, const float, const float, const float);
 	typedef std::pair<std::string, F> P;
@@ -136,7 +130,7 @@ void ImageContext::generate(HWND& hWnd, const EditContext& edit)
 	}
 
 	// シーケンス
-	auto s = vector<int>();
+	auto s = std::vector<int>();
 	for (int i = 0; i < sequence.size(); ++i) {
 		const char ps = sequence[i];
 		if (ps == 'A') {
@@ -148,7 +142,7 @@ void ImageContext::generate(HWND& hWnd, const EditContext& edit)
 	}
 
 	// 周期列を作る
-	auto S = vector<int>(edit.PN);
+	auto S = std::vector<int>(edit.PN);
 	for (int i = 0; i < edit.PN; ++i) {
 		S[i] = s[(size_t)i % s.size()];
 	}
@@ -166,6 +160,31 @@ void ImageContext::generate(HWND& hWnd, const EditContext& edit)
 			}
 		}
 	}
+
+
+	/*
+	if (edit.PFunc == "simple") {
+
+#pragma omp parallel for
+		for (int h = 0; h < bufH; ++h) {
+			for (int w = 0; w < bufW; w += 4) {
+				x[h][w][0] = edit.PInitX;
+
+
+
+				for (int n = 1; n < N; ++n) {
+					// x[n-1]をしているのは、初期値を計算させるため
+					// x[h][w][n] = func(x[h][w][n - 1], r[h][w][n], edit.PConst1, edit.PConst2);
+
+					//return r * x * (1.f - x);
+
+					// r[h][w][n] * x[h][w][n-1] * (1.f - x[h][w][n]
+					// x[h][w][n] = emm2
+				}
+			}
+		}
+	}
+	*/
 
 #pragma omp parallel for
 	for (int h = 0; h < bufH; ++h) {

@@ -2,9 +2,11 @@
 #include <Windows.h>
 #include "EditContexts.h"
 #include <vector>
+#include <emmintrin.h>
 
-typedef std::vector<std::vector<float>> V2D;
-typedef std::vector<float> V1D;
+typedef std::vector<std::vector<std::vector<__declspec(align(16)) float>>> V3D;
+typedef std::vector<std::vector<__declspec(align(16)) float>> V2D;
+typedef std::vector<__declspec(align(16)) float> V1D;
 typedef std::vector<std::vector<COLORREF>> C2D;
 typedef std::vector<COLORREF> C1D;
 

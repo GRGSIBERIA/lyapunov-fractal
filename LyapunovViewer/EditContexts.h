@@ -7,7 +7,7 @@ class EditContext {
     std::wstring SWidth = L"512";
     std::wstring SHeight = L"512";
     std::wstring SSequence = L"AABB";
-    std::wstring SN = L"12";
+    std::wstring SN = L"16";
     std::wstring SInitX = L"0.5";
     std::wstring SAmax = L"4.0";
     std::wstring SAmin = L"0.0";
@@ -50,7 +50,7 @@ public:
     int PWidth = 512;
     int PHeight = 512;
     std::string PSequence = "AABB";
-    int PN = 12;
+    int PN = 16;
     float PInitX = 0.5;
     float PAmax = 0;
     float PAmin = 4;
