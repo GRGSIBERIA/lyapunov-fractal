@@ -18,13 +18,23 @@ void ImageContext::initialize(HWND& hWnd, const int width, const int height)
 	ReleaseDC(hWnd, hdc);
 }
 
-float func_simple(const float x, const float r, const float c1, const float c2) {
-	return r * x * (1.f - x);
+const __m256 func_simple(const __m256& mx, const __m256& mr, const float c1, const float c2) {
+	const float onev = 1.f;
+	const auto one = _mm256_broadcast_ss(&onev);
+
+	const auto sub1 = _mm256_sub_ps(one, mx);
+	const auto mulrx = _mm256_mul_ps(mr, mx);
+	return _mm256_mul_ps(mulrx, sub1);
 }
-float func_cyclic(const float x, const float r, const float c1, const float c2){
-	const float sf = sinf(x + r);
-	const float pf = powf(sf, 2.f);
-	return c1 * pf;
+const __m256 func_cyclic(const __m256& mx, const __m256& mr, const float c1, const float c2) {
+	const auto xr = _mm256_add_ps(mx, mr);
+	const auto sinxr = _mm256_sin_ps(xr);
+	const float twov = 2.f;
+	const auto two = _mm256_broadcast_ss(&twov);
+	const auto constance = _mm256_broadcast_ss(&c1);
+
+	const auto powsin = _mm256_pow_ps(sinxr, two);
+	return _mm256_mul_ps(constance, powsin);
 }
 float grad_simple(const float x, const float r, const float c1, const float c2){
 	const float x2 = 2.f * x;
@@ -56,7 +66,7 @@ void ImageContext::generate(HWND& hWnd, const EditContext& edit)
 
 	pixels = C2D(bufH, C1D(bufW, 0.f));
 	
-	typedef float(*F)(const float, const float, const float, const float);
+	typedef const __m256(*F)(const __m256& mx, const __m256& mr, const float c1, const float c2);
 	typedef std::pair<std::string, F> P;
 
 	std::map<std::string, F> func_dic {
@@ -162,30 +172,71 @@ void ImageContext::generate(HWND& hWnd, const EditContext& edit)
 	}
 
 
-	/*
+	
 	if (edit.PFunc == "simple") {
 
 #pragma omp parallel for
 		for (int h = 0; h < bufH; ++h) {
-			for (int w = 0; w < bufW; w += 4) {
-				x[h][w][0] = edit.PInitX;
+			for (int w = 0; w < bufW; w += 8) {
 
-
-
+				for (int i = 0; i < 8; ++i)
+					x[h][w + i][0] = edit.PInitX;
+				
 				for (int n = 1; n < N; ++n) {
 					// x[n-1]をしているのは、初期値を計算させるため
 					// x[h][w][n] = func(x[h][w][n - 1], r[h][w][n], edit.PConst1, edit.PConst2);
 
 					//return r * x * (1.f - x);
 
-					// r[h][w][n] * x[h][w][n-1] * (1.f - x[h][w][n]
-					// x[h][w][n] = emm2
+					__m256 mr, mx;
+					for (int i = 0; i < 8; ++i) {
+						mr.m256_f32[i] = r[h][w + i][n];
+						mx.m256_f32[i] = x[h][w + i][n - 1];
+					}
+
+					const auto retval = func(mx, mr, edit.PConst1, edit.PConst2);
+
+					for (int i = 0; i < 8; ++i)
+						x[h][w + i][n] = retval.m256_f32[i];
 				}
 			}
 		}
 	}
-	*/
+	else if (edit.PFunc == "cyclic") {
+#pragma omp parallel for
+		for (int h = 0; h < bufH; ++h) {
+			for (int w = 0; w < bufW; w += 8) {
 
+				for (int i = 0; i < 8; ++i)
+					x[h][w + i][0] = edit.PInitX;
+
+				for (int n = 1; n < N; ++n) {
+					// x[n-1]をしているのは、初期値を計算させるため
+					// x[h][w][n] = func(x[h][w][n - 1], r[h][w][n], edit.PConst1, edit.PConst2);
+
+					/*
+					const float sf = sinf(x + r);
+					const float pf = powf(sf, 2.f);
+					return c1 * pf;
+					*/
+
+					__m256 mr, mx;
+					for (int i = 0; i < 8; ++i) {
+						mr.m256_f32[i] = r[h][w + i][n];
+						mx.m256_f32[i] = x[h][w + i][n - 1];
+					}
+
+					const auto retval = func(mr, mx, edit.PConst1, edit.PConst2);
+
+					for (int i = 0; i < 8; ++i)
+						x[h][w + i][n] = retval.m256_f32[i];
+				}
+			}
+		}
+	}
+	
+
+	/*
 #pragma omp parallel for
 	for (int h = 0; h < bufH; ++h) {
 		for (int w = 0; w < bufW; ++w) {
@@ -197,6 +248,7 @@ void ImageContext::generate(HWND& hWnd, const EditContext& edit)
 			}
 		}
 	}
+	*/
 
 #pragma omp parallel for
 	for (int h = 0; h < bufH; ++h) {
