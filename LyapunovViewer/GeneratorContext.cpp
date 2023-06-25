@@ -30,45 +30,56 @@ void LabelOut(HDC& hdc, const int x, const int y, LPCWSTR label)
 }
 
 void ValidateText(HWND& hWnd, HDC& hdc, const int c, const bool valid) {
-    if (valid) SetTextColor(hdc, RGB(0, 0, 0));
-    else SetTextColor(hdc, RGB(255, 192, 192));
-    RECT r;
-    r.left = 40;
-    r.top = 80 + 32 * c;
-    r.bottom = 40 + 32;
-    r.right = 80 + 32 * c + 200;
-    InvalidateRect(hWnd, &r, FALSE);
+    RECT r{ 
+        12,
+        80 + 32 * c + 5,
+        28,
+        80 + 32 * (c + 1) - 15
+    };
+    
+    if (valid) {
+        SelectObject(hdc, CreateSolidBrush(RGB(0, 0xff, 0)));
+    }
+    else {
+        SelectObject(hdc, CreateSolidBrush(RGB(0xff, 0, 0)));
+    }
+
+    RoundRect(hdc, r.left, r.top, r.right, r.bottom, 16, 16);
+    DeleteObject(SelectObject(hdc, GetStockObject(WHITE_BRUSH)));
 }
 
 void GenerateLabels(HWND& hWnd, HDC& hdc, const EditContext& edit)
 {
     int c = 0;
 
-    LabelOut(hdc, 40, 80 + 32 * c++, L"Width");
-    ValidateText(hWnd, hdc, c, edit.VHeight);
-    LabelOut(hdc, 40, 80 + 32 * c++, L"Height");
-    ValidateText(hWnd, hdc, c, edit.VSequence);
-    LabelOut(hdc, 40, 80 + 32 * c++, L"Sequence");
+#define VALIDATE(NAME) ValidateText(hWnd, hdc, c, edit.##NAME)
+#define LABELOUT(WSTR) LabelOut(hdc, 40, 80 + 32 * c++, WSTR);
+
+    VALIDATE(VWidth);
+    LABELOUT(L"Width");
+    VALIDATE(VHeight);
+    LABELOUT(L"Height");
+    VALIDATE(VSequence);
+    LABELOUT(L"Sequence");
     c += 1;
-    ValidateText(hWnd, hdc, c, edit.VN);
-    LabelOut(hdc, 40, 80 + 32 * c++, L"Number of iterations");
-    ValidateText(hWnd, hdc, c, edit.VInitX);
-    LabelOut(hdc, 40, 80 + 32 * c++, L"Initial x value");
-    ValidateText(hWnd, hdc, c, edit.VAmin);
-    LabelOut(hdc, 40, 80 + 32 * c++, L"a_min");
-    ValidateText(hWnd, hdc, c, edit.VAmax);
-    LabelOut(hdc, 40, 80 + 32 * c++, L"a_max");
-    ValidateText(hWnd, hdc, c, edit.VBmin);
-    LabelOut(hdc, 40, 80 + 32 * c++, L"b_min");
-    ValidateText(hWnd, hdc, c, edit.VBmax);
-    LabelOut(hdc, 40, 80 + 32 * c++, L"b_max");
-    ValidateText(hWnd, hdc, c, edit.VFunc);
-    LabelOut(hdc, 40, 80 + 32 * c++, L"func");
-    ValidateText(hWnd, hdc, c, edit.VConst1);
-    LabelOut(hdc, 40, 80 + 32 * c++, L"constance 1");
-    ValidateText(hWnd, hdc, c, edit.VConst2);
-    LabelOut(hdc, 40, 80 + 32 * c++, L"constance 2");
+    VALIDATE(VN);
+    LABELOUT(L"Number of iterations");
+    VALIDATE(VInitX);
+    LABELOUT(L"Initial x value");
+    VALIDATE(VAmin);
+    LABELOUT(L"a_min");
+    VALIDATE(VAmax);
+    LABELOUT(L"a_max");
+    VALIDATE(VBmin);
+    LABELOUT(L"b_min");
+    VALIDATE(VBmax);
+    LABELOUT(L"b_max");
+    VALIDATE(VFunc);
+    LABELOUT(L"func");
+    VALIDATE(VConst1);
+    LABELOUT(L"constance 1");
+    VALIDATE(VConst2);
+    LABELOUT(L"constance 2");
 
     SetTextColor(hdc, RGB(0, 0, 0));
-    InvalidateRect(hWnd, NULL, FALSE);
 }

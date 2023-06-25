@@ -188,6 +188,8 @@ const std::wstring GetName(const HWND& hWnd, const std::wstring& name) {
     return std::wstring(buf);
 }
 
+#define SHOWMSGBOX MessageBox(NULL, str.c_str(), TEXT("ERROR"), MB_OK | MB_ICONERROR)
+
 const bool ValidateDecodeStoI(const HWND& hWnd, const std::wstring& name) {
     const size_t N = 256;
     TCHAR buf[N];
@@ -206,7 +208,7 @@ const bool ValidateDecodeStoI(const HWND& hWnd, const std::wstring& name) {
         else
             str = std::format(L"Can't decode text box\n {} = {}", name, buf);
 
-        MessageBox(NULL, str.c_str(), TEXT("ERROR"), MB_OK | MB_ICONERROR);
+        SHOWMSGBOX;
         return false;
     }
 
@@ -230,7 +232,7 @@ const bool ValidateDecodeStoF(const HWND& hWnd, const std::wstring& name) {
         else
             str = std::format(L"Can't decode text box\n {} = {}", name, buf);
 
-        MessageBox(NULL, str.c_str(), TEXT("ERROR"), MB_OK | MB_ICONERROR);
+        SHOWMSGBOX;
         return false;
     }
 
@@ -260,7 +262,7 @@ const bool ValidateRange(const HWND& hWnd, const std::wstring& name, const T vmi
     }
     catch (...) {
         const auto str = std::format(L"Falls within the range\n{} <= {} <= {}\n{} = {}", vmin, name, vmax, name, test);
-        MessageBox(NULL, str.c_str(), TEXT("ERROR"), MB_OK | MB_ICONERROR);
+        SHOWMSGBOX;
         return false;
     }
 
@@ -276,7 +278,7 @@ const bool ValidateUnderCover(const HWND& hWnd, const std::wstring& name) {
     }
     catch (...) {
         const auto str = std::format(L"{} less than 1\n{} = {}", name, name, test);
-        MessageBox(NULL, str.c_str(), TEXT("ERROR"), MB_OK | MB_ICONERROR);
+        SHOWMSGBOX;
         return false;
     }
 
@@ -292,7 +294,7 @@ const bool ValidateModulo4(const HWND& hWnd, const std::wstring& name) {
     }
     catch (...) {
         const auto str = std::format(L"{} is not modulo 0 when divided by 4\n{} = {} mod 4 = ", name, name, test, test % 4);
-        MessageBox(NULL, str.c_str(), TEXT("ERROR"), MB_OK | MB_ICONERROR);
+        SHOWMSGBOX;
         return false;
     }
 
@@ -304,13 +306,13 @@ const bool ValidateSequence(const HWND& hWnd) {
 
     if (seq.size() == 0) {
         const auto str = std::format(L"Sequence is empty");
-        MessageBox(NULL, str.c_str(), TEXT("ERROR"), MB_OK | MB_ICONERROR);
+        SHOWMSGBOX;
         return false;
     }
 
     if ((L'0' <= seq[0] && seq[0] <= L'9')) {
         const auto str = std::format(L"Sequence's first character is number\nSequence = {}", seq);
-        MessageBox(NULL, str.c_str(), TEXT("ERROR"), MB_OK | MB_ICONERROR);
+        SHOWMSGBOX;
         return false;
     }
 
@@ -319,7 +321,7 @@ const bool ValidateSequence(const HWND& hWnd) {
         if (L'0' <= seq[i] && seq[i] <= L'9') continue;
 
         const auto str = std::format(L"Sequence can has A,B,0-9\nSequence = {}", seq);
-        MessageBox(NULL, str.c_str(), TEXT("ERROR"), MB_OK | MB_ICONERROR);
+        SHOWMSGBOX;
         return false;
     }
 
@@ -331,15 +333,39 @@ const bool ValidateEmpty(const HWND& hWnd, const std::wstring& name) {
 
     if (test.size() <= 0) {
         const auto str = std::format(L"Empty textbox: {}", name);
-        MessageBox(NULL, str.c_str(), TEXT("ERROR"), MB_OK | MB_ICONERROR);
+        SHOWMSGBOX;
         return false;
     }
     return true;
 }
 
+const bool ValidateFunc(const HWND& hWnd, const std::wstring& name) {
+    const auto test = GetName(hWnd, name);
+
+    if (test == L"simple") return true;
+    if (test == L"cyclic") return true;
+
+    const auto str = std::format(L"Invalid Function Name\nFunc = {}", test);
+    SHOWMSGBOX;
+    return false;
+}
+
 const bool EditContext::validateValues(HWND& hWnd)
 {
     bool valid = true;
+
+    VWidth = true;
+    VHeight = true;
+    VSequence = true;
+    VN = true;
+    VInitX = true;
+    VAmax = true;
+    VAmin = true;
+    VBmax = true;
+    VBmin = true;
+    VFunc = true;
+    VConst1 = true;
+    VConst2 = true;
 
     VWidth &= ValidateDecodeStoI(Width, L"Width");
     VHeight &= ValidateDecodeStoI(Height, L"Height");
@@ -347,6 +373,7 @@ const bool EditContext::validateValues(HWND& hWnd)
     
     VSequence &= ValidateEmpty(Sequence, L"Sequence");
     VFunc &= ValidateEmpty(Func, L"Func");
+    VFunc &= ValidateFunc(Func, L"Func");
     
     VAmax &= ValidateDecodeStoF(Amax, L"Amax");
     VAmin &= ValidateDecodeStoF(Amin, L"Amin");

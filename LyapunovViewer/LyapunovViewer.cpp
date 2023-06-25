@@ -205,7 +205,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         case BUTTON_ID_RUN_LYANUNOV:
         {
-            if (!edit.validateValues(hWnd)) break;
+            if (!edit.validateValues(hWnd)) {
+                InvalidateRect(hWnd, NULL, FALSE);
+                break;
+            }
             if (!edit.applyValues()) break;
 
             image.initialize(hWnd, edit.PWidth, edit.PHeight);
