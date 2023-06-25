@@ -36,21 +36,33 @@ const __m256 func_cyclic(const __m256& mx, const __m256& mr, const float c1, con
 	const auto powsin = _mm256_pow_ps(sinxr, two);
 	return _mm256_mul_ps(constance, powsin);
 }
-float grad_simple(const float x, const float r, const float c1, const float c2){
-	const float x2 = 2.f * x;
-	const float sx2 = 1.f - x2;
-	const float rs = r * sx2;
-	const float rsabs = fabsf(rs);
-	const float logabs = logf(rsabs);
-	return logabs;
+const __m256 grad_simple(const __m256& mx, const __m256& mr, const float c1, const float c2) {
+	const float onef = 1.f;
+	const float twof = 2.f;
+	const auto one = _mm256_broadcast_ss(&onef);
+	const auto two = _mm256_broadcast_ss(&twof);
+
+	const auto x2 = _mm256_mul_ps(two, mx);
+	const auto sx2 = _mm256_sub_ps(one, x2);
+	const auto rs = _mm256_mul_ps(mr, sx2);
+	
+	const auto mask = _mm256_set1_ps(-0.f);
+	const auto rsabs = _mm256_andnot_ps(rs, mask);
+	return _mm256_log_ps(rsabs);
 }
-float grad_cyclic(const float x, const float r, const float c1, const float c2){
-	const float s = sinf(x + r);
-	const float c = cosf(x + r);
-	const float t = 2.f * c1 * s * c;
-	const float abst = fabs(t);
-	const float logabs = logf(abst);
-	return logabs;
+const __m256 grad_cyclic(const __m256& mx, const __m256& mr, const float c1, const float c2) {
+	const auto xr = _mm256_add_ps(mx, mr);
+	const auto s = _mm256_sin_ps(xr);
+	const auto c = _mm256_cos_ps(xr);
+	
+	const float twof = 2.f;
+	const auto two = _mm256_broadcast_ss(&twof);
+	const auto mc1 = _mm256_broadcast_ss(&c1);
+	const auto t = _mm256_mul_ps(two, _mm256_mul_ps(mc1, _mm256_mul_ps(s, c)));
+
+	const auto mask = _mm256_set1_ps(-0.f);
+	const auto rsabs = _mm256_andnot_ps(t, mask);
+	return _mm256_log_ps(rsabs);
 }
 
 #include <vector>
@@ -171,69 +183,33 @@ void ImageContext::generate(HWND& hWnd, const EditContext& edit)
 		}
 	}
 
-
-	
-	if (edit.PFunc == "simple") {
+#define UNLOOP(FUNC_NAME, RETURN_NAME) \
+	for (int n = 1; n < N; ++n) {\
+		__m256 mr, mx;\
+		for (int i = 0; i < 8; ++i) {\
+			mr.m256_f32[i] = r[h][w + i][n];\
+			mx.m256_f32[i] = x[h][w + i][n - 1];\
+		}\
+		\
+		const auto retval = FUNC_NAME(mx, mr, edit.PConst1, edit.PConst2);\
+		\
+		for (int i = 0; i < 8; ++i)\
+			RETURN_NAME[h][w + i][n] = retval.m256_f32[i];\
+		}
 
 #pragma omp parallel for
-		for (int h = 0; h < bufH; ++h) {
-			for (int w = 0; w < bufW; w += 8) {
+	for (int h = 0; h < bufH; ++h) {
+		for (int w = 0; w < bufW; w += 8) {
 
-				for (int i = 0; i < 8; ++i)
-					x[h][w + i][0] = edit.PInitX;
+			for (int i = 0; i < 8; ++i)
+				x[h][w + i][0] = edit.PInitX;
 				
-				for (int n = 1; n < N; ++n) {
-					// x[n-1]をしているのは、初期値を計算させるため
-					// x[h][w][n] = func(x[h][w][n - 1], r[h][w][n], edit.PConst1, edit.PConst2);
-
-					//return r * x * (1.f - x);
-
-					__m256 mr, mx;
-					for (int i = 0; i < 8; ++i) {
-						mr.m256_f32[i] = r[h][w + i][n];
-						mx.m256_f32[i] = x[h][w + i][n - 1];
-					}
-
-					const auto retval = func(mx, mr, edit.PConst1, edit.PConst2);
-
-					for (int i = 0; i < 8; ++i)
-						x[h][w + i][n] = retval.m256_f32[i];
-				}
+			for (int n = 1; n < N; ++n) {
+				UNLOOP(func, x)
 			}
 		}
 	}
-	else if (edit.PFunc == "cyclic") {
-#pragma omp parallel for
-		for (int h = 0; h < bufH; ++h) {
-			for (int w = 0; w < bufW; w += 8) {
-
-				for (int i = 0; i < 8; ++i)
-					x[h][w + i][0] = edit.PInitX;
-
-				for (int n = 1; n < N; ++n) {
-					// x[n-1]をしているのは、初期値を計算させるため
-					// x[h][w][n] = func(x[h][w][n - 1], r[h][w][n], edit.PConst1, edit.PConst2);
-
-					/*
-					const float sf = sinf(x + r);
-					const float pf = powf(sf, 2.f);
-					return c1 * pf;
-					*/
-
-					__m256 mr, mx;
-					for (int i = 0; i < 8; ++i) {
-						mr.m256_f32[i] = r[h][w + i][n];
-						mx.m256_f32[i] = x[h][w + i][n - 1];
-					}
-
-					const auto retval = func(mr, mx, edit.PConst1, edit.PConst2);
-
-					for (int i = 0; i < 8; ++i)
-						x[h][w + i][n] = retval.m256_f32[i];
-				}
-			}
-		}
-	}
+	
 	
 
 	/*
@@ -254,7 +230,7 @@ void ImageContext::generate(HWND& hWnd, const EditContext& edit)
 	for (int h = 0; h < bufH; ++h) {
 		for (int w = 0; w < bufW; ++w) {
 			for (int n = 1; n < N; ++n) {
-				lam[h][w][n] = grad(x[h][w][n], r[h][w][n], edit.PConst1, edit.PConst2);
+				UNLOOP(grad, lam)
 			}
 		}
 	}
