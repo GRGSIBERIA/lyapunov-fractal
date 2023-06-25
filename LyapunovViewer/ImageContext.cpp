@@ -19,8 +19,7 @@ void ImageContext::initialize(HWND& hWnd, const int width, const int height)
 }
 
 const __m256 func_simple(const __m256& mx, const __m256& mr, const float c1, const float c2) {
-	const float onev = 1.f;
-	const auto one = _mm256_broadcast_ss(&onev);
+	const auto one = _mm256_set1_ps(1.f);
 
 	const auto sub1 = _mm256_sub_ps(one, mx);
 	const auto mulrx = _mm256_mul_ps(mr, mx);
@@ -29,8 +28,7 @@ const __m256 func_simple(const __m256& mx, const __m256& mr, const float c1, con
 const __m256 func_cyclic(const __m256& mx, const __m256& mr, const float c1, const float c2) {
 	const auto xr = _mm256_add_ps(mx, mr);
 	const auto sinxr = _mm256_sin_ps(xr);
-	const float twov = 2.f;
-	const auto two = _mm256_broadcast_ss(&twov);
+	const auto two = _mm256_set1_ps(2.f);
 	const auto constance = _mm256_broadcast_ss(&c1);
 
 	const auto powsin = _mm256_pow_ps(sinxr, two);
@@ -53,9 +51,8 @@ const __m256 grad_cyclic(const __m256& mx, const __m256& mr, const float c1, con
 	const auto s = _mm256_sin_ps(xr);
 	const auto c = _mm256_cos_ps(xr);
 	
-	const float twof = 2.f;
-	const auto two = _mm256_broadcast_ss(&twof);
-	const auto mc1 = _mm256_broadcast_ss(&c1);
+	const auto two = _mm256_set1_ps(2.f);
+	const auto mc1 = _mm256_set1_ps(c1);
 	const auto t = _mm256_mul_ps(two, _mm256_mul_ps(mc1, _mm256_mul_ps(s, c)));
 
 	const auto mask = _mm256_set1_ps(-0.f);
