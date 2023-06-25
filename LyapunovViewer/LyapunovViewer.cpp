@@ -165,6 +165,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             hWnd, (HMENU)BUTTON_ID_SAVE_FILE_DIALOG, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
         );
 
+        CreateWindow(
+            TEXT("BUTTON"), TEXT("OPEN 3D PLOTTING WINDOW"),
+            WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+            40, 512 + 64, 260, 24,
+            hWnd, (HMENU)BUTTON_ID_OPEN_3D_WINDOW, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
+        );
+
         GenerateSpoitButton(hWnd, lParam);
 
         /*
@@ -273,7 +280,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             edit.offTriggers();
             break;
         }
-        case BUTTON_ID_SPOIT_HOME :
+        case BUTTON_ID_SPOIT_HOME:
         {
             edit.PAmax = 4.f;
             edit.PAmin = 0.f;
@@ -281,6 +288,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             edit.PBmin = 0.f;
             edit.convertWString();
             edit.applyEditWindows();
+            break;
+        }
+        case BUTTON_ID_OPEN_3D_WINDOW:
+        {
+
             break;
         }
         default:
