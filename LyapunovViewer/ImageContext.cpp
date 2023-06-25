@@ -59,7 +59,7 @@ void ImageContext::generate(HWND& hWnd, const EditContext& edit)
 	auto lam = D3(bufH, D2(bufW, D1(N, 0.f)));
 	lambda = D2(bufH, D1(bufW, 0.f));
 
-	pixcels = vector<vector<COLORREF>>(bufH, vector<COLORREF>(bufW, 0.f));
+	pixels = vector<vector<COLORREF>>(bufH, vector<COLORREF>(bufW, 0.f));
 	
 	
 	typedef float(*F)(const float, const float, const float, const float);
@@ -232,15 +232,15 @@ void ImageContext::generate(HWND& hWnd, const EditContext& edit)
 		for (int h = 0; h < bufH; ++h) {
 			for (int w = 0; w < bufW; ++w) {
 				if (lambda[h][w] == -INFINITY) {
-					pixcels[h][w] = mincolor;
+					pixels[h][w] = mincolor;
 				}
 				else if (lambda[h][w] < 0.f) {
-					pixcels[h][w] = mincolor;
+					pixels[h][w] = mincolor;
 				}
 				else {
 					const auto percent = lambda[h][w] * diffLAMMAX;
 					RGBRGB(R); RGBRGB(G); RGBRGB(B);
-					pixcels[h][w] = RGB(R, G, B);
+					pixels[h][w] = RGB(R, G, B);
 				}
 			}
 		}
@@ -251,7 +251,7 @@ void ImageContext::generate(HWND& hWnd, const EditContext& edit)
 		for (int h = 0; h < bufH; ++h) {
 			for (int w = 0; w < bufW; ++w) {
 				if (lambda[h][w] == -INFINITY) {
-					pixcels[h][w] = mincolor;
+					pixels[h][w] = mincolor;
 				}
 				else {
 					const auto lam = lambda[h][w];
@@ -259,7 +259,7 @@ void ImageContext::generate(HWND& hWnd, const EditContext& edit)
 
 					RGBRGB(R); RGBRGB(G); RGBRGB(B);
 					const auto rgb = RGB((int)R, (int)G, (int)B);
-					pixcels[h][w] = rgb;
+					pixels[h][w] = rgb;
 				}
 			}
 		}
@@ -268,7 +268,7 @@ void ImageContext::generate(HWND& hWnd, const EditContext& edit)
 	// バッファに色を転送する
 	for (int h = 0; h < bufH; ++h) {
 		for (int w = 0; w < bufW; ++w) {
-			const auto color = pixcels[h][w];
+			const auto color = pixels[h][w];
 
 			SetPixel(buffer, w, h, color);
 		}
