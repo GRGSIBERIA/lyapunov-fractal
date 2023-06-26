@@ -12,6 +12,7 @@ LRESULT CALLBACK WndProcSub(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
         HDC hdc = GetDC(hWnd);
         BeginPaint(hWnd, &ps);
 
+        SetBkColor(hdc, RGB(192, 192, 192));
         TextOut(hdc, 10, 10, TEXT("Thickness"), lstrlen(TEXT("Thickness")));
 
         EndPaint(hWnd, &ps);
@@ -21,7 +22,6 @@ LRESULT CALLBACK WndProcSub(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
     }
     case WM_DESTROY:
     {
-        CloseWindow(hWnd);
         DestroyWindow(hWnd);
         break;
     }
@@ -52,10 +52,4 @@ void PlotterContext::initialize(HINSTANCE& hInst, HWND& hWnd)
 
     ShowWindow(window, SW_SHOW);
     //UpdateWindow(window);
-
-    MSG msg;
-    while (GetMessage(&msg, nullptr, 0, 0))
-    {
-        DispatchMessage(&msg);
-    }
 }
