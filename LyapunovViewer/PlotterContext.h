@@ -4,8 +4,8 @@
 #include "ImageContext.h"
 
 class PlotterStructure {
-	float height = 10.f;
-	float width = 10.f;
+	float height = 200.f;
+	float width = 200.f;
 	float depth = 10.f;
 
 public:

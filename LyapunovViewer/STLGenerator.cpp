@@ -27,7 +27,7 @@ const std::wstring OpenSaveDialog(HWND& hWnd, const std::wstring& filter) {
 #include <fstream>
 STLGenerator::STLGenerator(HWND& hWnd, const V2D& lambda, const int width, const int height, const Space& space)
 {
-	const auto fname = OpenSaveDialog(hWnd, L"STL file {*.stl}\0*.stl\0");
+	const auto fname = OpenSaveDialog(hWnd, TEXT("STL file {*.stl}\0*.stl\0") TEXT("All files {*.*}\0*.*\0\0"));
 	if (fname.size() <= 0) return;
 
 	std::ofstream ofs(fname, std::ios::binary | std::ios::out);
@@ -93,13 +93,28 @@ STLGenerator::STLGenerator(HWND& hWnd, const V2D& lambda, const int width, const
 	float diffD = space.depth / height;
 	float thick = space.thickness * 0.5f;
 
+	V2D LAM = lambda;
+	for (int D = 0; D < height; ++D)
+		for (int W = 0; W < width; ++W)
+			LAM[D][W] = std::isinf(lambda[D][W]) ? 0.f : lambda[D][W];
+
+	float emax = 0.f;
+	for (int i = 0; i < height; ++i)
+		emax = max(emax, (float)*std::max_element(LAM[i].cbegin(), LAM[i].cend()));
+
+	float emin = 0.f;
+	for (int i = 0; i < height; ++i)
+		emin = min(emin, (float)*std::min_element(LAM[i].cbegin(), LAM[i].cend()));
+
+	float dist = (emax - emin) / space.height;
+
 	for (int D = 0; D < height; ++D) {
 		for (int W = 0; W < width; ++W) {
 			// ’¸“_‚Ì’è‹`
-			const float L = std::isinf(lambda[D][W]) ? -thick : lambda[D][W];
+			const float L = LAM[D][W];
 
-			const float top = thick + L;
-			const float btm = thick + L;
+			const float top = (L * dist) + thick;
+			const float btm = (L * dist) - thick;
 
 			const float pos[8][3] = {
 				{ diffW * W, top, diffD * D},

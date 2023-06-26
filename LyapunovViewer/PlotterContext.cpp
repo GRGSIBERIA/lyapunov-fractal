@@ -36,9 +36,9 @@ LRESULT CALLBACK WndProcSub(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 #define CEdit(STR) CreateEdit(lParam, hWnd, c, L##STR)
 
         plot._thickness = CEdit("10.0");
-        plot._width = CEdit("10.0");
-        plot._height = CEdit("10.0");
-        plot._depth = CEdit("10.0");
+        plot._width = CEdit("200.0");
+        plot._height = CEdit("200.0");
+        plot._depth = CEdit("200.0");
         
         CreateButton(lParam, hWnd, c, 150, L"GENERATE POVRAY", BUTTON_ID_SUB_GENERATE_POVRAY);
         CreateButton(lParam, hWnd, c, 150, L"GENERATE STL", BUTTON_ID_SUB_GENERATE_STL);
@@ -88,18 +88,7 @@ LRESULT CALLBACK WndProcSub(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
             func(plot._height, space.height);
             func(plot._width, space.width);
             func(plot._thickness, space.thickness);
-
-            float emax = 0.f;
-            for (int i = 0; i < bufH; ++i)
-                emax = max(emax, (float)*std::max_element(lambda[i].cbegin(), lambda[i].cend()));
-
-            float emin = 0.f;
-            for (int i = 0; i < bufH; ++i)
-                emin = min(emin, (float)*std::min_element(lambda[i].cbegin(), lambda[i].cend()));
-
-            space.min = emin;
-            space.max = emax;
-
+            
             STLGenerator gen(hWnd, lambda, bufW, bufH, space);
 
             break;

@@ -8,8 +8,6 @@ struct Space {
 	float height;
 	float depth;
 	float thickness;
-	float min;
-	float max;
 };
 
 class STLGenerator {
