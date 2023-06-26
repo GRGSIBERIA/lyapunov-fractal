@@ -106,7 +106,7 @@ STLGenerator::STLGenerator(HWND& hWnd, const V2D& lambda, const int width, const
 	for (int i = 0; i < height; ++i)
 		emin = min(emin, (float)*std::min_element(LAM[i].cbegin(), LAM[i].cend()));
 
-	float dist = (emax - emin) / space.height;
+	float dist = space.height / (emax - emin);
 
 	for (int D = 0; D < height; ++D) {
 		for (int W = 0; W < width; ++W) {
