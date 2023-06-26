@@ -131,9 +131,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     static ImageContext image;
     static PreferenceContext prefer;
     static PlotterContext plotter;
-
+    
     static TCHAR currentDir[MAX_PATH];
     static HWND hClient;
+    static bool isGenerated = false;
 
     switch (message)
     {
@@ -219,6 +220,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             image.setIsChaos(prefer.isChaos());
             image.generate(hWnd, edit);
 
+            isGenerated = true;
+
             SendMessage(hWnd, WM_PAINT, wParam, lParam);
             break;
         }
@@ -289,6 +292,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         case BUTTON_ID_OPEN_3D_WINDOW:
         {
+            if (!isGenerated) {
+                MessageBox(NULL, TEXT("Fractal was not generated"), TEXT("ERROR"), MB_OK | MB_ICONERROR);
+                break;
+            }
             plotter.initialize(hInst, hWnd, image);
             break;
         }

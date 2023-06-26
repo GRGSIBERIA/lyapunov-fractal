@@ -3,6 +3,8 @@
 
 V2D lambda;
 C2D pixel;
+int bufW;
+int bufH;
 
 HWND CreateEdit(LPARAM& lParam, HWND& hWnd, int& c, const std::wstring& str) {
     return CreateWindow(
@@ -22,6 +24,8 @@ void CreateButton(LPARAM& lParam, HWND& hWnd, int& c, const int width, const std
     );
 }
 
+#include "STLGenerator.h"
+#include <streambuf>
 LRESULT CALLBACK WndProcSub(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
     static PlotterStructure plot;
     
@@ -71,6 +75,19 @@ LRESULT CALLBACK WndProcSub(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
         }
         case BUTTON_ID_SUB_GENERATE_STL:
         {
+            Space space;
+            auto func = [](HWND& hWnd, float& val) -> void {
+                TCHAR buf[256];
+                GetWindowText(hWnd, buf, 256);
+                val = std::stof(buf);
+            };
+            
+            func(plot._depth, space.depth);
+            func(plot._height, space.height);
+            func(plot._width, space.width);
+
+            STLGenerator gen(hWnd, lambda, bufW, bufH, space);
+
             break;
         }
         default:
@@ -118,4 +135,6 @@ void PlotterContext::initialize(HINSTANCE& hInst, HWND& hWnd, const ImageContext
 
     lambda = image.getLambda();
     pixel = image.getPixel();
+    bufW = image.getWidth();
+    bufH = image.getHeight();
 }
