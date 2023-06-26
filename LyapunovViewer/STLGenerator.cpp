@@ -91,14 +91,15 @@ STLGenerator::STLGenerator(HWND& hWnd, const V2D& lambda, const int width, const
 
 	float diffW = space.width / width;
 	float diffD = space.depth / height;
-	float half = (space.min + space.max) * 0.5f;
 	float thick = space.thickness * 0.5f;
 
 	for (int D = 0; D < height; ++D) {
 		for (int W = 0; W < width; ++W) {
 			// ’¸“_‚Ì’è‹`
-			const float top = half + thick + lambda[D][W];
-			const float btm = half - thick + lambda[D][W];
+			const float L = std::isinf(lambda[D][W]) ? -thick : lambda[D][W];
+
+			const float top = thick + L;
+			const float btm = thick + L;
 
 			const float pos[8][3] = {
 				{ diffW * W, top, diffD * D},
