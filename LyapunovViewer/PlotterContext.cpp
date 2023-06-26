@@ -35,8 +35,8 @@ LRESULT CALLBACK WndProcSub(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
         plot._height = CEdit("10.0");
         plot._depth = CEdit("10.0");
         
-        CreateButton(lParam, hWnd, c, 128, L"SET MIN COLOR", BUTTON_ID_SUB_SET_MIN_COLOR);
-        CreateButton(lParam, hWnd, c, 128, L"SET MAX COLOR", BUTTON_ID_SUB_SET_MAX_COLOR);
+        CreateButton(lParam, hWnd, c, 150, L"GENERATE POVRAY", BUTTON_ID_SUB_GENERATE_POVRAY);
+        CreateButton(lParam, hWnd, c, 150, L"GENERATE STL", BUTTON_ID_SUB_GENERATE_STL);
 
         break;
     }
@@ -65,11 +65,11 @@ LRESULT CALLBACK WndProcSub(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
         int wmId = LOWORD(wParam);
         // ëIëÇ≥ÇÍÇΩÉÅÉjÉÖÅ[ÇÃâêÕ:
         switch (wmId) {
-        case BUTTON_ID_SUB_SET_MIN_COLOR:
+        case BUTTON_ID_SUB_GENERATE_POVRAY:
         {
             break;
         }
-        case BUTTON_ID_SUB_SET_MAX_COLOR:
+        case BUTTON_ID_SUB_GENERATE_STL:
         {
             break;
         }
