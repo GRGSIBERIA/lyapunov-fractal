@@ -12,6 +12,7 @@ public:
 	HWND _height;
 	HWND _width;
 	HWND _depth;
+	HWND _thickness;
 };
 
 class PlotterContext {

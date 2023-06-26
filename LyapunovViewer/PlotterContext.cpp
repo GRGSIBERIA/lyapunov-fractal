@@ -35,6 +35,7 @@ LRESULT CALLBACK WndProcSub(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
         int c = 0;
 #define CEdit(STR) CreateEdit(lParam, hWnd, c, L##STR)
 
+        plot._thickness = CEdit("10.0");
         plot._width = CEdit("10.0");
         plot._height = CEdit("10.0");
         plot._depth = CEdit("10.0");
@@ -55,6 +56,7 @@ LRESULT CALLBACK WndProcSub(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
         int c = 0;
 #define TOut(STR) TextOut(hdc, 10, 10 + c++ * 32, TEXT(STR), lstrlen(TEXT(STR)))
 
+        TOut("Thickness (mm)");
         TOut("Width (mm)");
         TOut("Height (mm)");
         TOut("Depth (mm)");
@@ -85,6 +87,7 @@ LRESULT CALLBACK WndProcSub(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
             func(plot._depth, space.depth);
             func(plot._height, space.height);
             func(plot._width, space.width);
+            func(plot._thickness, space.thickness);
 
             STLGenerator gen(hWnd, lambda, bufW, bufH, space);
 
