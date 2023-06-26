@@ -394,7 +394,6 @@ const bool EditContext::validateValues(HWND& hWnd)
     
     VWidth &= ValidateModulo8<int>(Width, L"Width");
     VHeight &= ValidateModulo8<int>(Height, L"Height");
-    VN &= ValidateModulo8<int>(N, L"Number of iterations");
 
     VSequence &= ValidateSequence(Sequence);
 

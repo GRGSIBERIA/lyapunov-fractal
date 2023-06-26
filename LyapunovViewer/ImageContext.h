@@ -44,4 +44,7 @@ public:
 
 	const V2D& getLambda() const { return lambda; }
 	const C2D& getPixel() const { return pixels; }
+
+	const int getHeight() const { return bufH; }
+	const int getWidth() const { return bufW; }
 };
