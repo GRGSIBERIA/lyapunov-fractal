@@ -20,7 +20,7 @@ void CreateButton(LPARAM& lParam, HWND& hWnd, int& c, const int width, const std
         TEXT("BUTTON"), str.c_str(),
         WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
         10, 10 + c++ * 32, width, 24,
-        hWnd, (HMENU)BUTTON_ID_OPEN_FILE_DIALOG, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
+        hWnd, (HMENU)id, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
     );
 }
 
@@ -88,6 +88,17 @@ LRESULT CALLBACK WndProcSub(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
             func(plot._height, space.height);
             func(plot._width, space.width);
             func(plot._thickness, space.thickness);
+
+            float emax = 0.f;
+            for (int i = 0; i < bufH; ++i)
+                emax = max(emax, (float)*std::max_element(lambda[i].cbegin(), lambda[i].cend()));
+
+            float emin = 0.f;
+            for (int i = 0; i < bufH; ++i)
+                emin = min(emin, (float)*std::min_element(lambda[i].cbegin(), lambda[i].cend()));
+
+            space.min = emin;
+            space.max = emax;
 
             STLGenerator gen(hWnd, lambda, bufW, bufH, space);
 
