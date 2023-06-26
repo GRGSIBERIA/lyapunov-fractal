@@ -289,7 +289,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         case BUTTON_ID_OPEN_3D_WINDOW:
         {
-            plotter.initialize(hInst, hWnd);
+            plotter.initialize(hInst, hWnd, image);
             break;
         }
         default:
