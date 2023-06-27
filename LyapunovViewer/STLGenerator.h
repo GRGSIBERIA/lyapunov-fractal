@@ -10,6 +10,7 @@ struct Space {
 	float height;
 	float depth;
 	float thickness;
+	bool isMetal = false;
 };
 
 class STLGenerator {
