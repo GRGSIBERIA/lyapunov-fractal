@@ -25,6 +25,7 @@ void CreateButton(LPARAM& lParam, HWND& hWnd, int& c, const int width, const std
 }
 
 #include "STLGenerator.h"
+#include "POVRAYGenerator.h"
 #include <streambuf>
 LRESULT CALLBACK WndProcSub(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
     static PlotterStructure plot;
@@ -68,23 +69,38 @@ LRESULT CALLBACK WndProcSub(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
     }
     case WM_COMMAND:
     {
+        auto func = [](HWND& hWnd, float& val) -> void {
+            TCHAR buf[256];
+            GetWindowText(hWnd, buf, 256);
+            val = std::stof(buf);
+
+            if (!(val > 0.f)) throw std::exception("Undercover Error");
+        };
+
         int wmId = LOWORD(wParam);
         // ‘I‘ð‚³‚ê‚½ƒƒjƒ…[‚Ì‰ðÍ:
         switch (wmId) {
         case BUTTON_ID_SUB_GENERATE_POVRAY:
         {
+            Space space;
+            try {
+                func(plot._depth, space.depth);
+                func(plot._height, space.height);
+                func(plot._width, space.width);
+                func(plot._thickness, space.thickness);
+            }
+            catch (...) {
+                MessageBox(NULL, L"Please check if the entered value is correct", L"Invalid Values", MB_OK | MB_ICONERROR);
+                break;
+            }
+
+            POVRAYGenerator pov(hWnd, lambda, pixel, bufW, bufH, space);
+
             break;
         }
         case BUTTON_ID_SUB_GENERATE_STL:
         {
             Space space;
-            auto func = [](HWND& hWnd, float& val) -> void {
-                TCHAR buf[256];
-                GetWindowText(hWnd, buf, 256);
-                val = std::stof(buf);
-
-                if (!(val > 0.f)) throw std::exception("Undercover Error");
-            };
             
             try {
                 func(plot._depth, space.depth);
