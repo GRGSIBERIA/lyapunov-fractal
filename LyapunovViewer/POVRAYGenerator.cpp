@@ -24,7 +24,7 @@ POVRAYGenerator::POVRAYGenerator(HWND& hWnd, const V2D& lambda, const C2D color,
 
     std::string finish = "";
     
-    if (true) {
+    if (space.isMetal) {
         finish = std::string("") + 
             "    finish {\n"+
             "        Metal\n"+
@@ -39,7 +39,7 @@ POVRAYGenerator::POVRAYGenerator(HWND& hWnd, const V2D& lambda, const C2D color,
         for (int w = 0; w < width2d; ++w) {
             // lambdaで位置とスケールを合わせる
             // colorでpigmentの色を変える
-            const auto L = lambda[h][w];
+            const auto L = std::isinf(lambda[h][w]) ? 0 : lambda[h][w];
             const auto C = color[h][w];
 
             const auto tx = w;
@@ -52,8 +52,32 @@ POVRAYGenerator::POVRAYGenerator(HWND& hWnd, const V2D& lambda, const C2D color,
             const auto g = GetGValue(C);
             const auto b = GetBValue(C);
 
-            ofs << std::format(temp, tx, ty, tz, sy, r, g, b, finish);
+            std::string s = "";
+            s += "object {\n";
+            s += "    box {\n";
+            s += "        <0, 0, 0>\n";
+            s += "        <1, 1, 1>\n";
+            s += std::format("        translate <{}, {}, {}>\n", tx, ty, tz);
+            s += std::format("        scale <1, {}, 1>\n", sy);
+            s += "    }\n";
+            s += "    texture {\n";
+            s += "        pigment {\n";
+            s += std::format("            color rgb <{}, {}, {}>\n", r, g, b);
+            s += "        }\n";
+            s += "    }\n";
+
+            if (space.isMetal) {
+                s += "    finish {\n";
+                s += "        Metal\n";
+                s += "    }\n";
+            }
+
+            s += "}\n";
+
+            ofs << s;
         }
     }
     ofs.close();
+
+    MessageBox(NULL, TEXT("Generated POV-RAY Include File"), TEXT("INFORMATION"), MB_OK | MB_ICONINFORMATION);
 }
