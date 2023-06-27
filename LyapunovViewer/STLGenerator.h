@@ -3,6 +3,8 @@
 #include <commdlg.h>
 #include "ImageContext.h"
 
+const std::wstring OpenSaveDialog(HWND& hWnd, const std::wstring& filter);
+
 struct Space {
 	float width;
 	float height;
