@@ -41,9 +41,18 @@ LRESULT CALLBACK WndProcSub(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
         plot._height = CEdit("200.0");
         plot._depth = CEdit("200.0");
         
+        plot._isMetalic = CreateWindow(
+            TEXT("BUTTON"), TEXT("Metalic"),
+            WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
+            10, 10 + c++ * 32, 128, 24,
+            hWnd, NULL, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
+        );
+
+
         CreateButton(lParam, hWnd, c, 150, L"GENERATE POVRAY", BUTTON_ID_SUB_GENERATE_POVRAY);
         CreateButton(lParam, hWnd, c, 150, L"GENERATE STL", BUTTON_ID_SUB_GENERATE_STL);
 
+        
         break;
     }
     case WM_PAINT:
@@ -93,6 +102,7 @@ LRESULT CALLBACK WndProcSub(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 MessageBox(NULL, L"Please check if the entered value is correct", L"Invalid Values", MB_OK | MB_ICONERROR);
                 break;
             }
+            space.isMetal = BST_CHECKED == SendMessage(plot._isMetalic, BM_GETCHECK, 0, 0) ? true : false;
 
             POVRAYGenerator pov(hWnd, lambda, pixel, bufW, bufH, space);
 
