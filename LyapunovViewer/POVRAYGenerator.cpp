@@ -48,9 +48,9 @@ POVRAYGenerator::POVRAYGenerator(HWND& hWnd, const V2D& lambda, const C2D color,
 
             const auto sy = L + space.thickness;
 
-            const auto r = GetRValue(C);
-            const auto g = GetGValue(C);
-            const auto b = GetBValue(C);
+            const auto r = (float)GetRValue(C) / 255.f;
+            const auto g = (float)GetGValue(C) / 255.f;
+            const auto b = (float)GetBValue(C) / 255.f;
 
             std::string s = "";
             s += "object {\n";
