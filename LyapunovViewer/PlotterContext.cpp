@@ -82,12 +82,20 @@ LRESULT CALLBACK WndProcSub(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
                 TCHAR buf[256];
                 GetWindowText(hWnd, buf, 256);
                 val = std::stof(buf);
+
+                if (!(val > 0.f)) throw std::exception("Undercover Error");
             };
             
-            func(plot._depth, space.depth);
-            func(plot._height, space.height);
-            func(plot._width, space.width);
-            func(plot._thickness, space.thickness);
+            try {
+                func(plot._depth, space.depth);
+                func(plot._height, space.height);
+                func(plot._width, space.width);
+                func(plot._thickness, space.thickness);
+            }
+            catch (...) {
+                MessageBox(NULL, L"Please check if the entered value is correct", L"Invalid Values", MB_OK | MB_ICONERROR);
+                break;
+            }
             
             STLGenerator gen(hWnd, lambda, bufW, bufH, space);
 
