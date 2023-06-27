@@ -155,3 +155,5 @@ cython_debug/
 HiraStlViewer128/
 *.stl
 HiraStlViewer.exe - ショートカット.lnk
+povray-base.pov.bak
+povray-base.png
