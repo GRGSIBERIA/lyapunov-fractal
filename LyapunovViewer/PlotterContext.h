@@ -9,14 +9,15 @@ class PlotterStructure {
 	float depth = 10.f;
 
 public:
-	HWND _height;
-	HWND _width;
-	HWND _depth;
-	HWND _thickness;
+	HWND _height = NULL;
+	HWND _width = NULL;
+	HWND _depth = NULL;
+	HWND _thickness = NULL;
+	HWND _isMetalic = NULL;
 };
 
 class PlotterContext {
-	HWND window;
+	HWND window = NULL;
 
 public:
 	void initialize(HINSTANCE& hInst, HWND& hWnd, const ImageContext& image);

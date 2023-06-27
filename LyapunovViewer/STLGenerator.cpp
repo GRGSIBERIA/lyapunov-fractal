@@ -3,7 +3,8 @@
 const std::wstring OpenSaveDialog(HWND& hWnd, const std::wstring& filter) {
 	OPENFILENAME ofn = { 0 };
 	TCHAR initialCurrentDir[MAX_PATH];
-	TCHAR filename[MAX_PATH] = { '\0' };
+	TCHAR filename[MAX_PATH] = TEXT("output.stl");
+	TCHAR strCustom[256] = TEXT("Before files\0*.*\0\0");
 
 	ZeroMemory(filename, sizeof(TCHAR) * MAX_PATH);
 
@@ -15,6 +16,8 @@ const std::wstring OpenSaveDialog(HWND& hWnd, const std::wstring& filter) {
 	ofn.lpstrFile = filename;
 	ofn.nMaxFile = MAX_PATH;
 	ofn.lpstrInitialDir = initialCurrentDir;
+	ofn.lpstrCustomFilter = strCustom;
+	ofn.nMaxCustFilter = 256;
 	ofn.Flags = OFN_FILEMUSTEXIST | OFN_OVERWRITEPROMPT;
 
 	if (GetSaveFileName(&ofn))

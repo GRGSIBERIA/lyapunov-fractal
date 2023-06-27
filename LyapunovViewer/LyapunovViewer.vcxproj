@@ -157,6 +157,7 @@
     <ClInclude Include="LyapunovViewer.h" />
     <ClInclude Include="OpenTomlContext.h" />
     <ClInclude Include="PlotterContext.h" />
+    <ClInclude Include="POVRAYGenerator.h" />
     <ClInclude Include="PreferenceContext.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="STLGenerator.h" />
@@ -169,6 +170,7 @@
     <ClCompile Include="LyapunovViewer.cpp" />
     <ClCompile Include="OpenTomlContext.cpp" />
     <ClCompile Include="PlotterContext.cpp" />
+    <ClCompile Include="POVRAYGenerator.cpp" />
     <ClCompile Include="PreferenceContext.cpp" />
     <ClCompile Include="STLGenerator.cpp" />
   </ItemGroup>

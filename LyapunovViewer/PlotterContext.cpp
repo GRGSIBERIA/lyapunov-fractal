@@ -25,6 +25,7 @@ void CreateButton(LPARAM& lParam, HWND& hWnd, int& c, const int width, const std
 }
 
 #include "STLGenerator.h"
+#include "POVRAYGenerator.h"
 #include <streambuf>
 LRESULT CALLBACK WndProcSub(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
     static PlotterStructure plot;
@@ -40,9 +41,18 @@ LRESULT CALLBACK WndProcSub(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
         plot._height = CEdit("200.0");
         plot._depth = CEdit("200.0");
         
+        plot._isMetalic = CreateWindow(
+            TEXT("BUTTON"), TEXT("Metalic"),
+            WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
+            10, 10 + c++ * 32, 128, 24,
+            hWnd, NULL, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
+        );
+
+
         CreateButton(lParam, hWnd, c, 150, L"GENERATE POVRAY", BUTTON_ID_SUB_GENERATE_POVRAY);
         CreateButton(lParam, hWnd, c, 150, L"GENERATE STL", BUTTON_ID_SUB_GENERATE_STL);
 
+        
         break;
     }
     case WM_PAINT:
@@ -68,26 +78,50 @@ LRESULT CALLBACK WndProcSub(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
     }
     case WM_COMMAND:
     {
+        auto func = [](HWND& hWnd, float& val) -> void {
+            TCHAR buf[256];
+            GetWindowText(hWnd, buf, 256);
+            val = std::stof(buf);
+
+            if (!(val > 0.f)) throw std::exception("Undercover Error");
+        };
+
         int wmId = LOWORD(wParam);
         // ‘I‘ð‚³‚ê‚½ƒƒjƒ…[‚Ì‰ðÍ:
         switch (wmId) {
         case BUTTON_ID_SUB_GENERATE_POVRAY:
         {
+            Space space;
+            try {
+                func(plot._depth, space.depth);
+                func(plot._height, space.height);
+                func(plot._width, space.width);
+                func(plot._thickness, space.thickness);
+            }
+            catch (...) {
+                MessageBox(NULL, L"Please check if the entered value is correct", L"Invalid Values", MB_OK | MB_ICONERROR);
+                break;
+            }
+            space.isMetal = BST_CHECKED == SendMessage(plot._isMetalic, BM_GETCHECK, 0, 0) ? true : false;
+
+            POVRAYGenerator pov(hWnd, lambda, pixel, bufW, bufH, space);
+
             break;
         }
         case BUTTON_ID_SUB_GENERATE_STL:
         {
             Space space;
-            auto func = [](HWND& hWnd, float& val) -> void {
-                TCHAR buf[256];
-                GetWindowText(hWnd, buf, 256);
-                val = std::stof(buf);
-            };
             
-            func(plot._depth, space.depth);
-            func(plot._height, space.height);
-            func(plot._width, space.width);
-            func(plot._thickness, space.thickness);
+            try {
+                func(plot._depth, space.depth);
+                func(plot._height, space.height);
+                func(plot._width, space.width);
+                func(plot._thickness, space.thickness);
+            }
+            catch (...) {
+                MessageBox(NULL, L"Please check if the entered value is correct", L"Invalid Values", MB_OK | MB_ICONERROR);
+                break;
+            }
             
             STLGenerator gen(hWnd, lambda, bufW, bufH, space);
 
