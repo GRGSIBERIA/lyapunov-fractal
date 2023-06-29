@@ -85,11 +85,6 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.lpszClassName  = szWindowClass;
     wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
     // RGB(212, 207, 201)
-    RegisterClassExW(&wcex);
-
-    wcex.lpfnWndProc = DefMDIChildProc;
-    wcex.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
-    wcex.lpszClassName = MDI_CHILD;
 
     return RegisterClassExW(&wcex);
 }
@@ -128,15 +123,18 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 #include "GeneratorContext.h"
 #include "ImageContext.h"
 #include "PreferenceContext.h"
+#include "PlotterContext.h"
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     static EditContext edit;
     static OpenTomlContext open;
     static ImageContext image;
     static PreferenceContext prefer;
-
+    static PlotterContext plotter;
+    
     static TCHAR currentDir[MAX_PATH];
     static HWND hClient;
+    static bool isGenerated = false;
 
     switch (message)
     {
@@ -163,6 +161,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
             40, 512 + 32, 260, 24,
             hWnd, (HMENU)BUTTON_ID_SAVE_FILE_DIALOG, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
+        );
+
+        CreateWindow(
+            TEXT("BUTTON"), TEXT("OPEN 3D PLOTTING WINDOW"),
+            WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+            40, 512 + 64, 260, 24,
+            hWnd, (HMENU)BUTTON_ID_OPEN_3D_WINDOW, ((LPCREATESTRUCT)(lParam))->hInstance, NULL
         );
 
         GenerateSpoitButton(hWnd, lParam);
@@ -205,12 +210,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         case BUTTON_ID_RUN_LYANUNOV:
         {
-            if (!edit.validateValues(hWnd)) break;
+            if (!edit.validateValues(hWnd)) {
+                InvalidateRect(hWnd, NULL, FALSE);
+                break;
+            }
             if (!edit.applyValues()) break;
 
             image.initialize(hWnd, edit.PWidth, edit.PHeight);
             image.setIsChaos(prefer.isChaos());
             image.generate(hWnd, edit);
+
+            isGenerated = true;
 
             SendMessage(hWnd, WM_PAINT, wParam, lParam);
             break;
@@ -270,7 +280,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             edit.offTriggers();
             break;
         }
-        case BUTTON_ID_SPOIT_HOME :
+        case BUTTON_ID_SPOIT_HOME:
         {
             edit.PAmax = 4.f;
             edit.PAmin = 0.f;
@@ -278,6 +288,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             edit.PBmin = 0.f;
             edit.convertWString();
             edit.applyEditWindows();
+            break;
+        }
+        case BUTTON_ID_OPEN_3D_WINDOW:
+        {
+            if (!isGenerated) {
+                MessageBox(NULL, TEXT("Fractal was not generated"), TEXT("ERROR"), MB_OK | MB_ICONERROR);
+                break;
+            }
+            plotter.initialize(hInst, hWnd, image);
             break;
         }
         default:
@@ -312,7 +331,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         SetBkColor(hdc, RGB(192,192,192));
 
-        GenerateLabels(hdc);
+        GenerateLabels(hWnd, hdc, edit);
         TextOut(hdc, 320, 10, L"Spoit", lstrlen(L"Spoit"));
         
         // 記録の有無を判定して表示する

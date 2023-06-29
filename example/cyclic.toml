@@ -18,8 +18,8 @@ amin = 3
 amax = 3.5
 bmin = 2
 bmax = 3.5
-# simple, sin2
-func = "sin2"
+# simple, cyclic
+func = "cyclic"
 # 定数
 const1 = 2.7
 const2 = 0.0

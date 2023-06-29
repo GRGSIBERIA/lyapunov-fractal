@@ -60,7 +60,7 @@ def func_simple(x, r, _):
     return x * r * (1. - x)
 
 @njit(f8(f8, f8, f8))
-def func_sin2(x, r, const):
+def func_cyclic(x, r, const):
     return const * np.sin(x + r)**2.
 
 
@@ -69,7 +69,7 @@ def r2x(r, initX, const, func_mode):
 
     func = {
         "simple": func_simple,
-        "sin2": func_sin2
+        "cyclic": func_cyclic
     }
     func = func[func_mode]
 
@@ -84,7 +84,7 @@ def grad_simple(x, r, _):
     return np.fabs(r * (1. - (2. * x)))
 
 @njit(f8(f8, f8, f8))
-def grad_sin2(x, r, const):
+def grad_cyclic(x, r, const):
     return np.fabs(2. * const * np.sin(x + r) * np.cos(x + r))
 
 
@@ -94,7 +94,7 @@ def compute_lambda(r, x, const, func_mode):
 
     func = {
         "simple": grad_simple,
-        "sin2": grad_sin2
+        "cyclic": grad_cyclic
     }
     func = func[func_mode]
     

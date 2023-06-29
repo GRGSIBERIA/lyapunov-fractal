@@ -2,6 +2,13 @@
 #include <Windows.h>
 #include "EditContexts.h"
 #include <vector>
+#include <intrin.h>
+
+typedef std::vector<std::vector<std::vector<__declspec(align(32)) float>>> V3D;
+typedef std::vector<std::vector<__declspec(align(32)) float>> V2D;
+typedef std::vector<__declspec(align(32)) float> V1D;
+typedef std::vector<std::vector<COLORREF>> C2D;
+typedef std::vector<COLORREF> C1D;
 
 class ImageContext {
 	HBITMAP bitmap = { 0 };
@@ -17,10 +24,8 @@ class ImageContext {
 	bool isChaos = true;
 
 	// generateÇ≈Ç‡èâä˙âª
-	std::vector<std::vector<float>> lambda =
-		std::vector<std::vector<float>>(512, std::vector<float>(512, 0.f));
-	std::vector<std::vector<COLORREF>> pixcels =
-		std::vector<std::vector<COLORREF>>(512, std::vector<COLORREF>(512, 0.f));
+	V2D lambda = V2D(512, V1D(512, 0.f));
+	C2D pixels = C2D(512, C1D(512, 0));
 
 public:
 	ImageContext() {}
@@ -37,5 +42,9 @@ public:
 	void setMaxColor(const COLORREF color) { maxcolor = color; }
 	void setIsChaos(const bool chaos) { isChaos = chaos; }
 
-	
+	const V2D& getLambda() const { return lambda; }
+	const C2D& getPixel() const { return pixels; }
+
+	const int getHeight() const { return bufH; }
+	const int getWidth() const { return bufW; }
 };

@@ -7,14 +7,14 @@ class EditContext {
     std::wstring SWidth = L"512";
     std::wstring SHeight = L"512";
     std::wstring SSequence = L"AABB";
-    std::wstring SN = L"10";
+    std::wstring SN = L"16";
     std::wstring SInitX = L"0.5";
     std::wstring SAmax = L"4.0";
     std::wstring SAmin = L"0.0";
     std::wstring SBmax = L"4.0";
     std::wstring SBmin = L"0.0";
     std::wstring SFunc = L"simple";
-    std::wstring SConst1 = L"0.0";
+    std::wstring SConst1 = L"2.7";
     std::wstring SConst2 = L"0.0";
 
     int mx = 0;
@@ -34,17 +34,30 @@ public:
     HWND Const1 = NULL;
     HWND Const2 = NULL;
 
+    bool VWidth = true;
+    bool VHeight = true;
+    bool VSequence = true;
+    bool VN = true;
+    bool VInitX = true;
+    bool VAmax = true;
+    bool VAmin = true;
+    bool VBmax = true;
+    bool VBmin = true;
+    bool VFunc = true;
+    bool VConst1 = true;
+    bool VConst2 = true;
+
     int PWidth = 512;
     int PHeight = 512;
     std::string PSequence = "AABB";
-    int PN = 10;
+    int PN = 16;
     float PInitX = 0.5;
     float PAmax = 0;
     float PAmin = 4;
     float PBmax = 0;
     float PBmin = 4;
     std::string PFunc = "simple";
-    float PConst1 = 0;
+    float PConst1 = 2.7f;
     float PConst2 = 0;
 
     EditContext() {}
@@ -73,5 +86,5 @@ public:
     // ÉgÉäÉKÅ[ÇÃÇ¢Ç∏ÇÍÇ©Ç™ÉIÉìÇ…Ç»Ç¡ÇƒÇ¢ÇΩÇÁtrue
     const bool enableTriggers() const { return amaxTrig || aminTrig || bmaxTrig || bminTrig; }
 
-    const bool validateValues(HWND& hWnd) const;
+    const bool validateValues(HWND& hWnd);
 };
